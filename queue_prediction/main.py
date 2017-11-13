@@ -16,6 +16,7 @@ from db.prevision_entity import PrevisionEntity
 from db.prevision_data_entity import PrevisionDataEntity
 from db.measures_db_helper import MeasureDbHelper
 from db.prevision_db_helper import PrevisionDbHelper
+from db.canteens_db_helper import CanteensDbHelper
 
 import utils.timeutils
 from utils.command_line_parameters import Parameters
@@ -27,43 +28,6 @@ import datetime
 
 import MySQLdb
 
-# Generates a predefined list of canteeens
-# MUST BE SUBSTITUTED WITH DATA FROM DATABASE
-def generateDebugCanteenList():
-    #Initializes each canteen
-    pastoLestoOpeningHours = {
-        0: (datetime.time(11, 45), datetime.time(14, 30)),
-        1: (datetime.time(11, 45), datetime.time(14, 30)),
-        2: (datetime.time(11, 45), datetime.time(14, 30)),
-        3: (datetime.time(11, 45), datetime.time(14, 30)),
-        4: (datetime.time(11, 45), datetime.time(14, 30)),
-        5: (datetime.time(11, 45), datetime.time(14, 30)),
-    }
-
-    povo0OpeningHours = {
-        0: (datetime.time(11, 45), datetime.time(14, 30)),
-        1: (datetime.time(11, 45), datetime.time(14, 30)),
-        2: (datetime.time(11, 45), datetime.time(14, 30)),
-        3: (datetime.time(11, 45), datetime.time(14, 30)),
-        4: (datetime.time(11, 45), datetime.time(14, 30)),
-        5: (datetime.time(11, 45), datetime.time(14, 30)),
-    }
-
-    povo1OpeningHours = {
-        0: (datetime.time(11, 45), datetime.time(14, 30)),
-        1: (datetime.time(11, 45), datetime.time(14, 30)),
-        2: (datetime.time(11, 45), datetime.time(14, 30)),
-        3: (datetime.time(11, 45), datetime.time(14, 30)),
-        4: (datetime.time(11, 45), datetime.time(14, 30)),
-        5: (datetime.time(11, 45), datetime.time(14, 30)),
-    }
-
-    pastoLesto = CanteenEntity(1, "Pasto lesto", pastoLestoOpeningHours)
-    povo0 = CanteenEntity(2, "Povo 0", povo0OpeningHours)
-    povo1 = CanteenEntity(3, "Povo 1", povo1OpeningHours)
-
-    return [pastoLesto, povo0, povo1]
-
 # Generates previsions and stores them in the database
 #
 # @param connection database connection
@@ -74,7 +38,7 @@ def generateDebugCanteenList():
 def generatePrevisions(connection, measuresAgeLimitDays = 30, previsionIntervalSeconds = 60, previsionDay = datetime.datetime.now().date(), debugMode = False):
     cursor = connection.cursor()
 
-    canteenList = generateDebugCanteenList();
+    canteenList = CanteensDbHelper.getAllCanteens(cursor);
 
     currentWeekday = previsionDay.weekday()
     #Generate data for each canteen that day
@@ -92,8 +56,9 @@ def generatePrevisions(connection, measuresAgeLimitDays = 30, previsionIntervalS
 
             predictionDataList = predictor.getPredictions(previsionIntervalSeconds)
 
-            #Creates a prevision with no id. Opening hour id is generated such as there are no collisions. 7 days a week
-            prevision = PrevisionEntity(None, currentCanteen.canteenId * 7 + currentWeekday, previsionDay)
+            openingHourId = currentOpeningHours[currentWeekday][2]
+            #Creates a prevision with no id
+            prevision = PrevisionEntity(None, openingHourId, previsionDay)
             #Inserts the prevision
             previsionId = PrevisionDbHelper.insertPrevision(prevision, cursor)
 
@@ -134,7 +99,7 @@ def fillDatabase(beginDay, previsionBeginDay, endDay, connection, generationDail
     povo0WeeklyPivots = WeeklyPivotGenreator(pivotsList).getWeeklyMap(450, 0.2)
     povo1WeeklyPivots = WeeklyPivotGenreator(pivotsList).getWeeklyMap(450, 0.2)
 
-    canteenList = generateDebugCanteenList();
+    canteenList = CanteensDbHelper.getAllCanteens(cursor);
 
     pastoLesto = canteenList[0]
     povo0 = canteenList[1]

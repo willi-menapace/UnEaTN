@@ -11,7 +11,7 @@ class CanteenEntity:
 
     canteenId = 0
     name = ""
-    #Associates each day with opening and closing hours
+    #Associates each day with (opening hour, closing hour, openingHourId)
     openingHours = {}
 
     def __init__(self, id, name, openingHours):
