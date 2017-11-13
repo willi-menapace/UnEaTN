@@ -8,6 +8,9 @@
 
 import utils.timeutils as timeutils
 
+import matplotlib
+matplotlib.use("Agg")
+
 from matplotlib import pyplot
 
 #Utility class for predictions plotting
