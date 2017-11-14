@@ -48,6 +48,7 @@ class CanteensDbHelper:
             for openingHourRow in openingHoursResults:
 
                 weekday = openingHourRow[0]
+                #Transforms timedelta objects into time ones
                 openHour = (datetime.datetime.min + openingHourRow[1]).time()
                 closeHour = (datetime.datetime.min + openingHourRow[2]).time()
                 openingHourId = openingHourRow[3]

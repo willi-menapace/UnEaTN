@@ -24,11 +24,15 @@ class QueuePredictor:
     # Creates a new QueuePredictor
     #
     # @param openingHours touple of the form (openTime, closeTime)
-    # @param measureEntityList data on which to base the prediction
+    # @param measureEntityList data on which to base the prediction. Must not be empty
     def __init__(self, openingHours, measureEntityList):
 
         #Creates data arrays
         measuresCount = len(measureEntityList)
+
+        if measuresCount == 0:
+            raise ValueError("Cannot initialize predictor with empty measure list")
+
         self._arriveTimes = np.empty([measuresCount, 1])
         self._waitTimes = np.empty(measuresCount)
 
