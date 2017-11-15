@@ -8,7 +8,7 @@
 
 from db.measure_entity import MeasureEntity
 
-# Helper class for database measurement entities manupulation
+# Helper class for database measurement entities manipulation
 class MeasureDbHelper:
 
     insertQuery = (""
@@ -21,6 +21,10 @@ class MeasureDbHelper:
     " WHERE arrive_time BETWEEN %(beginDate)s AND %(endDate)s"
     " AND WEEKDAY(arrive_time) = %(weekday)s"
     " AND canteen_id = %(canteenId)s")
+
+    deleteAllMeasuresQuery = (""
+    "DELETE FROM measures "
+    " WHERE true")
 
     # Inserts a measure
     #
@@ -59,3 +63,13 @@ class MeasureDbHelper:
             measureEntities += [MeasureEntity(row[0], row[1], row[2], row[3])]
 
         return measureEntities
+
+    #Deletes all measures in the database
+    @staticmethod
+    def deleteAllMeasures(cursor):
+
+        cursor.execute(MeasureDbHelper.deleteAllMeasuresQuery)
+
+
+
+

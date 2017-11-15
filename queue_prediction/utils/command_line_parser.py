@@ -149,15 +149,15 @@ class CommandLineParser:
 
             elif parameter == Parameters.GENERATION_BEGIN_DAY:
                 currentOptionIndex += 1
-                self._paramsMap[parameter] = datetime.strptime(arguments[currentOptionIndex], "%Y-%m-%d")
+                self._paramsMap[parameter] = datetime.datetime.strptime(arguments[currentOptionIndex], "%Y-%m-%d")
 
             elif parameter == Parameters.GENERATION_PREVISION_BEGIN_DAY:
                 currentOptionIndex += 1
-                self._paramsMap[parameter] = datetime.strptime(arguments[currentOptionIndex], "%Y-%m-%d")
+                self._paramsMap[parameter] = datetime.datetime.strptime(arguments[currentOptionIndex], "%Y-%m-%d")
 
             elif parameter == Parameters.GENERATION_END_DAY:
                 currentOptionIndex += 1
-                self._paramsMap[parameter] = datetime.strptime(arguments[currentOptionIndex], "%Y-%m-%d")
+                self._paramsMap[parameter] = datetime.datetime.strptime(arguments[currentOptionIndex], "%Y-%m-%d")
 
             elif parameter == Parameters.GENERATION_DAILY_MEASURES_COUNT:
                 currentOptionIndex += 1
@@ -172,12 +172,12 @@ class CommandLineParser:
 
             elif parameter == Parameters.PREDICT_PREVISION_DAY:
                 currentOptionIndex += 1
-                self._paramsMap[parameter] = datetime.strptime(arguments[currentOptionIndex], "%Y-%m-%d")
+                self._paramsMap[parameter] = datetime.datetime.strptime(arguments[currentOptionIndex], "%Y-%m-%d")
 
             elif parameter == Parameters.HELP:
                 self._paramsMap[parameter] = True
 
-            elif p_paramsMaparameter == Parameters.DB_URL:
+            elif parameter == Parameters.DB_URL:
                 currentOptionIndex += 1
                 self._paramsMap[parameter] = arguments[currentOptionIndex]
 

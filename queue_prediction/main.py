@@ -74,6 +74,7 @@ def generatePrevisions(connection, measuresAgeLimitDays = 30, previsionIntervalS
                 PredictionPlotter.addPrevisionDataEntities(predictionDataList, currentOpeningHours[currentWeekday][0])
                 PredictionPlotter.showPlot()
 
+
     #Closes database connections
     cursor.close()
     connection.commit()
