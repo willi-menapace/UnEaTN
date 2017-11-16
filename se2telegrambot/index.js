@@ -49,8 +49,16 @@ console.log('Bot started in ' + NODE_ENV + ' mode');
 
 bot.on('message', function(msg){
 
-    var answer = "implement"
-    //TODO implement parsing
+    var answer = commandParser.parse(msg).then(function(val) {
+        bot.sendMessage(msg.chat.id, val, {parse_mode: 'markdown'});
+        console.log('SUCCESFULL REQUEST: ' + msg.text); //todo remove this line (debug only)
+    }).catch(function(res) {
+        bot.sendMessage(msg.chat.id, res, {parse_mode: 'markdown'});
+        console.log('BAD REQUEST RECEIVED');
+        console.log('Req:');
+        console.log(msg.text);
+        console.log('Res:');
+        console.log(res);
+    });
 
-    bot.sendMessage(msg.chat.id, answer, {parse_mode: 'markdown'});
 });
