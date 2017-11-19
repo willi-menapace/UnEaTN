@@ -5,6 +5,7 @@
 */
 
 const UTIL = require('./utilities');
+const UNEATN = require('./uneatn-api');
 
 /* Canteen list */
 const canteenList = ['povo0', 'povo1', 'pastoLesto'];
@@ -87,8 +88,13 @@ function waitSA(msg, resolve, reject) {
         dayOfTheWeek = new Date().getDay();
     }
 
-    resolve('This feature is WIP!');
-    //TODO call RESTful API method
+    UNEATN.waitingTimeCanteen(canteen, hour, minute, dayOfTheWeek).then(function(val) {
+        answer = 'Tempo di attesa: ' + val + ' min';
+        resolve(answer);
+    }).catch(function(res) {
+        answer = INTERNAL_ERROR;
+        reject(answer);
+    });
 }
 
 
@@ -137,14 +143,28 @@ function bestTimeSA(msg, resolve, reject) {
         dayOfTheWeek = new Date().getDay();
     }
 
-    resolve('This feature is WIP!');
-    //TODO call RESTful API method
+    UNEATN.bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek).then(function(val) {
+        for (var key in val) {
+            if (val.hasOwnProperty(key)) {
+                if(val[key].error === false) {
+                    answer += key + ' -- Miglior orario: ' + val[key].bestTime + ' Tempo di attesa: ' + val[key].waitTime + '\n';
+                } else {
+                    answer += key + ' -- Nessun orario trovato' + '\n';
+                }
+            }
+        }
+        resolve(answer);
+    }).catch(function(res) {
+        answer = INTERNAL_ERROR;
+        reject(answer);
+    });
 }
 
 
 function submitSA(msg, resolve, reject) {
     var answer = '';
 
+    var telegramID = msg.chat.id;
     var canteen;
     var waitingTime;
     var hour;
@@ -202,8 +222,13 @@ function submitSA(msg, resolve, reject) {
         while(hour < 0) {hour += 24}
     }
 
-    resolve('This feature is WIP!');
-    //TODO call RESTful API method
+    UNEATN.addWaitingTime(telegramID, canteen, waitingTime, hour, minute).then(function(val) {
+        answer = 'Grazie per il tuo contributo!';
+        resolve(answer);
+    }).catch(function(res) {
+        answer = INTERNAL_ERROR;
+        reject(answer);
+    });
 }
 
 function helpSA(msg, resolve, reject) {
