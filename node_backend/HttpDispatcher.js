@@ -4,10 +4,10 @@ var QRHandler = require('./web_interface/handlers/QRHandler.js');
 var JoinProjectHandler = require('./web_interface/handlers/JoinProjectHandler.js');
 var WaitingTimeDailyHandler = require('./web_interface/handlers/WaitingTimeDailyHandler.js');
 var WaitingTimeWeeklyHandler = require('./web_interface/handlers/WaitingTimeWeeklyHandler.js');
-var AddWaitingTimeHandler = require('./telegram_bot/handlers/AddWaitingTimeHandler');
-var BestWaitingTimeHandler = require('./api/handlers/BestWaitingTimeHandler')
+var AddWaitingTimeHandler = require('./telegram_bot/handlers/AddWaitingTimeHandler.js');
+var BestWaitingTimeHandler = require('./api/handlers/BestWaitingTimeHandler.js');
+var WaitingTimeCanteenHandler = require('./api/handlers/WaitingTimeCanteenHandler.js');
 var bodyParser = require('body-parser');
-var DatabaseHelper = require('./database/helpers/DatabaseHelper.js');
 
 
 // Instantiate express
@@ -64,7 +64,8 @@ app.get('/api/bestWaitingTime', function (req, res) {
 
 //handle requests on /api/waitingTimeCanteen
 app.get('/api/waitingTimeCanteen', function (req, res) {
-
+    var waitingTimeCanteenHandler = new WaitingTimeCanteenHandler();
+    waitingTimeCanteenHandler.dispatch(req,res);
 });
 
 //handle requests on /api/ranking

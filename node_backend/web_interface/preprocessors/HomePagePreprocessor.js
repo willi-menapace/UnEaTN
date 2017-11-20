@@ -1,8 +1,6 @@
-var Attributes = require('../../common/Attributes.js');
-
-class HomePageAttributes extends Attributes {
+class HomePageAttributes {
     constructor() {
-        super();
+        // DEFAULT CONSTRUCTOR
     }
 }
 
@@ -13,8 +11,12 @@ module.exports = class HomePagePreprocessor {
     }
     
     parseAndValidate(req) {
-        var homePageAttributes = new HomePageAttributes();
+        var self = this;
+        var promiseFunction = function(resolve, reject) {
+            var homePageAttributes = new HomePageAttributes();
         
-        return homePageAttributes;
+            resolve(homePageAttributes);    
+        }  
+        return new Promise(promiseFunction);
     }
 }

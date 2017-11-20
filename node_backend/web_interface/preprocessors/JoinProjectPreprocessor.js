@@ -1,8 +1,6 @@
-var Attributes = require('../../common/Attributes.js');
-
-class JoinProjectAttributes extends Attributes {
+class JoinProjectAttributes {
     constructor() {
-        super();
+        // DEFAULT CONSTRUCTOR
     }
 }
 
@@ -13,8 +11,12 @@ module.exports = class JoinProjectPreprocessor {
     }
     
     parseAndValidate(req) {
-        var joinProjectAttributes = new JoinProjectAttributes();
-        
-        return joinProjectAttributes;
+        var self = this;
+        var promiseFunction = function(resolve, reject) {
+            var joinProjectAttributes = new JoinProjectAttributes();
+            
+            resolve(joinProjectAttributes);
+        }
+        return new Promise(promiseFunction);
     }
 }

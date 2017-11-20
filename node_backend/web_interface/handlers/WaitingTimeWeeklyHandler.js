@@ -6,7 +6,7 @@ var PrevisionDataEntity = require('../../database/entities/PrevisionDataEntity.j
 var PrevisionDataDBHelper = require('../../database/helpers/PrevisionDataDBHelper.js');
 var bind = require('bind');
 
-class StasticalData {
+class StatisticalData {
     constructor(time, waitingTimes) {
         this.time = time;
         this.waitingTimes = waitingTimes;
@@ -28,49 +28,97 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
         return new Date(date.getTime() + minutes*60000);
     }
     
+    getDateByTime(time) {
+        const HOURS_INDEX = 0;
+        const MINUTES_INDEX = 1;
+        var dateTime = new Date();
+        var splittedTime = time.split(":",2);
+        var hours = splittedTime[HOURS_INDEX];
+        var minutes = splittedTime[MINUTES_INDEX];
+        dateTime.setHours(hours);
+        dateTime.setMinutes(minutes);
+        dateTime.setSeconds(0);
+        dateTime.setMilliseconds(0);
+        
+        return dateTime;
+    }
+    
     getPrevisionDataByTime(previsionsData, time) {
         var previsionData = null;
+        const HOURS_INDEX = 0;
+        const MINUTES_INDEX = 1;
         for(var i = 0; i < previsionsData.length && previsionData === null; i++) {
             // TODO: Change the follow condition by calling function of TimeChecker to check if hours and minutes correspond
-            if(previsionsData[i].arriveTime.getHours() == time.getHours() && previsionsData[i].arriveTime.getMinutes() == time.getMinutes())
-                previsionData = previsionData[i];
+            var arriveTimeDate = getDateByTime(previsionsData[i].arriveTime);
+            var arriveTimeHours = arriveTimeDate.getHours();
+            var arriveTimeMinutes = arriveTimeDate.getMinutes();
+            if(arriveTimeHours == time.getHours() && arriveTimeMinutes == time.getMinutes())
+                previsionData = previsionsData[i];
         }
         return previsionData;
     }
     
     processRequest(res, waitingTimeWeeklyAttributes) {
+        var self = this;
         var openingHourDBHelper = new OpeningHourDBHelper();
         var previsionDataDBHelper = new PrevisionDataDBHelper();
-        var canteenId = waitingTimeWeeklyAttributes.getCanteenId();
         var weeklyStatistics = [];
         var previsionsData = [];
-        var openingHours = openingHourDBHelper.getOpeningHoursByCanteenId(canteenId);
+        var canteenId = waitingTimeWeeklyAttributes.getCanteenId();
         var statisticalData = null;
         var canteenPrevision = null;
-        
-        for(var i = 0; i < openingHours.length; i++) {
-            previsionsData = previsionDataDBHelper.getPrevisionDataByCanteenIdAndDay(canteenId, openingHours[i].weekDay);
+        var savedOpeningHours;
+        var openingHours = openingHourDBHelper.getOpeningHoursByCanteenId(canteenId).then(function(openingHours) {
+            savedOpeningHours = openingHours;
             
-            var openTime = openingHours[i].openTime;
-            var closeTime = openingHours[i].closeTime;
+            var promiseArray = [];
             
-            for(var timeIterator = openTime; timeIterator <= closeTime; timeIterator = addMinutes(timeIterator, 1)) {
-                canteenPrevision = this.getPrevisionDataByTime(previsionsData, timeIterator);
-                statisticalData = new StatisticalData(timeIterator, canteenPrevision);
-                weeklyStatistics[i].push(statisticalData);
+            if(typeof openingHours !== 'undefined' && openingHours.length > 0) {
+                for(var i = 0; i < openingHours.length; i++) {
+                    if(openingHours[i] === null) {
+                        promiseArray[i] = Promise.resolve(null);
+                    } else {
+                        promiseArray[i] = previsionDataDBHelper.getPrevisionDataByCanteenIdAndDay(canteenId, openingHours[i].weekDay); 
+                    }
+                }
             }
-        }
-        
-        var weeklyStatisticsJSON = {
-            statistics: weeklyStatistics
-        };
-        
-        bind.toFile('./web_interface/templates/weekchart.tpl', {
-            weeklyStatistics: JSON.stringify(dailyStatisticsJSON)
-        }, function(data) {
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            res.end(data);
+            
+            return Promise.all(promiseArray);
+            
+        }, function(err) {
+            console.log(err);
+        }).then(function(previsionDataForEachDay) {
+            if(typeof previsionDataForEachDay !== 'undefined' && previsionDataForEachDay.length > 0) {
+                for(var i = 0; i < previsionDataForEachDay.length; i++) {
+                    if(previsionDataForEachDay[i] === null) {
+                        weeklyStatistics[i] = null;
+                    } else {
+                        var openTime = savedOpeningHours[i].openTime;
+                        var openTimeDate = self.getDateByTime(openTime);
+                        var closeTime = savedOpeningHours[i].closeTime;
+                        var closeTimeDate = self.getDateByTime(closeTime);
+                        for(var timeIterator = openTimeDate; timeIterator <= closeTimeDate; timeIterator = addMinutes(timeIterator, 1)) {
+                            canteenPrevision = self.getPrevisionDataByTime(previsionDataForEachDay[i], timeIterator);
+                            statisticalData = new StatisticalData(timeIterator, canteenPrevision);
+                            weeklyStatistics[i].push(statisticalData);
+                        } 
+                    }  
+                }
+            }
+            
+            var weeklyStatisticsJSON = {
+                statistics: weeklyStatistics
+            };
+            
+            bind.toFile('./web_interface/tpl/weekchart.tpl', {
+                weeklyStatistics: JSON.stringify(weeklyStatisticsJSON)
+            }, function(data) {
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.end(data);
+            });
+              
+        }, function(err) {
+            console.log(err);
         });
-
     }
 }

@@ -15,7 +15,7 @@ module.exports = class JoinProjectHandler extends ApplicationHandlerSkeleton {
     
     processRequest(res, joinProjectAttributes) {
         
-        bind.toFile('./web_interface/templates/joinproject.tpl', {
+        bind.toFile('./web_interface/tpl/joinproject.tpl', {
             // NOTHING TO PASS
         }, function(data) {
             res.writeHead(200, {'Content-Type': 'text/html'});

@@ -1,8 +1,6 @@
-var Attributes = require('../../common/Attributes.js');
-
-class QRAttributes extends Attributes {
+class QRAttributes {
     constructor() {
-        super();
+        // DEFAULT CONSTRUCTOR
     }
 }
 
@@ -13,8 +11,12 @@ module.exports = class QRPreprocessor {
     }
     
     parseAndValidate(req) {
-        var qrAttributes = new QRAttributes();
+        var self = this;
+        var promiseFunction = function(resolve, reject) {
+            var qrAttributes = new QRAttributes();
         
-        return qrAttributes;
+            resolve(qrAttributes);    
+        } 
+        return new Promise(promiseFunction); 
     }
 }

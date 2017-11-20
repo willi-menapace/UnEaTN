@@ -4,12 +4,12 @@ module.exports = class ApplicationHandlerSkeleton {
     }
     
     dispatch(req, res) {
-        var attributes = this.preprocessor.parseAndValidate(req);
-        if(attributes.getError() == true) {
-            this.processParseOfValidationFailure(res, attributes.getErrorDescription());
-        } else {
-            this.processRequest(res, attributes);
-        }
+        var self = this;
+        this.preprocessor.parseAndValidate(req).then(function(attributes) {
+            self.processRequest(res, attributes);
+        }, function(err) {
+            self.processParseOfValidationFailure(res, err);
+        });
     }
     
     processParseOfValidationFailure(res, errorDescription) {

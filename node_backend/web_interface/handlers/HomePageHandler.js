@@ -50,27 +50,54 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
         var previsionDataDBHelper = new PrevisionDataDBHelper();
         var openingHourDBHelper = new OpeningHourDBHelper();
         var requestDate = new Date();
-        var canteens = canteenDBHelper.getAllCanteens();
-        var waitingTimes = [];
-        var openingHours = [];
         var canteenStatus = [];
+        var savedCanteens;
         var weekDay;
-        
         // If today is SUNDAY
         if(requestDate.getDay() == 0)
             weekDay = Days.SUNDAY.ordinal;
         else
             weekDay = requestDate.getDay()-1;
-        for(var i = 0; i < canteens.length; i++) {
-            openingHours[i] = openingHourDBHelper.getOpeningHoursByCanteenIdAndDay(canteens[i].canteenId, weekDay);
-            if(openingHours[i] === null) {
-                canteenStatus[i] = CanteenStatus.CLOSED.id;
-            } else {
-                // Time of request has to be included between time of opening of the given canteen to get a prevision, otherwise canteen is closed
-                if(TimeChecker.compareHoursMinutesTimes(requestDate, openingHours[i].openTime) != 1 && TimeChecker.compareHoursMinutesTimes(requestDate, openingHours[i].closeTime) != -1) {
-                    waitingTimes[i] = previsionDataDBHelper.getPrevisionDataByCanteenIdAndTime(canteenId, requestDate);
-                    if(waitingTimes[i] >= 0) {
-                        if(waitingTimes[i] <= CanteenStatus.FREE.threshold) {
+        
+        canteenDBHelper.getAllCanteens().then(function(canteens) {         
+            savedCanteens = canteens; 
+            var promiseArray = [];
+            
+            for(var i = 0; i < canteens.length; i++) {          
+                promiseArray.push(openingHourDBHelper.getOpeningHourByCanteenIdAndDay(canteens[i].canteenId, weekDay));
+            }
+            
+            return Promise.all(promiseArray);
+            
+              
+        }, function(err) {
+            console.log(err);
+        }).then(function(openingHours) {
+
+            var promiseArray = [];
+            
+            for(var i = 0; i < openingHours.length; i++) {
+                if(openingHours[i] === null) {
+                    promiseArray[i] = Promise.resolve(CanteenStatus.CLOSED.id);
+                } else {
+                    promiseArray[i] = previsionDataDBHelper.getPrevisionDataByCanteenIdAndTime(savedCanteens[i].canteenId, weekDay, requestDate);
+                }
+            }
+            
+            return Promise.all(promiseArray);
+            
+        }, function(err) {
+            console.log(err);
+        }).then(function(previsionDataArray){
+            for(var i = 0; i < previsionDataArray.length; i++) {
+                if(previsionDataArray[i] == CanteenStatus.CLOSED.id) {
+                    canteenStatus[i] = CanteenStatus.CLOSED.id
+                } else if(previsionDataArray[i] === null) {
+                    canteenStatus[i] = CanteenStatus.CLOSED.id
+                } else {
+                    var waitingTime = previsionDataArray[i].waitSeconds / 60;
+                    if(waitingTime >= 0) {
+                        if(waitingTime <= CanteenStatus.FREE.threshold) {
                             canteenStatus[i] = CanteenStatus.FREE.id;
                         } else if(waitingTimes[i] <= CanteenStatus.BUSY.threshold) {
                             canteenStatus[i] = CanteenStatus.BUSY.id;
@@ -82,20 +109,22 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
                         var errorDescription = "Invalid result from database";
                         res.end(errorDescription);
                     }
-                } else {
-                    canteenStatus[i] = CanteenStatus.CLOSED.id;
                 }
-            }   
-        }
+            }
             
-        bind.toFile('./web_interface/tpl/home.tpl', {
-            canteenAffStatus_1: canteenStatus[0],
-            canteenAffStatus_2: canteenStatus[1],
-            canteenAffStatus_3: canteenStatus[2]
-        }, function(data) {
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            res.end(data);
+            bind.toFile('./web_interface/tpl/home.tpl', {
+                    canteenAffStatus_1: canteenStatus[0],
+                    canteenAffStatus_2: canteenStatus[1],
+                    canteenAffStatus_3: canteenStatus[2]
+            }, function(data) {
+                    res.writeHead(200, {'Content-Type': 'text/html'});
+                    res.end(data);
+            }); 
+        }, function(err) {
+            console.log(err);
         });
 
     }
 }
+                                             
+                                              

@@ -15,7 +15,7 @@ module.exports = class QRHandler extends ApplicationHandlerSkeleton {
     
     processRequest(res, qrAttributes) {
         
-        bind.toFile('./web_interface/templates/qr.tpl', {
+        bind.toFile('./web_interface/tpl/qr.tpl', {
             // NOTHING TO PASS
         }, function(data) {
             res.writeHead(200, {'Content-Type': 'text/html'});
