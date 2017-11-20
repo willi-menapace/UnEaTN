@@ -1,13 +1,13 @@
-DROP DATABASE IF EXISTS unieatn;
+DROP DATABASE IF EXISTS uneatn;
 
-CREATE DATABASE unieatn;
-USE unieatn;
+CREATE DATABASE uneatn;
+USE uneatn;
 
 DROP USER IF EXISTS 'mluser'@'%';
 
 CREATE USER 'mluser'@'%' IDENTIFIED BY 'sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ';
 
-GRANT ALL ON unieatn.* TO 'mluser'@'%';
+GRANT ALL ON uneatn.* TO 'mluser'@'%';
 
 FLUSH PRIVILEGES;
 

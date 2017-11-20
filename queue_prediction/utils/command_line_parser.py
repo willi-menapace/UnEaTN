@@ -40,9 +40,9 @@ class CommandLineParser:
         #whether to use database data generation mode
         Parameters.GENERATE: False,
         #day from which to begin data generation in generation mode
-        Parameters.GENERATION_BEGIN_DAY: datetime.date(2017, 1, 1),
+        Parameters.GENERATION_BEGIN_DAY: datetime.date(2017, 10, 1),
         #day from which to begin prevision generation in generation mode
-        Parameters.GENERATION_PREVISION_BEGIN_DAY : datetime.date(2017, 2, 1),
+        Parameters.GENERATION_PREVISION_BEGIN_DAY : datetime.date(2017, 10, 8),
         #last day for which to generate data and previsions in generation mode
         Parameters.GENERATION_END_DAY : datetime.datetime.now().date(),
         #number of measurements to generate for each day in generation mode
@@ -58,7 +58,7 @@ class CommandLineParser:
         #database url
         Parameters.DB_URL : "nanobit.eu",
         #database name
-        Parameters.DB_NAME : "unieatn",
+        Parameters.DB_NAME : "uneatn",
         #database username
         Parameters.DB_USER : "mluser",
         #database password

@@ -43,7 +43,9 @@ def generatePrevisions(connection, measuresAgeLimitDays = 30, previsionIntervalS
     currentWeekday = previsionDay.weekday()
     #Generate data for each canteen that day
     for currentCanteen in canteenList:
+
         currentOpeningHours = currentCanteen.openingHours
+
         #If the canteen is open on that day
         if currentWeekday in currentOpeningHours:
 
@@ -56,7 +58,9 @@ def generatePrevisions(connection, measuresAgeLimitDays = 30, previsionIntervalS
 
             predictionDataList = predictor.getPredictions(previsionIntervalSeconds)
 
+
             openingHourId = currentOpeningHours[currentWeekday][2]
+
             #Creates a prevision with no id
             prevision = PrevisionEntity(None, openingHourId, previsionDay)
             #Inserts the prevision
