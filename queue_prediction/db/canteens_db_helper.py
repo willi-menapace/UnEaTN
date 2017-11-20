@@ -44,6 +44,7 @@ class CanteensDbHelper:
             openingHoursResults = cursor.fetchall()
             currentCanteenOpeningHours = {}
 
+
             #For each canteen fetches its opening hours
             for openingHourRow in openingHoursResults:
 
@@ -53,7 +54,9 @@ class CanteensDbHelper:
                 closeHour = (datetime.datetime.min + openingHourRow[2]).time()
                 openingHourId = openingHourRow[3]
 
+
                 currentOpeningHour = (openHour, closeHour, openingHourId)
+
                 currentCanteenOpeningHours[weekday] = currentOpeningHour
 
             canteensList += [CanteenEntity(currentCanteenId, canteenName, currentCanteenOpeningHours)]

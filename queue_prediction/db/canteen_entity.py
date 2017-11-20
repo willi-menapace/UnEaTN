@@ -18,6 +18,7 @@ class CanteenEntity:
 
         self.canteenId = id
         self.name = name
+        self.openingHours = {}
 
         #Adds opening hours for days from Monday 0 to Sunday 6
         for day in range(0, 7):
