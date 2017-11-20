@@ -89,10 +89,15 @@ function waitSA(msg, resolve, reject) {
     }
 
     UNEATN.waitingTimeCanteen(canteen, hour, minute, dayOfTheWeek).then(function(val) {
-        answer = 'Tempo di attesa: ' + val + ' min';
+        if(val === null) {
+            answer = 'Nessuna previsione per l\'orario specificato';
+        } else {
+            answer = 'Tempo di attesa: ' + val + ' min';
+        }
         resolve(answer);
     }).catch(function(res) {
         answer = INTERNAL_ERROR;
+        console.log('ERROR reason: ' + res);
         reject(answer);
     });
 }
@@ -144,18 +149,18 @@ function bestTimeSA(msg, resolve, reject) {
     }
 
     UNEATN.bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek).then(function(val) {
-        for (var key in val) {
-            if (val.hasOwnProperty(key)) {
-                if(val[key].error === false) {
-                    answer += key + ' -- Miglior orario: ' + val[key].bestTime + ' Tempo di attesa: ' + val[key].waitTime + '\n';
-                } else {
-                    answer += key + ' -- Nessun orario trovato' + '\n';
-                }
+        var responseArray = val.bestWaitingTimes;
+        for(var i = 0; i < responseArray.length; i++) {
+            if(responseArray[i].error === false) {
+                answer += responseArray[i].name + ' -- Miglior orario: ' + responseArray[i].values.bestTime + ' Tempo di attesa: ' + responseArray[i].values.waitingTime + '\n';
+            } else {
+                answer += responseArray[i].name + ' -- Nessun orario trovato' + '\n';
             }
         }
         resolve(answer);
     }).catch(function(res) {
         answer = INTERNAL_ERROR;
+        console.log('ERROR reason: ' + res);
         reject(answer);
     });
 }
@@ -211,7 +216,7 @@ function submitSA(msg, resolve, reject) {
         hour = new Date().getHours();
         minute = new Date().getMinutes();
 
-        //calculating arrival time //todo test this branch
+        //calculating arrival time
         var waitingHour = Math.floor(waitingTime / 60);
         var waitingMinute = waitingTime % 60;
 
@@ -227,6 +232,7 @@ function submitSA(msg, resolve, reject) {
         resolve(answer);
     }).catch(function(res) {
         answer = INTERNAL_ERROR;
+        console.log('ERROR reason: ' + res);
         reject(answer);
     });
 }

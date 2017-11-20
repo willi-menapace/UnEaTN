@@ -1,15 +1,15 @@
 /*
 * Node.js module for accessing the unEATn RESTful API
 * Handles HTTP request and response, hiding all the implementation details
+* All the method return a promise, that will be resolved if the request gets
+* executed successfully, otherwise the promise will be rejected with an error message
 *
 * Author: Giuliani Daniele
 */
 
-const URL_UNEATN = 'http://localhost:8080';
+var URL_UNEATN = 'http://localhost:8080'; //todo set correct default url
 
 var request = require('request');
-
-//TODO recheck api specification, set different url, and url postfix
 
 /* ERROR MESSAGES */
 const MISSING_PARAM = "Missing parameters!";
@@ -19,7 +19,7 @@ const REQ_FAIL = "Request failed!";
 /*
 * Method for querying the waiting time of a specific canteen in a certain moment
 * Returns a promise containing:
-*   waitingTime (number) - if promise was resolved succesfully
+*   waitingTime - if promise was resolved succesfully (will be null if no time is available)
 *   error message - if promise was rejected
 */
 function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
@@ -53,11 +53,11 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
             if(!error && response.statusCode === 200) {
                 //controllo parametro errore sul json
                 if(body.error === false) {
-                    if(!isNaN(body.waitingTime)) {
-                        console.log(body);
-                        resolve(body.waitingTime);
-                        return;
-                    }
+                    resolve(body.waitingTime);
+                    return;
+                } else {
+                    reject(body.errorDescription);
+                    return;
                 }
             }
             reject(REQ_FAIL);
@@ -71,8 +71,16 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
 /*
 * Method for querying the best time to eat of all the canteen provided a time intrval
 * Returns a promise containing:
-*   A json object containing n (number of canteens) record, if the request was successfull
-*       record pattern: 'canteenName':{'bestHour':'HH', 'bestMinute':'MM', 'waitingTime':99}
+*   A json object with this pattern:
+*       {
+*           'error':false,
+            'bestWaitingTimes':
+                [
+                    {'name':'povo0', 'error':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+                    {'name':'povo0', 'error':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+                    {'name':'povo0', 'error':true, 'values':{'bestTime':null, 'waitingTime':null}}
+                ]
+*       }
 *       if the promise was resolved succesfully
 *   error message - if promise was rejected
 */
@@ -109,8 +117,10 @@ function bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWee
             if(!error && response.statusCode === 200) {
                 //controllo parametro errore sul json
                 if(body.error === false) {
-                    var jsonAnswer = body.bestWaitingTimes;
-                    resolve(jsonAnswer);
+                    resolve(body);
+                    return;
+                } else {
+                    reject(body.errorDescription);
                     return;
                 }
             }
@@ -161,6 +171,9 @@ function addWaitingTime(telegramID, canteenName, waitingTime, arriveHour, arrive
                 if(body.error === false) {
                     resolve(true);
                     return;
+                } else {
+                    reject(body.errorDescription);
+                    return;
                 }
             }
             reject(REQ_FAIL);
@@ -169,9 +182,25 @@ function addWaitingTime(telegramID, canteenName, waitingTime, arriveHour, arrive
     });
 }
 
+/*
+* Method used to set another URL for the api server
+* should never be used exept for testing purposes
+* return:
+*   true - update succesfull
+*   fale - update failed
+*/
+function overrideServerAPI(url) {
+    if(url !== undefined) {
+        URL_UNEATN = url;
+        return true;
+    }
+    return false;
+}
+
 /* EXPORT OF FUNCTIONS */
 module.exports = {
     waitingTimeCanteen: waitingTimeCanteen,
     bestWaitingTime: bestWaitingTime,
-    addWaitingTime: addWaitingTime
+    addWaitingTime: addWaitingTime,
+    overrideServerAPI: overrideServerAPI
 };
