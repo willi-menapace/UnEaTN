@@ -9,7 +9,9 @@
 import utils.timeutils as timeutils
 
 import matplotlib
-matplotlib.use("Agg")
+
+#Uncomment for heroku deployment
+#matplotlib.use("Agg")
 
 from matplotlib import pyplot
 

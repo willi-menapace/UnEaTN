@@ -77,6 +77,10 @@ class QueuePredictor:
             #Data is normalized so probe points must be normalized
             currentY = regressor.predict(currentX / self._maxArriveTime)[0]
 
+            #Avoids negative waiting times
+            if currentY < 0:
+                currentY = 0
+
             predictedValues += [PrevisionDataEntity(None, None, (datetime.datetime.combine(datetime.datetime.today(), self._openingHours[0]) + datetime.timedelta(seconds = currentX)).time(), currentY)]
 
             currentX += predictionsInterval
