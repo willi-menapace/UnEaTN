@@ -25,6 +25,7 @@ from utils.command_line_parser import CommandLineParser
 from plotting.prediction_plotter import PredictionPlotter
 
 import datetime
+import random
 
 import MySQLdb
 
@@ -94,7 +95,7 @@ def generatePrevisions(connection, measuresAgeLimitDays = 30, previsionIntervalS
 # @param previsionIntervalSeconds seconds separating two successive generated prediction points
 # @param debugMode if true it visually displays generated measures and previsions for each day and canteen
 #
-def fillDatabase(beginDay, previsionBeginDay, endDay, connection, generationDailyCount = 20, generationVariance = 5, previsionIntervalSeconds = 60, debugMode = False):
+def fillDatabase(beginDay, previsionBeginDay, endDay, connection, generationDailyCount = 20, generationVariance = 5, previsionIntervalSeconds = 60, debugMode = False, userbaseSize = 400):
     cursor = connection.cursor()
 
     pivotsList = [(0, 0 * 60), (900 * 1, 25 * 60), (900 * 3, 10 * 60), (900 * 4, 10 * 60), (900 * 5, 40 * 60), (900 * 6, 40 * 60), (900 * 8, 10 * 60), (900 * 9, 15 * 60), (900 * 11, 0 * 60),]
@@ -138,7 +139,7 @@ def fillDatabase(beginDay, previsionBeginDay, endDay, connection, generationDail
                 #Inserts generated data into the database
                 for dataPoint in generatedDataPoints:
 
-                    currentMeasureEntity = MeasureEntity.fromCanteenAndDataPoint(currentCanteen, currentDay, dataPoint[0], dataPoint[1])
+                    currentMeasureEntity = MeasureEntity.fromCanteenAndDataPoint(currentCanteen, currentDay, dataPoint[0], dataPoint[1], random.randint(1, userbaseSize))
 
                     MeasureDbHelper.insert(currentMeasureEntity, cursor)
 
@@ -170,6 +171,6 @@ elif commandLineParser.getParam(Parameters.GENERATE) == True:
     fillDatabase(commandLineParser.getParam(Parameters.GENERATION_BEGIN_DAY), commandLineParser.getParam(Parameters.GENERATION_PREVISION_BEGIN_DAY), commandLineParser.getParam(Parameters.GENERATION_END_DAY), connection, commandLineParser.getParam(Parameters.GENERATION_DAILY_MEASURES_COUNT), commandLineParser.getParam(Parameters.GENERATION_VARIANCE), commandLineParser.getParam(Parameters.PREVISION_INTERVAL), commandLineParser.getParam(Parameters.DEBUG))
 
 elif commandLineParser.getParam(Parameters.PREDICT) == True:
-    generatePrevisions(connection, commandLineParser.getParam(Parameters.MEASURES_AGE_LIMIT), commandLineParser.getParam(Parameters.PREVISION_INTERVAL), commandLineParser.getParam(Parameters.PREDICT_PREVISION_DAY), commandLineParser.getParam(Parameters.DEBUG))
+    generatePrevisions(connection, commandLineParser.getParam(Parameters.MEASURES_AGE_LIMIT), commandLineParser.getParam(Parameters.PREVISION_INTERVAL), commandLineParser.getParam(Parameters.PREDICT_PREVISION_DAY), commandLineParser.getParam(Parameters.DEBUG), commandLineParser.getParam(Parameters.GENERATION_USERBASE_SIZE))
 
 connection.close()

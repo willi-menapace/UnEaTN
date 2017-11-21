@@ -3,11 +3,13 @@ DROP DATABASE IF EXISTS uneatn;
 CREATE DATABASE uneatn;
 USE uneatn;
 
-DROP USER IF EXISTS 'mluser'@'%';
+#DROP USER IF EXISTS 'mluser'@'%';
 
-CREATE USER 'mluser'@'%' IDENTIFIED BY 'sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ';
+#CREATE USER 'mluser'@'%' IDENTIFIED BY 'sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ';
 
-GRANT ALL ON uneatn.* TO 'mluser'@'%';
+#GRANT ALL ON uneatn.* TO 'mluser'@'%';
+#GRANT ALL ON uneatn_test.* TO 'mluser'@'%';
+#GRANT ALL ON uneatn_sandbox.* TO 'mluser'@'%';
 
 FLUSH PRIVILEGES;
 
@@ -57,6 +59,7 @@ CREATE TABLE measures (
 	canteen_id INT NOT NULL,
 	arrive_time DATETIME NOT NULL,
 	wait_seconds INT NOT NULL,
+	user_id BIGINT NOT NULL,
 	FOREIGN KEY (canteen_id) REFERENCES canteens(canteen_id)
 );
 

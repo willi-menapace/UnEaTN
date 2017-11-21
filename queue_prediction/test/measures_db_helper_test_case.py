@@ -24,7 +24,7 @@ class MeasuresDbHelperTestCase(unittest.TestCase):
     dbUrl = "nanobit.eu"
     dbPassword = "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ"
     canteenId = 1
-    canteenEntity = CanteenEntity(canteenId, "test_canteen", {})
+    canteenEntity = CanteenEntity(canteenId, "test_canteen", "test_canteen", {})
 
     def setUp(self):
         self.connection = MySQLdb.connect(user = self.dbUser,
@@ -39,7 +39,7 @@ class MeasuresDbHelperTestCase(unittest.TestCase):
         for i in range(20):
             currentDateTime = datetime.datetime(2017, 1, i + 1)
             generatedDates.append(currentDateTime)
-            currentEntity = MeasureEntity(None, self.canteenId, currentDateTime, i)
+            currentEntity = MeasureEntity(None, self.canteenId, currentDateTime, i, i)
 
             MeasureDbHelper.insert(currentEntity, cursor)
 

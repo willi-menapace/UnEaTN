@@ -12,11 +12,11 @@ from db.measure_entity import MeasureEntity
 class MeasureDbHelper:
 
     insertQuery = (""
-    "INSERT INTO measures (canteen_id, arrive_time, wait_seconds)"
-    " VALUES (%(canteenId)s, %(arriveTime)s, %(waitSeconds)s)")
+    "INSERT INTO measures (canteen_id, arrive_time, wait_seconds, user_id)"
+    " VALUES (%(canteenId)s, %(arriveTime)s, %(waitSeconds)s, %(userId)s)")
 
     getFromDaterangeAndWeekdayQuery = (""
-    "SELECT measure_id, canteen_id, arrive_time, wait_seconds"
+    "SELECT measure_id, canteen_id, arrive_time, wait_seconds, user_id"
     " FROM measures"
     " WHERE arrive_time BETWEEN %(beginDate)s AND %(endDate)s"
     " AND WEEKDAY(arrive_time) = %(weekday)s"
@@ -37,6 +37,7 @@ class MeasureDbHelper:
             "canteenId": measureEntity.canteenId,
             "arriveTime": measureEntity.arriveDateTime,
             "waitSeconds": measureEntity.waitSeconds,
+            "userId": measureEntity.userId
         }
 
         cursor.execute(MeasureDbHelper.insertQuery, measureDataMap)
@@ -60,7 +61,7 @@ class MeasureDbHelper:
 
         #Converts results to measure entites
         for row in results:
-            measureEntities += [MeasureEntity(row[0], row[1], row[2], row[3])]
+            measureEntities += [MeasureEntity(row[0], row[1], row[2], row[3], row[4])]
 
         return measureEntities
 

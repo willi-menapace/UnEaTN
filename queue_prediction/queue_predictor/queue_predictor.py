@@ -29,6 +29,7 @@ class QueuePredictor:
 
         #Minimum number of training iterations. Guards against bad initial training points which cause training to end prematurely
         self._minIterations = 150
+        self._maxRetries = 20
 
         #Creates data arrays
         measuresCount = len(measureEntityList)
@@ -77,9 +78,12 @@ class QueuePredictor:
 
 
         regressor.fit(self._arriveTimes, self._waitTimes)
+
+        retriesCount = 0
         #Guards against premature training failure
-        while regressor.n_iter_ < self._minIterations:
+        while regressor.n_iter_ < self._minIterations and retriesCount < self._maxRetries:
             regressor.fit(self._arriveTimes, self._waitTimes)
+            retriesCount += 1
 
         predictedValues = []
 

@@ -16,12 +16,13 @@ class CommandLineParser:
 
     #Mapping between command line strings and affected parameter
     _paramsAliasMap = {
-        "--generate" : Parameters.GENERATE,
+        "--generate": Parameters.GENERATE,
         "--begin_day": Parameters.GENERATION_BEGIN_DAY,
         "--prevision_begin_day": Parameters.GENERATION_PREVISION_BEGIN_DAY,
         "--end_day": Parameters.GENERATION_END_DAY,
         "--daily_measures": Parameters.GENERATION_DAILY_MEASURES_COUNT,
         "--variance": Parameters.GENERATION_VARIANCE,
+        "--userbase_size": Parameters.GENERATION_USERBASE_SIZE,
         "--predict": Parameters.PREDICT,
         "--prevision_day": Parameters.PREDICT_PREVISION_DAY,
         "--help": Parameters.HELP,
@@ -42,52 +43,55 @@ class CommandLineParser:
         #day from which to begin data generation in generation mode
         Parameters.GENERATION_BEGIN_DAY: datetime.date(2017, 10, 1),
         #day from which to begin prevision generation in generation mode
-        Parameters.GENERATION_PREVISION_BEGIN_DAY : datetime.date(2017, 10, 8),
+        Parameters.GENERATION_PREVISION_BEGIN_DAY: datetime.date(2017, 10, 8),
         #last day for which to generate data and previsions in generation mode
-        Parameters.GENERATION_END_DAY : datetime.datetime.now().date(),
+        Parameters.GENERATION_END_DAY: datetime.datetime.now().date(),
         #number of measurements to generate for each day in generation mode
-        Parameters.GENERATION_DAILY_MEASURES_COUNT : 20,
+        Parameters.GENERATION_DAILY_MEASURES_COUNT: 20,
         #variance for the generated measures in generation mode
-        Parameters.GENERATION_VARIANCE : 5,
+        Parameters.GENERATION_VARIANCE: 5,
+        #number of users regularly using the application
+        Parameters.GENERATION_USERBASE_SIZE: 400,
         #whether to use prediction mode
-        Parameters.PREDICT : True,
+        Parameters.PREDICT: True,
         #day for which to generate previsions in prediction mode
-        Parameters.PREDICT_PREVISION_DAY : datetime.datetime.now().date(),
+        Parameters.PREDICT_PREVISION_DAY: datetime.datetime.now().date(),
         #whether to use help mode
-        Parameters.HELP : False,
+        Parameters.HELP: False,
         #database url
-        Parameters.DB_URL : "nanobit.eu",
+        Parameters.DB_URL: "nanobit.eu",
         #database name
-        Parameters.DB_NAME : "uneatn",
+        Parameters.DB_NAME: "uneatn",
         #database username
-        Parameters.DB_USER : "mluser",
+        Parameters.DB_USER: "mluser",
         #database password
-        Parameters.DB_PASSWORD : "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ",
+        Parameters.DB_PASSWORD: "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ",
         #maximum age in number of days of the measures to consider for generating predictions
-        Parameters.MEASURES_AGE_LIMIT : 30,
+        Parameters.MEASURES_AGE_LIMIT: 30,
         #interval in seconds between two generated prediction points
-        Parameters.PREVISION_INTERVAL : 60,
+        Parameters.PREVISION_INTERVAL: 60,
         #whether to display debug information
-        Parameters.DEBUG : False,
+        Parameters.DEBUG: False,
     }
 
     _paramsDescriptionsMap = {
         Parameters.GENERATE: "whether to use database data generation mode",
         Parameters.GENERATION_BEGIN_DAY: "day from which to begin data generation in generation mode",
-        Parameters.GENERATION_PREVISION_BEGIN_DAY : "day from which to begin prevision generation in generation mode",
-        Parameters.GENERATION_END_DAY : "last day for which to generate data and previsions in generation mode",
-        Parameters.GENERATION_DAILY_MEASURES_COUNT : "number of measurements to generate for each day in generation mode",
-        Parameters.GENERATION_VARIANCE : "variance for the generated measures in generation mode",
+        Parameters.GENERATION_PREVISION_BEGIN_DAY: "day from which to begin prevision generation in generation mode",
+        Parameters.GENERATION_END_DAY: "last day for which to generate data and previsions in generation mode",
+        Parameters.GENERATION_DAILY_MEASURES_COUNT: "number of measurements to generate for each day in generation mode",
+        Parameters.GENERATION_VARIANCE: "variance for the generated measures in generation mode",
+        Parameters.GENERATION_USERBASE_SIZE: "number of users for which to simulate regular usage of the application",
         Parameters.PREDICT : "whether to use prediction mode",
-        Parameters.PREDICT_PREVISION_DAY : "day for which to generate previsions in prediction mode",
-        Parameters.HELP : "whether to use help mode",
-        Parameters.DB_URL : "database url",
-        Parameters.DB_NAME : "database name",
-        Parameters.DB_USER : "database username",
-        Parameters.DB_PASSWORD : "database password",
-        Parameters.MEASURES_AGE_LIMIT : "maximum age in number of days of the measures to consider for generating predictions",
-        Parameters.PREVISION_INTERVAL : "interval in seconds between two generated prediction points",
-        Parameters.DEBUG : "whether to display debug information",
+        Parameters.PREDICT_PREVISION_DAY: "day for which to generate previsions in prediction mode",
+        Parameters.HELP: "whether to use help mode",
+        Parameters.DB_URL: "database url",
+        Parameters.DB_NAME: "database name",
+        Parameters.DB_USER: "database username",
+        Parameters.DB_PASSWORD: "database password",
+        Parameters.MEASURES_AGE_LIMIT: "maximum age in number of days of the measures to consider for generating predictions",
+        Parameters.PREVISION_INTERVAL: "interval in seconds between two generated prediction points",
+        Parameters.DEBUG: "whether to display debug information",
     }
 
     def generateHelpMessage(self):
@@ -163,7 +167,12 @@ class CommandLineParser:
                 currentOptionIndex += 1
                 self._paramsMap[parameter] = int(arguments[currentOptionIndex])
 
+
             elif parameter == Parameters.GENERATION_VARIANCE:
+                currentOptionIndex += 1
+                self._paramsMap[parameter] = int(arguments[currentOptionIndex])
+
+            elif parameter == Parameters.GENERATION_USERBASE_SIZE:
                 currentOptionIndex += 1
                 self._paramsMap[parameter] = int(arguments[currentOptionIndex])
 
@@ -205,7 +214,7 @@ class CommandLineParser:
                 self._paramsMap[parameter] = True
 
             else:
-                raise ValuesError("Unknown parameter")
+                raise ValueError("Unknown parameter")
 
             #Processes next command line argument
             currentOptionIndex += 1
