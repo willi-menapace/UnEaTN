@@ -144,7 +144,7 @@ function addWaitingTime(telegramID, canteenName, waitingTime, arriveHour, arrive
             reject(MISSING_PARAM);
             return;
         }
-        if(isNaN(waitingTime) || isNaN(arriveHour) || isNaN(arriveMinute)) {
+        if(isNaN(telegramID) || isNaN(waitingTime) || isNaN(arriveHour) || isNaN(arriveMinute)) {
             reject(BAD_PARAM);
             return;
         }
@@ -199,8 +199,14 @@ function overrideServerAPI(url) {
 
 /* EXPORT OF FUNCTIONS */
 module.exports = {
+    //function
     waitingTimeCanteen: waitingTimeCanteen,
     bestWaitingTime: bestWaitingTime,
     addWaitingTime: addWaitingTime,
+    //error messages
+    MISSING_PARAM: MISSING_PARAM,
+    BAD_PARAM: BAD_PARAM,
+    REQ_FAIL: REQ_FAIL,
+    //testing function
     overrideServerAPI: overrideServerAPI
 };
