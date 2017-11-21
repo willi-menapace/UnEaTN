@@ -63,9 +63,9 @@ class QueuePredictorTestCase(unittest.TestCase):
         while currentArriveSeconds < self.timeSpanSeconds:
 
             self.currentArriveDateTime = (self.baseDate + datetime.timedelta(seconds = currentArriveSeconds))
-            self.constantMeasures.append(MeasureEntity(0, 0, self.currentArriveDateTime, 15))
-            self.linearMeasures.append(MeasureEntity(0, 0, self.currentArriveDateTime, currentArriveSeconds * 0.001))
-            self.quadraticMeasures.append(MeasureEntity(0, 0, self.currentArriveDateTime, currentArriveSeconds ** 2 * 0.000001 + currentArriveSeconds * 0.001 + 5))
+            self.constantMeasures.append(MeasureEntity(0, 0, self.currentArriveDateTime, 15, 1))
+            self.linearMeasures.append(MeasureEntity(0, 0, self.currentArriveDateTime, currentArriveSeconds * 0.001, 1))
+            self.quadraticMeasures.append(MeasureEntity(0, 0, self.currentArriveDateTime, currentArriveSeconds ** 2 * 0.000001 + currentArriveSeconds * 0.001 + 5, 1))
 
             currentArriveSeconds += self.secondsStep
 

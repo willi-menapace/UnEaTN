@@ -29,7 +29,7 @@ class PrevisionDbHelperTestCase(unittest.TestCase):
     dbUrl = "nanobit.eu"
     dbPassword = "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ"
     canteenId = 1
-    canteenEntity = CanteenEntity(canteenId, "test_canteen", {})
+    canteenEntity = CanteenEntity(canteenId, "test_canteen", "test_canteen", {})
 
     def setUp(self):
         self.connection = MySQLdb.connect(user = self.dbUser,
