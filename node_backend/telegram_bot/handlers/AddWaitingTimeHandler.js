@@ -24,13 +24,17 @@ module.exports = class AddWaitingTimeHandler extends ApplicationHandlerSkeleton{
     processRequest(res, attributes) {
         
         var measureDBHelper = new MeasureDBHelper();
-        var newMeasure = new MeasureEntity(attributes.getTelegramId(), null, attributes.getCanteen().canteenId, attributes.getArriveTime(), attributes.getWaitingTime * 60);
-        measureDBHelper.addMeasure(newMeasure);
-        var json = JSON.stringify({
-            error: false  //to test
+        var newMeasure = new MeasureEntity(null, attributes.getTelegramId(), attributes.getCanteen().canteenId, attributes.getArriveTime(), attributes.getWaitingTime() * 60);
+        measureDBHelper.addMeasure(newMeasure).then(function(){
+            var json = JSON.stringify({
+                error: false  //to test
+            });
+            res.writeHead(200, {'Content-Type': 'application/json', 'Accept': 'application/json'});
+            res.end(json);
+        }, function(err){
+            console.log(err);
         });
-        res.writeHead(200, {'Content-Type': 'application/json', 'Accept': 'application/json'});
-        res.end(json);
+        
 
     }
     
