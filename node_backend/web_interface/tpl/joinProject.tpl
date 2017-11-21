@@ -1,5 +1,5 @@
 <!--
-    Page Name:  QR
+    Page Name:  Join Project
     Project:    unEATn
     Author:     Simone Lorengo
     Date:       15.11.2017
@@ -56,10 +56,11 @@
         <!-- TEXT -->
         <div class="col-sm-12 col-sm-offset-0 col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2 body-padding">
             <div class="alignment-wrapper txt-justify">
-                <span class="txt-center txt-bold"><p style="margin-bottom: 25px">BENVENUTO NEL NUOVO SISTEMA<br>DI PREVISIONI CODE IN MENSA</p></span>
-                <p>Ottimizza il tempo a tua disposizione, non sprecarlo stando in coda per il pasto in mensa quando puoi evitarla!</p>
-                <p>Grazie al nostro servizio potrai visualizzare accurate previsioni sull’affluenza alle mense dei vari dipartimenti di Povo.</p>
-                <p>Consulta gratuitamente i nostri dati, se l’idea ti piace, aiutaci a migliorare le previsioni comunicandoci i tempi di attesa, in cambio potrai ricedere interessanti premi.</p>
+                <span class="txt-center txt-bold"><p style="margin-bottom: 25px">VUOI AIUTARCI A<br>MIGLIORARE LE PREVISIONI?</p></span>
+                <p>Collaborare con noi a questo progetto è più facile di quanto tu possa immaginare!</p>
+                <p>Conosci già Telegram? E’ un’app di instant messaging come Whatsapp, ma dotato di funzionalità più avanzate.</p>
+                <p>Ti basterà scaricarlo dallo Store e collegarti al nostro bot @uneatn_bot per iniziare a fornirci dati utili e migliorare il servizio.</p>
+                <p>Prova, ti aspettano dei premi intererssanti!</p>
             </div>
         </div>
     </div>
@@ -70,15 +71,14 @@
                 <div class="row">
                     <div class="col-sm-6 bottom-margin">
                         <div class="alignment-wrapper margin-right-null">
-                            <button type="button" class="btn btn-primary expand" onclick="window.location='/';">CONSULTA DATI MENSE</button>
+                            <button type="button" class="btn btn-primary expand" id="telegram-download"">SCARICA TELEGRAM &nbsp;<i class="zmdi zmdi-download"></i></button>
                         </div>
                     </div>
                     <div class="col-sm-6 bottom-margin">
                         <div class="alignment-wrapper margin-left-null">
-                            <button type="button" class="btn btn-danger expand" onclick="window.location='/joinProject';">PARTECIPA AL PROGETTO</button>
+                            <button type="button" class="btn btn-primary expand" onclick="window.open('https://telegram.me/uneatn_bot', '_blank');">BOT @UNEATN_BOT &nbsp;<i class="zmdi zmdi-code"></i></button>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -90,5 +90,30 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    var downloadUrl = "https://telegram.org/";
+
+    if(navigator.userAgent.match(/Android/i)){
+        downloadUrl = "https://telegram.org/dl/android";
+    } else if(navigator.userAgent.match(/iPhone|iPad/i)){
+        downloadUrl = "https://telegram.org/dl/ios";
+    } else if(navigator.userAgent.match(/Windows Phone|Lumia/i)){
+        downloadUrl = "https://telegram.org/dl/wp";
+    } else if(navigator.userAgent.match(/Mac/i)){
+        downloadUrl = "https://macos.telegram.org/";
+    } else if(navigator.userAgent.match(/Linux/i)){
+        downloadUrl = "https://desktop.telegram.org/";
+    } else {
+        downloadUrl = "https://desktop.telegram.org/";
+    }
+
+    $("#telegram-download").click(function () {
+        window.open(
+            downloadUrl,
+            '_blank'
+        );
+    });
+</script>
 </body>
 </html
