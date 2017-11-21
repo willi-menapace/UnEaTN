@@ -67,7 +67,7 @@ module.exports = class BestWaitingTimeHandler extends ApplicationHandlerSkeleton
                 if(previsionDataArray[i] === null){
                     var bestTime = new BestTime(canteensArray[i].name, true, new Values(null, null));
                 } else{
-                    var bestTime = new BestTime(canteensArray[i].name, false, new Values(TimeChecker.fromDateToStringHoursAndMinutes(fromTimeToStringHoursAndMinutes(previsionDataArray[i].arriveTime)), previsionDataArray[i].waitingSeconds));
+                    var bestTime = new BestTime(canteensArray[i].name, false, new Values(TimeChecker.fromTimeToStringHoursAndMinutes(previsionDataArray[i].arriveTime), Math.floor(previsionDataArray[i].waitSeconds / 60)) );
                 }
                 bestTimesArray.push(bestTime);
             }

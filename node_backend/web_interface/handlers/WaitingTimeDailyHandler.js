@@ -50,9 +50,10 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
     getPrevisionDataByTime(previsionsData, time) {
         var previsionData = null;
         for(var i = 0; i < previsionsData.length && previsionData === null; i++) {
-            var arriveTime = self.getDateByTime(previsionsData[i].arriveTime);
+            var arriveTime = this.getDateByTime(previsionsData[i].arriveTime);
+            console.log("arriveTime in getPrevisionDataByTime: ", arriveTime);
             if(TimeChecker.compareHoursMinutesTimes(arriveTime, time) == 0)
-                previsionData = previsionData[i];
+                previsionData = previsionsData[i];
         }
         return previsionData;
     }
@@ -124,30 +125,40 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
         }, function(err) {
             console.log(err);
         }).then(function(previsionDataArray) {
+            //console.log("previsionDataArray in dailyHandler: ", previsionDataArray);
             var minOpenDateTime = self.getMinOpenDateTime(savedOpeningHours);
+            console.log("minOpenDateTime: ", minOpenDateTime);
             var maxCloseDateTime = self.getMaxCloseDateTime(savedOpeningHours);
+            console.log("maxCloseDateTime: ", maxCloseDateTime);
        
-            for(var timeIterator = minOpenDateTime; timeIterator <= maxCloseDateTime; timeIterator = self.addMinutes(timeIterator, 1)) {
-
+            for(var timeIterator = minOpenDateTime; timeIterator <= maxCloseDateTime; timeIterator = self.addMinutes(timeIterator, 10)) {
+                console.log("index timeIterator: ", timeIterator);
                 for(var j = 0; j < previsionDataArray.length; j++) {
+                    console.log("index j: ", j);
                     // If canteen[j] is open at a given time then waiting time will be set to number of 
                     // minutes of waiting at that time, else waiting time will be set to null
                     if(previsionDataArray[j] === null) {
+                        console.log("Enter in if");
                         canteensPrevisionData[j] = null; // Closed canteen due to closed canteen or no prevision for that canteen
                     } else {
-                        canteensPrevisionData[j] = (self.getPrevisionDataByTime(previsionDataArray[j], timeIterator)).waitSeconds / 60; 
+                        console.log("Enter in else");
+                        canteensPrevisionData[j] = (self.getPrevisionDataByTime(previsionDataArray[j], timeIterator)).waitSeconds / 60;
                     }
                     
                 }
 
                 var statisticalData = new StatisticalData(timeIterator, canteensPrevisionData);    
                 dailyStatistics.push(statisticalData);
-
+                
             }
             
             var dailyStatisticsJSON = {
                 statistics: dailyStatistics
             };
+            
+            // TEST
+            console.log(JSON.stringify(dailyStatisticsJSON));
+            //
 
             bind.toFile('./web_interface/tpl/compChart.tpl', {
                 dailyStatistics: JSON.stringify(dailyStatisticsJSON)

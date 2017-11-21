@@ -9,19 +9,23 @@ module.exports = class MeasureDBHelper {
             host: "nanobit.eu",
             user: "mluser",
             password: "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ",
-            database: "uneatn_sandbox"
+            database: "uneatn"
         });
     }
     
     // Add a new entry in measures 
     addMeasure(measure) {
-        var promiseFunction = function(reject) {
+        var self = this;
+        var promiseFunction = function(resolve, reject) {
             // Method to insert measure in uneatn database not in that created for ml
             var sql = "INSERT INTO measures (telegram_id, canteen_id, arrive_time, wait_seconds) VALUES ?";
-            var values = [measure.telegramId, measure.canteenId, measure.arriveTime, measure.waitSeconds];
+            var values = [];
+            values.push([measure.telegramId, measure.canteenId, measure.arriveTime, measure.waitSeconds]);
 
-            this.pool.getConnection(function(err, connection) {
-                if(err) reject(err);
+            self.pool.getConnection(function(err, connection) {
+                if(err) {
+                    reject(err);
+                } 
                 // Use the connection
                 connection.query(sql, [values], function(err, result) {
                     measure.measureId = result.insertId;

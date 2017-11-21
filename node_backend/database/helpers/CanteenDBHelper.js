@@ -5,11 +5,11 @@ module.exports = class CanteenDBHelper {
     
     constructor() {
         this.pool = mysql.createPool({
-                //connectionLimit: 
-                host: "nanobit.eu",
-                user: "mluser",
-                password: "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ",
-                database: "uneatn_sandbox"
+            //connectionLimit: 
+            host: "nanobit.eu",
+            user: "mluser",
+            password: "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ",
+            database: "uneatn"
         });
     }
     
@@ -23,24 +23,29 @@ module.exports = class CanteenDBHelper {
             var canteen = null;
 
             self.pool.getConnection(function(err, connection) {
-                if(err) reject(err);
-                // Use the connection
-                connection.query(sql, function(err, result) {
-                    if(typeof result !== 'undefined' && result.length > 0) {
-                       for(var i = 0; i < result.length; i++) {
-                            canteen = new CanteenEntity(result[i].canteen_id, result[i].name);
-                            canteens[i] = canteen;
-                        } 
-                    }
-                    
-                    // Done with the connetion
-                    connection.release();
+                if(err) {
+                    reject(err);
+                } else {
+                    // Use the connection
+                    connection.query(sql, function(err, result) {
+                        if(typeof result !== 'undefined' && result.length > 0) {
+                           for(var i = 0; i < result.length; i++) {
+                                canteen = new CanteenEntity(result[i].canteen_id, result[i].name);
+                                canteens[i] = canteen;
+                            } 
+                        }
 
-                    // Handle error after the release
-                    if(err) reject(err);  
-                    
-                    resolve(canteens);
-                });
+                        // Done with the connetion
+                        connection.release();
+
+                        // Handle error after the release
+                        if(err) {
+                            reject(err);     
+                        } else {
+                            resolve(canteens);
+                        }                    
+                    });
+                }
             });  
         }
     
@@ -56,22 +61,29 @@ module.exports = class CanteenDBHelper {
             var canteen = null;
 
             self.pool.getConnection(function(err, connection) {
-                if(err) reject(err);
-                // Use the connection
-                connection.query(sql, [canteenId], function (err, result) {
-                    if (typeof result !== 'undefined' && result.length == 1) {
-                        canteen = new CanteenEntity(result[0].canteen_id, result[0].name);
-                    }
+                if(err) {
+                    reject(err);
+                } else {
+                    // Use the connection
+                    connection.query(sql, [canteenId], function (err, result) {
+                        if (typeof result !== 'undefined' && result.length == 1) {
+                            canteen = new CanteenEntity(result[0].canteen_id, result[0].name);
+                        }
 
-                    // Done with the connetion
-                    connection.release();  
+                        // Done with the connetion
+                        connection.release();  
 
-                    // Handle error after the release   
-                    if (err) reject(err);
-                    if (result.length > 1) reject(err); 
-                    
-                    resolve(canteen);
-                });
+                        // Handle error after the release   
+                        if (err) {
+                            reject(err);
+                        } else if (result.length > 1) {
+                            reject(err);
+                        } else {
+                            resolve(canteen);    
+                        }
+                        
+                    });    
+                }
             }); 
         }
         
@@ -87,22 +99,28 @@ module.exports = class CanteenDBHelper {
             var canteen = null;
 
             self.pool.getConnection(function(err, connection) {
-                if(err) reject(err);
-                // Use the connection
-                connection.query(sql, [name], function (err, result) {
-                    if (typeof result !== 'undefined' && result.length == 1) {
-                        canteen = new CanteenEntity(result[0].canteen_id, result[0].name);
-                    }
+                if(err) {
+                    reject(err);    
+                } else {
+                    // Use the connection
+                    connection.query(sql, [name], function (err, result) {
+                        if (typeof result !== 'undefined' && result.length == 1) {
+                            canteen = new CanteenEntity(result[0].canteen_id, result[0].name);
+                        }
 
-                    // Done with the connetion
-                    connection.release();
+                        // Done with the connetion
+                        connection.release();
 
-                    // Handle error after the release
-                    if (err) reject(err);
-                    if (result.length > 1) reject(err);
-                    
-                    resolve(canteen);
-                });
+                        // Handle error after the release
+                        if (err) {
+                            reject(err);    
+                        } else if (result.length > 1) {
+                            reject(err);   
+                        } else {
+                            resolve(canteen);    
+                        } 
+                    });    
+                }  
             });
         }
     
@@ -118,22 +136,28 @@ module.exports = class CanteenDBHelper {
             var numOfCanteens = 0;
 
             self.pool.getConnection(function(err, connection) {
-                if(err) reject(err);
-                // Use the connection
-                connection.query(sql, function (err, result) {
-                    if (typeof result !== 'undefined' && result.length == 1) {
-                       numOfCanteens = result[0].num_of_canteens; 
-                    }
+                if(err) {
+                    reject(err);    
+                } else {
+                    // Use the connection
+                    connection.query(sql, function (err, result) {
+                        if (typeof result !== 'undefined' && result.length == 1) {
+                           numOfCanteens = result[0].num_of_canteens; 
+                        }
 
-                    // Done with the connetion
-                    connection.release();
+                        // Done with the connetion
+                        connection.release();
 
-                    // Handle error after the release
-                    if (err) reject(err);
-                    if (result.length > 1) reject(err);
-                    
-                    resolve(numOfCanteens);
-                });
+                        // Handle error after the release
+                        if (err) {
+                            reject(err);    
+                        } else if (result.length > 1) {
+                            reject(err);    
+                        } else {
+                            resolve(numOfCanteens);    
+                        }                  
+                    });
+                }
             });    
         }
         

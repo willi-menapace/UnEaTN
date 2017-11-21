@@ -22,12 +22,11 @@ module.exports = class WaitingTimeCanteenHandler extends ApplicationHandlerSkele
     
     processRequest(res, attributes) {
         var previsionDataDBHelper = new PrevisionDataDBHelper();
-        
-        previsionDataDBHelper.getPrevisionDataByCanteenIdAndTime(attributes.getCanteen().canteenId, attributes.getTime(), attributes.getDay()).then(function(previsionData){
+        previsionDataDBHelper.getPrevisionDataByCanteenIdAndTime(attributes.getCanteen().canteenId, attributes.getDay(), attributes.getTime()).then(function(previsionData){
             if(previsionData !== null){
                 var json = JSON.stringify({
                     error: false,  //to test
-                    waitingTime:  previsionData.waitSeconds / 60//time in secondi o in minuti?
+                    waitingTime:  Math.floor(previsionData.waitSeconds / 60)//time in secondi o in minuti?
                 });
             } else{
                 var json = JSON.stringify({

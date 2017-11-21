@@ -90,9 +90,19 @@ module.exports = class TimeChecker{
         }
     }
     
+    static fromTimeToDate(time){
+        var splittedTime = time.spli(":");
+        var date = new Date();
+        date.setHours = parseInt(splittedTime[0]);
+        date.setMinutes = parseInt(splittedTime[1]);
+        date.setSeconds = parseInt(splittedTime[2]);
+        
+        return date;
+    }
     static fromTimeToStringHoursAndMinutes(time){
-        splittedTime = time.split(':');
+        var splittedTime = time.split(':');
         var stringDate = splittedTime[0] + ":" + splittedTime[1];
+        return stringDate;
     }
     
     static getDateByTime(time) {

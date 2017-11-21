@@ -49,7 +49,6 @@ module.exports = class BestWaitingTimePreprocessor{
 
             var startDate = TimeChecker.getDateFromHoursAndMinutesByString(startTimeAttribute);
             var endDate = TimeChecker.getDateFromHoursAndMinutesByString(endTimeAttribute);
-            console.log("startDate from preprocessor", startDate);
             if(startDate === null){ //check if startTime exist and is in a correct format
                 reject("Invalid date format or missing start-time-attribute");
             } else if(endDate === null){
