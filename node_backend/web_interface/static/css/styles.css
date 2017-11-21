@@ -2,8 +2,8 @@
  * Page Name:  CSS Stylesheet (static)
  * Project:    unEATn
  * Author:     Simone Lorengo
- * Date:       15.11.2017
- * Note:       Ultimare link e richieste get
+ * Date:       21.11.2017
+ * Note:       OK, needs debug
  */
 
 /* BODY SETTING */
@@ -213,5 +213,11 @@ body {
 
     .margin-right-null {
         margin-right: 0px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .chart {
+        height: 300px;
     }
 }
