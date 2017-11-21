@@ -2,7 +2,6 @@
   "name": "uneatn",
   "version": "1.0.0",
   "description": "uneatn project for se2 class",
-  "main": "index.js",
   "scripts": {
     "test": "jest"
   },
