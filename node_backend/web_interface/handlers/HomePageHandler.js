@@ -112,6 +112,12 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
                 }
             }
             
+            // TEST
+            for(var i = 0; i < savedCanteens.length; i++) {
+                console.log(savedCanteens[i].name, ": ", canteenStatus[i]);
+            } 
+            //
+            
             bind.toFile('./web_interface/tpl/home.tpl', {
                     canteenAffStatus_1: canteenStatus[0],
                     canteenAffStatus_2: canteenStatus[1],

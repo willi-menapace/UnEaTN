@@ -61,9 +61,9 @@ module.exports = class WaitingTimeDailyPreprocessor {
             if(canteenId === null) {
                 var errorDescription = "Invalid canteen";
                 reject(errorDescription);
+            } else {
+                resolve(waitingTimeWeeklyAttributes);
             }
-
-            resolve(waitingTimeWeeklyAttributes);
         }   
         
         return new Promise(promiseFunction);

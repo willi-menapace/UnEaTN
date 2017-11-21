@@ -49,7 +49,7 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
         const MINUTES_INDEX = 1;
         for(var i = 0; i < previsionsData.length && previsionData === null; i++) {
             // TODO: Change the follow condition by calling function of TimeChecker to check if hours and minutes correspond
-            var arriveTimeDate = getDateByTime(previsionsData[i].arriveTime);
+            var arriveTimeDate = this.getDateByTime(previsionsData[i].arriveTime);
             var arriveTimeHours = arriveTimeDate.getHours();
             var arriveTimeMinutes = arriveTimeDate.getMinutes();
             if(arriveTimeHours == time.getHours() && arriveTimeMinutes == time.getMinutes())
@@ -93,13 +93,18 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
                     if(previsionDataForEachDay[i] === null) {
                         weeklyStatistics[i] = null;
                     } else {
+                        weeklyStatistics[i] = [];
                         var openTime = savedOpeningHours[i].openTime;
                         var openTimeDate = self.getDateByTime(openTime);
+                        console.log("openTimeDate: ", openTimeDate);
                         var closeTime = savedOpeningHours[i].closeTime;
                         var closeTimeDate = self.getDateByTime(closeTime);
-                        for(var timeIterator = openTimeDate; timeIterator <= closeTimeDate; timeIterator = addMinutes(timeIterator, 1)) {
+                        console.log("closeTimeDate: ", closeTimeDate);
+                        for(var timeIterator = openTimeDate; timeIterator <= closeTimeDate; timeIterator = self.addMinutes(timeIterator, 10)) {
                             canteenPrevision = self.getPrevisionDataByTime(previsionDataForEachDay[i], timeIterator);
-                            statisticalData = new StatisticalData(timeIterator, canteenPrevision);
+                            statisticalData = new StatisticalData(timeIterator, canteenPrevision.waitSeconds / 60);
+                            //console.log("statisticalData: ", statisticalData);
+                            //console.log(weeklyStatistics[i]);
                             weeklyStatistics[i].push(statisticalData);
                         } 
                     }  
@@ -109,6 +114,10 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
             var weeklyStatisticsJSON = {
                 statistics: weeklyStatistics
             };
+            
+            // TEST
+            console.log(JSON.stringify(weeklyStatisticsJSON));
+            //
             
             bind.toFile('./web_interface/tpl/weekChart.tpl', {
                 weeklyStatistics: JSON.stringify(weeklyStatisticsJSON)

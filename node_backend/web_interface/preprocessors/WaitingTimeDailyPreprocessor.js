@@ -72,9 +72,9 @@ module.exports = class WaitingTimeDailyPreprocessor {
             if(day === null) {
                 var errorDescription = "Invalid day";
                 reject(errorDescription);
+            } else {
+                resolve(waitingTimeDailyAttributes);    
             }
-        
-            resolve(waitingTimeDailyAttributes);
         }   
         
         return new Promise(promiseFunction);

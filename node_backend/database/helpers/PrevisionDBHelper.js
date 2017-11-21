@@ -9,7 +9,7 @@ module.exports = class PrevisionDBHelper {
             host: "nanobit.eu",
             user: "mluser",
             password: "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ",
-            database: "uneatn_sandbox"
+            database: "uneatn"
         });
     }
     
@@ -25,23 +25,26 @@ module.exports = class PrevisionDBHelper {
             var prevision = null;
 
             self.pool.getConnection(function(err, connection) {
-                if(err) reject(err);
-                // Use the connection
-                connection.query(sql, [canteenId, day], function(err, result) {
-                    if(typeof result !== 'undefined' && result.length > 0) {
-                        prevision = new PrevisionEntity(result[0].prevision_id, result[0].opening_hour_id, result[0].generation_date);
-                    }
-                    // Done with the connetion
-                    connection.release();
+                if(err) {
+                    reject(err);    
+                } else {
+                    // Use the connection
+                    connection.query(sql, [canteenId, day], function(err, result) {
+                        if(typeof result !== 'undefined' && result.length > 0) {
+                            prevision = new PrevisionEntity(result[0].prevision_id, result[0].opening_hour_id, result[0].generation_date);
+                        }
+                        // Done with the connetion
+                        connection.release();
 
-                    // Handle error after the release
-                    if(err) reject(err);
-                    
-                    resolve(prevision);
-                    
-                });
-            });
-            
+                        // Handle error after the release
+                        if(err) {
+                            reject(err);    
+                        } else {
+                            resolve(prevision);    
+                        }
+                    });    
+                }          
+            });      
         }
         return new Promise(promiseFunction);
     } 

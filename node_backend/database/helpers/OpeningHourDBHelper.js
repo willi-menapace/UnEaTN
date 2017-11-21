@@ -9,7 +9,7 @@ module.exports = class OpeningHourDBHelper {
             host: "nanobit.eu",
             user: "mluser",
             password: "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ",
-            database: "uneatn_sandbox"
+            database: "uneatn"
         }); 
     }
     
@@ -21,23 +21,29 @@ module.exports = class OpeningHourDBHelper {
             var openingHour = null;
 
             self.pool.getConnection(function(err, connection) {
-                if(err) reject(err);
-                // Use the connection
-                connection.query(sql, [canteenId, day], function(err, result) {
-                    if(typeof result[0] !== 'undefined' && result.length > 0) {
-                        openingHour = new OpeningHourEntity(result[0].opening_hour_id, result[0].canteen_id, result[0].weekday, result[0].open_time, result[0].close_time);
-                    }
-                    
-                    // Done with the connetion
-                    connection.release();
+                if(err) {
+                    reject(err);
+                } else {
+                    // Use the connection
+                    connection.query(sql, [canteenId, day], function(err, result) {
+                        if(typeof result[0] !== 'undefined' && result.length > 0) {
+                            openingHour = new OpeningHourEntity(result[0].opening_hour_id, result[0].canteen_id, result[0].weekday, result[0].open_time, result[0].close_time);
+                        }
 
-                    // Handle error after the release
-                    if(err) reject(err);
-                    if(result.length > 1) reject(err); 
-                    
-                    // Returns null if canteen is closed
-                    resolve(openingHour)
-                });
+                        // Done with the connetion
+                        connection.release();
+
+                        // Handle error after the release
+                        if(err) {
+                            reject(err);    
+                        } else if (result.length > 1) {
+                             reject(err);     
+                        } else {
+                            // Returns null if canteen is closed
+                            resolve(openingHour);    
+                        }  
+                    });                    
+                }
             });   
         }
         
@@ -59,30 +65,35 @@ module.exports = class OpeningHourDBHelper {
             const DAY_PER_WEEK = 7;
             
             self.pool.getConnection(function(err, connection) {
-                if(err) reject(err);
-                // Use the connection
-                connection.query(sql, [canteenId], function(err, result) {
-                    if(typeof result !== 'undefined' && result.length > 0) {
-                        for(var i = 0, j = 0; i < DAY_PER_WEEK; i++) {
-                            if(typeof result[j] !== 'undefined') {
-                               openingHour = new OpeningHourEntity(result[j].opening_hour_id, result[j].canteen_id, result[j].weekday, result[j].open_time, result[j].close_time);
-                                if(openingHour.weekDay == i) {
-                                    openingHours[i] = openingHour;
-                                    j++;
+                if(err) {
+                    reject(err);
+                } else {
+                    // Use the connection
+                    connection.query(sql, [canteenId], function(err, result) {
+                        if(typeof result !== 'undefined' && result.length > 0) {
+                            for(var i = 0, j = 0; i < DAY_PER_WEEK; i++) {
+                                if(typeof result[j] !== 'undefined') {
+                                   openingHour = new OpeningHourEntity(result[j].opening_hour_id, result[j].canteen_id, result[j].weekday, result[j].open_time, result[j].close_time);
+                                    if(openingHour.weekDay == i) {
+                                        openingHours[i] = openingHour;
+                                        j++;
+                                    } else {
+                                        openingHours[i] = null;
+                                    }
                                 } else {
                                     openingHours[i] = null;
                                 }
-                            } else {
-                                openingHours[i] = null;
                             }
                         }
-                    }
 
-                    // Handle error after the release
-                    if(err) reject(err);
-                    
-                    resolve(openingHours);         
-                });
+                        // Handle error after the release
+                        if(err) {
+                            reject(err);
+                        } else {
+                            resolve(openingHours);    
+                        }           
+                    });
+                }
             });
         }
         
