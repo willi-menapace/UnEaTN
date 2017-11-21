@@ -2,18 +2,18 @@
     Page Name:  Comparative Chart
     Project:    unEATn
     Author:     Simone Lorengo
-    Date:       15.11.2017
-    Note:       Ultimare link e richieste get
+    Date:       21.11.2017
+    Note:       OK, needs debug
 
     Valori necessari:
     - selectedCanteen :: id or string :: default 1 :: Mensa selezionata
-    0 -> Povo 0
-    1 -> Povo 1
-    2 -> Pasto Lesto
+    1 -> Povo 0
+    2 -> Povo 1
+    3 -> Pasto Lesto
 
     GET:
     weekChart?canteen=x
-    x con lo stesso significato di prima
+    x con il significato indicato
 -->
 
 <!DOCTYPE html>
@@ -36,7 +36,6 @@
     <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">-->
     <link rel="stylesheet" href="https://cdn.anychart.com/releases/8.0.1/css/anychart-ui.min.css" />
     <link rel="stylesheet" href="/css/styles.css">
     <!-- EXTERNAL SCRIPTS -->
@@ -65,38 +64,31 @@
         <div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 col-lg-8 col-lg-offset-2 body-padding chart" id="chart-0">
         </div>
     </div>
-
     <div class="row">
         <div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 col-lg-8 col-lg-offset-2 body-padding chart" id="chart-1">
         </div>
     </div>
-
     <div class="row">
         <div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 col-lg-8 col-lg-offset-2 body-padding chart" id="chart-2">
         </div>
     </div>
-
     <div class="row">
         <div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 col-lg-8 col-lg-offset-2 body-padding chart" id="chart-3">
         </div>
     </div>
-
     <div class="row">
         <div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 col-lg-8 col-lg-offset-2 body-padding chart" id="chart-4">
         </div>
     </div>
-
     <div class="row">
         <div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 col-lg-8 col-lg-offset-2 body-padding chart" id="chart-5">
         </div>
     </div>
-
     <div class="row">
         <div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 col-lg-8 col-lg-offset-2 body-padding chart" id="chart-6">
         </div>
     </div>
-
-        <!-- BUTTON  -->
+    <!-- BUTTON  -->
     <div class="row">
         <div class="col-sm-12 col-sm-offset-0 col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2 body-padding">
             <div class="container-fluid">
@@ -151,16 +143,19 @@
     }
 </script>
 
-<!-- ELABORAZIONE DATI GRAFICO -->
+<!-- ELABORAZIONE DATI GRAFICO E INIZIALIZZAZIONE-->
 <script type="text/javascript">
+    // LEGGE IL TESTO E NE RICAVA IL JSON
     var jsonTxt = '(:weeklyStatistics:)';
     var jsonObj = JSON.parse(jsonTxt);
+    // ESEGUE LA LETTURA E LA CONVERSIONE DEI DATI
     var xValues = [];
     var i;
     for (i = 0; i < 7; i++) {
         var thisChart = document.getElementById("chart-".concat(i));
         var xValuesNum = jsonObj.statistics[i].length;
         var dailyValues = [];
+        // IN BASE AL CONTENUTO DEI DATI, DECIDE SE MOSTRARE O MENO UN DETERMINATO GRAFICO
         if(jsonObj.statistics[i].toString() !== "") {
             thisChart.style.display = 'block';
             var j;
@@ -175,16 +170,26 @@
         else {
             thisChart.style.display = 'none';
         }
+        // SCRIVE I DATI GIORNALIERI FORMATTATI IN UN ARRAY GENERICO DI VALORI DELL'ASSE X
         xValues.push(dailyValues);
     }
-</script>
 
-<!-- GRAFICO LUNEDI' -->
-<script type="text/javascript">
+    // INIZIALIZZA I 7 GRAFICI QUANDO IL DOCUMENTO E' STATO INTERAMENTE CARICATO
     anychart.onDocumentReady(function() {
+        var canteenActive = selector.value;
+        initializeChart("LUNEDÌ", xValues[0], "#FF6767", canteenActive, "chart-0");
+        initializeChart("MARTEDÌ", xValues[1], "#FFE866", canteenActive, "chart-1");
+        initializeChart("MERCOLEDÌ", xValues[2], "#94FF66", canteenActive, "chart-2");
+        initializeChart("GIOVEDÌ", xValues[3], "#66FFBA", canteenActive, "chart-3");
+        initializeChart("VENERDÌ", xValues[4], "#66C2FF", canteenActive, "chart-4");
+        initializeChart("SABATO", xValues[5], "#8C66FF", canteenActive, "chart-5");
+        initializeChart("DOMENICA", xValues[6], "#FF66F0", canteenActive, "chart-6");
+    });
+
+    // FUNZIONE GENERICA DI GENERAZIONE GRAFICI
+    function initializeChart(cTitle, cValues, cColor, cCanteen, cContainer) {
         // DATI DEL GRAFICO
-        alert(xValues[0]);
-        var dataSet = anychart.data.set(xValues[0]);
+        var dataSet = anychart.data.set(cValues);
 
         // MAPPATURA DATI MENSA "POVO 0"
         var seriesData_1 = dataSet.mapAs({
@@ -216,7 +221,7 @@
         crosshair.xLabel().enabled(false);
 
         // IMPOSTAZIONE DEL TITOLO DEL GRAFICO
-        chart.title('LUNEDÌ');
+        chart.title(cTitle);
         chart.title()
             .fontSize(18)
             .fontColor('#FFFFFF')
@@ -242,23 +247,18 @@
         var series;
 
         // MAPPATURA DATI
-        var canteenToShow = selector.value;
-        var canteenName = "non corretta: cantina non selezionata.";
+        var canteenName = "non corretta: mensa non selezionata.";
         series = chart.area(seriesData_1);
-        if(canteenToShow.toString() === "1") {
+        if(cCanteen.toString() === "1") {
             canteenName = "Mensa Povo 0";
-        } else if(canteenToShow.toString() === "2") {
+        } else if(cCanteen.toString() === "2") {
             canteenName = "Mensa Povo 1";
-        } else if(canteenToShow.toString() === "3") {
+        } else if(cCanteen.toString() === "3") {
             canteenName = "Pasto Lesto";
         } else {
-            canteenName = "non corretta: cantina inesistente."
+            canteenName = "non corretta: mensa inesistente."
         }
-        setupSeriesLabels(series, 'Attesa '.concat(canteenName), '#FF6767');
-
-        // Y AXIS OFFSET
-        //innerLabels = labelsInside.xAxis().labels();
-        //innerLabels.offsetY(-30);
+        setupSeriesLabels(series, 'Attesa '.concat(canteenName), cColor);
 
         // IMPOSTAZIONE DELLA LEGENDA GRAFICI
         chart.legend()
@@ -299,767 +299,11 @@
             .fontFamily('Ubuntu');
 
         // IMPOSTA L'ID DEL CONTAINER DA USARE PER IL GRAFICO
-        chart.container('chart-0');
+        chart.container(cContainer);
 
         // AVVIA IL DISEGNO DEL GRAFICO
         chart.draw();
-    });
-</script>
-
-<!-- GRAFICO MARTEDI' -->
-<script type="text/javascript">
-    anychart.onDocumentReady(function() {
-        // DATI DEL GRAFICO
-        var dataSet = anychart.data.set(xValues[1]);
-
-        // MAPPATURA DATI MENSA "POVO 0"
-        var seriesData_1 = dataSet.mapAs({
-            'x': 0,
-            'value': 1
-        });
-
-        // IMPOSTAZIONE DEL TIPO DI GRAFICO
-        chart = anychart.area();
-
-        // IMPOSTAZIONE LA MODALITA' STACKED RISPETTO ALL'ASSE Y
-        chart.yScale().stackMode('value');
-
-        // ABILITA L'ANIMAZIONE
-        chart.animation(true);
-
-        // IMPOSTA LO SFONDO
-        chart.background().fill("#222222");
-
-        // IMPOSTAZIONE CURSORE
-        var crosshair = chart.crosshair();
-        crosshair.enabled(true)
-            .yStroke(null)
-            .xStroke('#fff')
-            .zIndex(39);
-
-        // IMPOSTAZIONI ETICHETTE SU ASSI PER CURSORE
-        crosshair.yLabel().enabled(false);
-        crosshair.xLabel().enabled(false);
-
-        // IMPOSTAZIONE DEL TITOLO DEL GRAFICO
-        chart.title('MARTEDÌ');
-        chart.title()
-            .fontSize(18)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu')
-            .fontWeight('bold')
-            .padding([0, 0, 25, 5]);
-
-        // IMPOSTAZIONI DELLE ETICHETTE DELLE SERIE
-        var setupSeriesLabels = function(series, name, color) {
-            series.name(name)
-                .stroke('3 #fff 1')
-                .fill(color);
-            series.hovered().stroke('3 #fff 1');
-            series.hovered().markers()
-                .enabled(true)
-                .type('circle')
-                .size(4)
-                .stroke('1.5 #fff');
-            series.markers().zIndex(100);
-        };
-
-        // VARIABILE TEMPORANEA CONTENENTE LE SERIE
-        var series;
-
-        // MAPPATURA DATI
-        var canteenToShow = selector.value;
-        var canteenName = "non corretta: cantina non selezionata.";
-        series = chart.area(seriesData_1);
-        if(canteenToShow.toString() === "1") {
-            canteenName = "Mensa Povo 0";
-        } else if(canteenToShow.toString() === "2") {
-            canteenName = "Mensa Povo 1";
-        } else if(canteenToShow.toString() === "3") {
-            canteenName = "Pasto Lesto";
-        } else {
-            canteenName = "non corretta: cantina inesistente."
-        }
-        setupSeriesLabels(series, 'Attesa '.concat(canteenName), '#FFE866');
-
-        // Y AXIS OFFSET
-        //innerLabels = labelsInside.xAxis().labels();
-        //innerLabels.offsetY(-30);
-
-        // IMPOSTAZIONE DELLA LEGENDA GRAFICI
-        chart.legend()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu')
-            .padding([0, 0, 20, 0]);
-
-        // TITOLAZIONE DEGLI ASSI
-        chart.xAxis().title(false);
-        chart.yAxis().title('Tempo di attesa');
-        chart.yAxis().title()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTAZIONE ETICHETTE ASSI
-        chart.xAxis().labels()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-        chart.yAxis().labels()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTAZIONE DI INTERATTIVITA' E TOOLTIP BOX
-        chart.interactivity().hoverMode('by-x');
-        chart.tooltip()
-            .valuePostfix(' min')
-            .displayMode('union')
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTA L'ID DEL CONTAINER DA USARE PER IL GRAFICO
-        chart.container('chart-1');
-
-        // AVVIA IL DISEGNO DEL GRAFICO
-        chart.draw();
-    });
-</script>
-
-<!-- GRAFICO MERCOLEDI' -->
-<script type="text/javascript">
-    anychart.onDocumentReady(function() {
-        // DATI DEL GRAFICO
-        var dataSet = anychart.data.set(xValues[2]);
-
-        // MAPPATURA DATI MENSA "POVO 0"
-        var seriesData_1 = dataSet.mapAs({
-            'x': 0,
-            'value': 1
-        });
-
-        // IMPOSTAZIONE DEL TIPO DI GRAFICO
-        chart = anychart.area();
-
-        // IMPOSTAZIONE LA MODALITA' STACKED RISPETTO ALL'ASSE Y
-        chart.yScale().stackMode('value');
-
-        // ABILITA L'ANIMAZIONE
-        chart.animation(true);
-
-        // IMPOSTA LO SFONDO
-        chart.background().fill("#222222");
-
-        // IMPOSTAZIONE CURSORE
-        var crosshair = chart.crosshair();
-        crosshair.enabled(true)
-            .yStroke(null)
-            .xStroke('#fff')
-            .zIndex(39);
-
-        // IMPOSTAZIONI ETICHETTE SU ASSI PER CURSORE
-        crosshair.yLabel().enabled(false);
-        crosshair.xLabel().enabled(false);
-
-        // IMPOSTAZIONE DEL TITOLO DEL GRAFICO
-        chart.title('MERCOLEDÌ');
-        chart.title()
-            .fontSize(18)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu')
-            .fontWeight('bold')
-            .padding([0, 0, 25, 5]);
-
-        // IMPOSTAZIONI DELLE ETICHETTE DELLE SERIE
-        var setupSeriesLabels = function(series, name, color) {
-            series.name(name)
-                .stroke('3 #fff 1')
-                .fill(color);
-            series.hovered().stroke('3 #fff 1');
-            series.hovered().markers()
-                .enabled(true)
-                .type('circle')
-                .size(4)
-                .stroke('1.5 #fff');
-            series.markers().zIndex(100);
-        };
-
-        // VARIABILE TEMPORANEA CONTENENTE LE SERIE
-        var series;
-
-        // MAPPATURA DATI
-        var canteenToShow = selector.value;
-        var canteenName = "non corretta: cantina non selezionata.";
-        series = chart.area(seriesData_1);
-        if(canteenToShow.toString() === "1") {
-            canteenName = "Mensa Povo 0";
-        } else if(canteenToShow.toString() === "2") {
-            canteenName = "Mensa Povo 1";
-        } else if(canteenToShow.toString() === "3") {
-            canteenName = "Pasto Lesto";
-        } else {
-            canteenName = "non corretta: cantina inesistente."
-        }
-        setupSeriesLabels(series, 'Attesa '.concat(canteenName), '#94FF66');
-
-        // Y AXIS OFFSET
-        //innerLabels = labelsInside.xAxis().labels();
-        //innerLabels.offsetY(-30);
-
-        // IMPOSTAZIONE DELLA LEGENDA GRAFICI
-        chart.legend()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu')
-            .padding([0, 0, 20, 0]);
-
-        // TITOLAZIONE DEGLI ASSI
-        chart.xAxis().title(false);
-        chart.yAxis().title('Tempo di attesa');
-        chart.yAxis().title()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTAZIONE ETICHETTE ASSI
-        chart.xAxis().labels()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-        chart.yAxis().labels()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTAZIONE DI INTERATTIVITA' E TOOLTIP BOX
-        chart.interactivity().hoverMode('by-x');
-        chart.tooltip()
-            .valuePostfix(' min')
-            .displayMode('union')
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTA L'ID DEL CONTAINER DA USARE PER IL GRAFICO
-        chart.container('chart-2');
-
-        // AVVIA IL DISEGNO DEL GRAFICO
-        chart.draw();
-    });
-</script>
-
-<!-- GRAFICO GIOVEDI' -->
-<script type="text/javascript">
-    anychart.onDocumentReady(function() {
-        // DATI DEL GRAFICO
-        var dataSet = anychart.data.set(xValues[3]);
-
-        // MAPPATURA DATI MENSA "POVO 0"
-        var seriesData_1 = dataSet.mapAs({
-            'x': 0,
-            'value': 1
-        });
-
-        // IMPOSTAZIONE DEL TIPO DI GRAFICO
-        chart = anychart.area();
-
-        // IMPOSTAZIONE LA MODALITA' STACKED RISPETTO ALL'ASSE Y
-        chart.yScale().stackMode('value');
-
-        // ABILITA L'ANIMAZIONE
-        chart.animation(true);
-
-        // IMPOSTA LO SFONDO
-        chart.background().fill("#222222");
-
-        // IMPOSTAZIONE CURSORE
-        var crosshair = chart.crosshair();
-        crosshair.enabled(true)
-            .yStroke(null)
-            .xStroke('#fff')
-            .zIndex(39);
-
-        // IMPOSTAZIONI ETICHETTE SU ASSI PER CURSORE
-        crosshair.yLabel().enabled(false);
-        crosshair.xLabel().enabled(false);
-
-        // IMPOSTAZIONE DEL TITOLO DEL GRAFICO
-        chart.title('GIOVEDÌ');
-        chart.title()
-            .fontSize(18)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu')
-            .fontWeight('bold')
-            .padding([0, 0, 25, 5]);
-
-        // IMPOSTAZIONI DELLE ETICHETTE DELLE SERIE
-        var setupSeriesLabels = function(series, name, color) {
-            series.name(name)
-                .stroke('3 #fff 1')
-                .fill(color);
-            series.hovered().stroke('3 #fff 1');
-            series.hovered().markers()
-                .enabled(true)
-                .type('circle')
-                .size(4)
-                .stroke('1.5 #fff');
-            series.markers().zIndex(100);
-        };
-
-        // VARIABILE TEMPORANEA CONTENENTE LE SERIE
-        var series;
-
-        // MAPPATURA DATI
-        var canteenToShow = selector.value;
-        var canteenName = "non corretta: cantina non selezionata.";
-        series = chart.area(seriesData_1);
-        if(canteenToShow.toString() === "1") {
-            canteenName = "Mensa Povo 0";
-        } else if(canteenToShow.toString() === "2") {
-            canteenName = "Mensa Povo 1";
-        } else if(canteenToShow.toString() === "3") {
-            canteenName = "Pasto Lesto";
-        } else {
-            canteenName = "non corretta: cantina inesistente."
-        }
-        setupSeriesLabels(series, 'Attesa '.concat(canteenName), '#66FFBA');
-
-        // Y AXIS OFFSET
-        //innerLabels = labelsInside.xAxis().labels();
-        //innerLabels.offsetY(-30);
-
-        // IMPOSTAZIONE DELLA LEGENDA GRAFICI
-        chart.legend()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu')
-            .padding([0, 0, 20, 0]);
-
-        // TITOLAZIONE DEGLI ASSI
-        chart.xAxis().title(false);
-        chart.yAxis().title('Tempo di attesa');
-        chart.yAxis().title()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTAZIONE ETICHETTE ASSI
-        chart.xAxis().labels()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-        chart.yAxis().labels()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTAZIONE DI INTERATTIVITA' E TOOLTIP BOX
-        chart.interactivity().hoverMode('by-x');
-        chart.tooltip()
-            .valuePostfix(' min')
-            .displayMode('union')
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTA L'ID DEL CONTAINER DA USARE PER IL GRAFICO
-        chart.container('chart-3');
-
-        // AVVIA IL DISEGNO DEL GRAFICO
-        chart.draw();
-    });
-</script>
-
-<!-- GRAFICO VENERDI' -->
-<script type="text/javascript">
-    anychart.onDocumentReady(function() {
-        // DATI DEL GRAFICO
-        var dataSet = anychart.data.set(xValues[4]);
-
-        // MAPPATURA DATI MENSA "POVO 0"
-        var seriesData_1 = dataSet.mapAs({
-            'x': 0,
-            'value': 1
-        });
-
-        // IMPOSTAZIONE DEL TIPO DI GRAFICO
-        chart = anychart.area();
-
-        // IMPOSTAZIONE LA MODALITA' STACKED RISPETTO ALL'ASSE Y
-        chart.yScale().stackMode('value');
-
-        // ABILITA L'ANIMAZIONE
-        chart.animation(true);
-
-        // IMPOSTA LO SFONDO
-        chart.background().fill("#222222");
-
-        // IMPOSTAZIONE CURSORE
-        var crosshair = chart.crosshair();
-        crosshair.enabled(true)
-            .yStroke(null)
-            .xStroke('#fff')
-            .zIndex(39);
-
-        // IMPOSTAZIONI ETICHETTE SU ASSI PER CURSORE
-        crosshair.yLabel().enabled(false);
-        crosshair.xLabel().enabled(false);
-
-        // IMPOSTAZIONE DEL TITOLO DEL GRAFICO
-        chart.title('VENERDÌ');
-        chart.title()
-            .fontSize(18)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu')
-            .fontWeight('bold')
-            .padding([0, 0, 25, 5]);
-
-        // IMPOSTAZIONI DELLE ETICHETTE DELLE SERIE
-        var setupSeriesLabels = function(series, name, color) {
-            series.name(name)
-                .stroke('3 #fff 1')
-                .fill(color);
-            series.hovered().stroke('3 #fff 1');
-            series.hovered().markers()
-                .enabled(true)
-                .type('circle')
-                .size(4)
-                .stroke('1.5 #fff');
-            series.markers().zIndex(100);
-        };
-
-        // VARIABILE TEMPORANEA CONTENENTE LE SERIE
-        var series;
-
-        // MAPPATURA DATI
-        var canteenToShow = selector.value;
-        var canteenName = "non corretta: cantina non selezionata.";
-        series = chart.area(seriesData_1);
-        if(canteenToShow.toString() === "1") {
-            canteenName = "Mensa Povo 0";
-        } else if(canteenToShow.toString() === "2") {
-            canteenName = "Mensa Povo 1";
-        } else if(canteenToShow.toString() === "3") {
-            canteenName = "Pasto Lesto";
-        } else {
-            canteenName = "non corretta: cantina inesistente."
-        }
-        setupSeriesLabels(series, 'Attesa '.concat(canteenName), '#66C2FF');
-
-        // Y AXIS OFFSET
-        //innerLabels = labelsInside.xAxis().labels();
-        //innerLabels.offsetY(-30);
-
-        // IMPOSTAZIONE DELLA LEGENDA GRAFICI
-        chart.legend()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu')
-            .padding([0, 0, 20, 0]);
-
-        // TITOLAZIONE DEGLI ASSI
-        chart.xAxis().title(false);
-        chart.yAxis().title('Tempo di attesa');
-        chart.yAxis().title()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTAZIONE ETICHETTE ASSI
-        chart.xAxis().labels()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-        chart.yAxis().labels()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTAZIONE DI INTERATTIVITA' E TOOLTIP BOX
-        chart.interactivity().hoverMode('by-x');
-        chart.tooltip()
-            .valuePostfix(' min')
-            .displayMode('union')
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTA L'ID DEL CONTAINER DA USARE PER IL GRAFICO
-        chart.container('chart-4');
-
-        // AVVIA IL DISEGNO DEL GRAFICO
-        chart.draw();
-    });
-</script>
-
-<!-- GRAFICO SABATO -->
-<script type="text/javascript">
-    anychart.onDocumentReady(function() {
-        // DATI DEL GRAFICO
-        var dataSet = anychart.data.set(xValues[5]);
-
-        // MAPPATURA DATI MENSA "POVO 0"
-        var seriesData_1 = dataSet.mapAs({
-            'x': 0,
-            'value': 1
-        });
-
-        // IMPOSTAZIONE DEL TIPO DI GRAFICO
-        chart = anychart.area();
-
-        // IMPOSTAZIONE LA MODALITA' STACKED RISPETTO ALL'ASSE Y
-        chart.yScale().stackMode('value');
-
-        // ABILITA L'ANIMAZIONE
-        chart.animation(true);
-
-        // IMPOSTA LO SFONDO
-        chart.background().fill("#222222");
-
-        // IMPOSTAZIONE CURSORE
-        var crosshair = chart.crosshair();
-        crosshair.enabled(true)
-            .yStroke(null)
-            .xStroke('#fff')
-            .zIndex(39);
-
-        // IMPOSTAZIONI ETICHETTE SU ASSI PER CURSORE
-        crosshair.yLabel().enabled(false);
-        crosshair.xLabel().enabled(false);
-
-        // IMPOSTAZIONE DEL TITOLO DEL GRAFICO
-        chart.title('SABATO');
-        chart.title()
-            .fontSize(18)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu')
-            .fontWeight('bold')
-            .padding([0, 0, 25, 5]);
-
-        // IMPOSTAZIONI DELLE ETICHETTE DELLE SERIE
-        var setupSeriesLabels = function(series, name, color) {
-            series.name(name)
-                .stroke('3 #fff 1')
-                .fill(color);
-            series.hovered().stroke('3 #fff 1');
-            series.hovered().markers()
-                .enabled(true)
-                .type('circle')
-                .size(4)
-                .stroke('1.5 #fff');
-            series.markers().zIndex(100);
-        };
-
-        // VARIABILE TEMPORANEA CONTENENTE LE SERIE
-        var series;
-
-        // MAPPATURA DATI
-        var canteenToShow = selector.value;
-        var canteenName = "non corretta: cantina non selezionata.";
-        series = chart.area(seriesData_1);
-        if(canteenToShow.toString() === "1") {
-            canteenName = "Mensa Povo 0";
-        } else if(canteenToShow.toString() === "2") {
-            canteenName = "Mensa Povo 1";
-        } else if(canteenToShow.toString() === "3") {
-            canteenName = "Pasto Lesto";
-        } else {
-            canteenName = "non corretta: cantina inesistente."
-        }
-        setupSeriesLabels(series, 'Attesa '.concat(canteenName), '#8C66FF');
-
-        // Y AXIS OFFSET
-        //innerLabels = labelsInside.xAxis().labels();
-        //innerLabels.offsetY(-30);
-
-        // IMPOSTAZIONE DELLA LEGENDA GRAFICI
-        chart.legend()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu')
-            .padding([0, 0, 20, 0]);
-
-        // TITOLAZIONE DEGLI ASSI
-        chart.xAxis().title(false);
-        chart.yAxis().title('Tempo di attesa');
-        chart.yAxis().title()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTAZIONE ETICHETTE ASSI
-        chart.xAxis().labels()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-        chart.yAxis().labels()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTAZIONE DI INTERATTIVITA' E TOOLTIP BOX
-        chart.interactivity().hoverMode('by-x');
-        chart.tooltip()
-            .valuePostfix(' min')
-            .displayMode('union')
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTA L'ID DEL CONTAINER DA USARE PER IL GRAFICO
-        chart.container('chart-5');
-
-        // AVVIA IL DISEGNO DEL GRAFICO
-        chart.draw();
-    });
-</script>
-
-<!-- GRAFICO DOMENICA -->
-<script type="text/javascript">
-    anychart.onDocumentReady(function() {
-        // DATI DEL GRAFICO
-        var dataSet = anychart.data.set(xValues[6]);
-
-        // MAPPATURA DATI MENSA "POVO 0"
-        var seriesData_1 = dataSet.mapAs({
-            'x': 0,
-            'value': 1
-        });
-
-        // IMPOSTAZIONE DEL TIPO DI GRAFICO
-        chart = anychart.area();
-
-        // IMPOSTAZIONE LA MODALITA' STACKED RISPETTO ALL'ASSE Y
-        chart.yScale().stackMode('value');
-
-        // ABILITA L'ANIMAZIONE
-        chart.animation(true);
-
-        // IMPOSTA LO SFONDO
-        chart.background().fill("#222222");
-
-        // IMPOSTAZIONE CURSORE
-        var crosshair = chart.crosshair();
-        crosshair.enabled(true)
-            .yStroke(null)
-            .xStroke('#fff')
-            .zIndex(39);
-
-        // IMPOSTAZIONI ETICHETTE SU ASSI PER CURSORE
-        crosshair.yLabel().enabled(false);
-        crosshair.xLabel().enabled(false);
-
-        // IMPOSTAZIONE DEL TITOLO DEL GRAFICO
-        chart.title('DOMENICA');
-        chart.title()
-            .fontSize(18)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu')
-            .fontWeight('bold')
-            .padding([0, 0, 25, 5]);
-
-        // IMPOSTAZIONI DELLE ETICHETTE DELLE SERIE
-        var setupSeriesLabels = function(series, name, color) {
-            series.name(name)
-                .stroke('3 #fff 1')
-                .fill(color);
-            series.hovered().stroke('3 #fff 1');
-            series.hovered().markers()
-                .enabled(true)
-                .type('circle')
-                .size(4)
-                .stroke('1.5 #fff');
-            series.markers().zIndex(100);
-        };
-
-        // VARIABILE TEMPORANEA CONTENENTE LE SERIE
-        var series;
-
-        // MAPPATURA DATI
-        var canteenToShow = selector.value;
-        var canteenName = "non corretta: cantina non selezionata.";
-        series = chart.area(seriesData_1);
-        if(canteenToShow.toString() === "1") {
-            canteenName = "Mensa Povo 0";
-        } else if(canteenToShow.toString() === "2") {
-            canteenName = "Mensa Povo 1";
-        } else if(canteenToShow.toString() === "3") {
-            canteenName = "Pasto Lesto";
-        } else {
-            canteenName = "non corretta: cantina inesistente."
-        }
-        setupSeriesLabels(series, 'Attesa '.concat(canteenName), '#FF66F0');
-
-        // Y AXIS OFFSET
-        //innerLabels = labelsInside.xAxis().labels();
-        //innerLabels.offsetY(-30);
-
-        // IMPOSTAZIONE DELLA LEGENDA GRAFICI
-        chart.legend()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu')
-            .padding([0, 0, 20, 0]);
-
-        // TITOLAZIONE DEGLI ASSI
-        chart.xAxis().title(false);
-        chart.yAxis().title('Tempo di attesa');
-        chart.yAxis().title()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTAZIONE ETICHETTE ASSI
-        chart.xAxis().labels()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-        chart.yAxis().labels()
-            .enabled(true)
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTAZIONE DI INTERATTIVITA' E TOOLTIP BOX
-        chart.interactivity().hoverMode('by-x');
-        chart.tooltip()
-            .valuePostfix(' min')
-            .displayMode('union')
-            .fontSize(13)
-            .fontColor('#FFFFFF')
-            .fontFamily('Ubuntu');
-
-        // IMPOSTA L'ID DEL CONTAINER DA USARE PER IL GRAFICO
-        chart.container('chart-6');
-
-        // AVVIA IL DISEGNO DEL GRAFICO
-        chart.draw();
-    });
+    }
 </script>
 
 </body>

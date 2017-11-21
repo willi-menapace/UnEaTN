@@ -2,8 +2,8 @@
     Page Name:  Comparative Chart
     Project:    unEATn
     Author:     Simone Lorengo
-    Date:       15.11.2017
-    Note:       Ultimare link e richieste get
+    Date:       21.11.2017
+    Note:       OK, needs debug
 
     Valori necessari:
     - selectedDay :: id or string :: default 1 :: Giorno della settimana selezionato
@@ -11,7 +11,7 @@
 
     GET:
     compChart?day=x
-    x con lo stesso significato di prima
+    x con il significato indicato
 -->
 
 <!DOCTYPE html>
@@ -34,7 +34,6 @@
     <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">-->
     <link rel="stylesheet" href="https://cdn.anychart.com/releases/8.0.1/css/anychart-ui.min.css" />
     <link rel="stylesheet" href="/css/styles.css">
     <!-- EXTERNAL SCRIPTS -->
@@ -225,10 +224,6 @@
         // TERZA SERIE CON I DATI MAPPATI (PASTO LESTO)
         series = chart.area(seriesData_3);
         setupSeriesLabels(series, 'Pasto Lesto', '#67C1FF');
-
-        // Y AXIS OFFSET
-        //innerLabels = labelsInside.xAxis().labels();
-        //innerLabels.offsetY(-30);
 
         // IMPOSTAZIONE DELLA LEGENDA GRAFICI
         chart.legend()

@@ -2,8 +2,8 @@
     Page Name:  Home
     Project:    unEATn
     Author:     Simone Lorengo
-    Date:       15.11.2017
-    Note:       Dovrebbe essere ok
+    Date:       21.11.2017
+    Note:       OK, needs debug
 
     Valori necessari:
     - canteenAffStatus_1 :: int or string :: default 4 :: Stato Affluenza Mensa di Povo 0
@@ -36,7 +36,6 @@
     <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">-->
     <link rel="stylesheet" href="https://cdn.anychart.com/releases/8.0.1/css/anychart-ui.min.css" />
     <link rel="stylesheet" href="/css/styles.css">
     <!-- EXTERNAL SCRIPTS -->
