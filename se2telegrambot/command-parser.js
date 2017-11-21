@@ -169,7 +169,7 @@ function bestTimeSA(msg, resolve, reject) {
 function submitSA(msg, resolve, reject) {
     var answer = '';
 
-    var telegramID = msg.chat.id;
+    var telegramID;
     var canteen;
     var waitingTime;
     var hour;
@@ -185,6 +185,14 @@ function submitSA(msg, resolve, reject) {
     if(parameters.length < 2 || parameters.length > 3) {
         answer = PARAM_NUMBER_ERROR;
         reject(answer);
+    }
+
+    //controllo telegramID
+    if(isNaN(parseInt(msg.chat.id))) {
+        answer = INTERNAL_ERROR;
+        reject(answer);
+    } else {
+        telegramID = parseInt(msg.chat.id);
     }
 
     //controllo mensa

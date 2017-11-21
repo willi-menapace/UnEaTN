@@ -17,26 +17,27 @@ beforeAll(function() {
 });
 
 
-/* addWaitingTime() test cases */
 
-test('addWaitingTime(\'randomID\', \'testOK\', 99, 99, 99)', function() {
-   expect.assertions(1);
-   return expect(UNEATN.addWaitingTime(12345, 'testOK', 99, 99, 99)).resolves.toBe(true);
+/* waitingTimeCanteen() test cases */
+
+test('waitingTimeCanteen(\'testOK\', 12, 30, 3)', function() {
+    expect.assertions(1);
+    return expect(UNEATN.waitingTimeCanteen('testOK', 12, 30, 3)).resolves.toBe(11);
 });
 
-test('addWaitingTime()', function() {
+test('waitingTimeCanteen(\'testNO\', 12, 30, 3)', function() {
     expect.assertions(1);
-    return expect(UNEATN.addWaitingTime()).rejects.toBe(UNEATN.MISSING_PARAM);
+    return expect(UNEATN.waitingTimeCanteen('testNO', 12, 30, 3)).rejects.toBe('description of the error');
 });
 
-test('addWaitingTime(\'randomID\', \'testOK\', \'99\', \'99\', \'99\')', function() {
+test('waitingTimeCanteen()', function() {
     expect.assertions(1);
-    return expect(UNEATN.addWaitingTime('12345', 'testOK', 'ok', 'boh', 'no')).rejects.toBe(UNEATN.BAD_PARAM);
+    return expect(UNEATN.waitingTimeCanteen()).rejects.toBe(UNEATN.MISSING_PARAM);
 });
 
-test('addWaitingTime(123, \'testNO\', 99, 99, 99)', function() {
+test('waitingTimeCanteen(\'testOK\', \'abbas\', \'are great\')', function() {
     expect.assertions(1);
-    return expect(UNEATN.addWaitingTime(123, 'testNO', 99, 99, 99)).rejects.toBe('description of the error');
+    return expect(UNEATN.waitingTimeCanteen('testOK', 'abbas', 'are', 'great')).rejects.toBe(UNEATN.BAD_PARAM);
 });
 
 
@@ -73,27 +74,34 @@ test('bestWaitingTime(\'a\', \'l\', \'l\', \'a\', \'h\')', function() {
 });
 
 
-/* waitingTimeCanteen() test cases */
+/* addWaitingTime() test cases */
 
-test('waitingTimeCanteen(\'testOK\', 12, 30, 3)', function() {
+test('addWaitingTime(12345, \'testOK\', 99, 99, 99)', function() {
     expect.assertions(1);
-    return expect(UNEATN.waitingTimeCanteen('testOK', 12, 30, 3)).resolves.toBe(11);
+    return expect(UNEATN.addWaitingTime(12345, 'testOK', 99, 99, 99)).resolves.toBe(true);
 });
 
-test('waitingTimeCanteen(\'testNO\', 12, 30, 3)', function() {
+test('addWaitingTime()', function() {
     expect.assertions(1);
-    return expect(UNEATN.waitingTimeCanteen('testNO', 12, 30, 3)).rejects.toBe('description of the error');
+    return expect(UNEATN.addWaitingTime()).rejects.toBe(UNEATN.MISSING_PARAM);
 });
 
-test('waitingTimeCanteen()', function() {
+test('addWaitingTime(12345, \'testOK\', \'99\', \'99\', \'99\')', function() {
     expect.assertions(1);
-    return expect(UNEATN.waitingTimeCanteen()).rejects.toBe(UNEATN.MISSING_PARAM);
+    return expect(UNEATN.addWaitingTime('12345', 'testOK', 'ok', 'boh', 'no')).rejects.toBe(UNEATN.BAD_PARAM);
 });
 
-test('waitingTimeCanteen(\'testOK\', \'abbas\', \'are great\')', function() {
+test('addWaitingTime(123, \'testNO\', 99, 99, 99)', function() {
     expect.assertions(1);
-    return expect(UNEATN.waitingTimeCanteen('testOK', 'abbas', 'are', 'great')).rejects.toBe(UNEATN.BAD_PARAM);
+    return expect(UNEATN.addWaitingTime(123, 'testNO', 99, 99, 99)).rejects.toBe('description of the error');
 });
+
+test('addWaitingTime(\'randomID\', \'testOK\', 99, 99, 99)', function() {
+    expect.assertions(1);
+    return expect(UNEATN.addWaitingTime('randomID', 'testOK', 99, 99, 99)).rejects.toBe(UNEATN.BAD_PARAM);
+});
+
+
 
 /* Shutdown stub server replier */
 afterAll(function() {
