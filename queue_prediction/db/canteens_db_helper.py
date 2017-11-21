@@ -14,7 +14,7 @@ import datetime
 class CanteensDbHelper:
 
     _getAllCanteensQuery = (""
-        "SELECT canteen_id, name "
+        "SELECT canteen_id, name, codename "
         "FROM canteens ")
 
     _getOpeningHoursByCanteenId = (""
@@ -34,6 +34,7 @@ class CanteensDbHelper:
         for canteenRow in canteensResults:
             currentCanteenId = canteenRow[0]
             canteenName = canteenRow[1]
+            codename = canteenRow[2]
 
             getOpeningHoursParameters = {
                 "canteenId": currentCanteenId
@@ -59,6 +60,6 @@ class CanteensDbHelper:
 
                 currentCanteenOpeningHours[weekday] = currentOpeningHour
 
-            canteensList += [CanteenEntity(currentCanteenId, canteenName, currentCanteenOpeningHours)]
+            canteensList += [CanteenEntity(currentCanteenId, canteenName, codename, currentCanteenOpeningHours)]
 
         return canteensList
