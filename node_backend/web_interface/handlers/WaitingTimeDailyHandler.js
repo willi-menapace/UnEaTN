@@ -149,7 +149,7 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
                 statistics: dailyStatistics
             };
 
-            bind.toFile('./web_interface/tpl/compchart.tpl', {
+            bind.toFile('./web_interface/tpl/compChart.tpl', {
                 dailyStatistics: JSON.stringify(dailyStatisticsJSON)
             }, function(data) {
                 res.writeHead(200, {'Content-Type': 'text/html'});

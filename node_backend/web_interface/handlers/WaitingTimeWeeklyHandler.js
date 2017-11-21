@@ -110,7 +110,7 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
                 statistics: weeklyStatistics
             };
             
-            bind.toFile('./web_interface/tpl/weekchart.tpl', {
+            bind.toFile('./web_interface/tpl/weekChart.tpl', {
                 weeklyStatistics: JSON.stringify(weeklyStatisticsJSON)
             }, function(data) {
                 res.writeHead(200, {'Content-Type': 'text/html'});
