@@ -11,13 +11,15 @@ class CanteenEntity:
 
     canteenId = 0
     name = ""
+    codename = ""
     #Associates each day with (opening hour, closing hour, openingHourId)
     openingHours = {}
 
-    def __init__(self, id, name, openingHours):
+    def __init__(self, id, name, codename, openingHours):
 
         self.canteenId = id
         self.name = name
+        self.codename = codename
         self.openingHours = {}
 
         #Adds opening hours for days from Monday 0 to Sunday 6

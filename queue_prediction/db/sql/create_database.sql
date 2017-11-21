@@ -13,13 +13,14 @@ FLUSH PRIVILEGES;
 
 CREATE TABLE canteens (
 	canteen_id INT PRIMARY KEY auto_increment,
-	name VARCHAR(100) NOT NULL
+	name VARCHAR(100) NOT NULL,
+	codename VARCHAR(100) NOT NULL
 );
 
-INSERT INTO canteens(canteen_id, name) VALUES
-(1, 'Pasto lesto'),
-(2, 'Povo 0'),
-(3, 'Povo 1');
+INSERT INTO canteens(canteen_id, name, codename) VALUES
+(1, 'Pasto lesto', 'lesto'),
+(2, 'Povo 0', 'povo0'),
+(3, 'Povo 1', 'povo1');
 
 CREATE TABLE opening_hours (
 	opening_hour_id INT PRIMARY KEY auto_increment,
