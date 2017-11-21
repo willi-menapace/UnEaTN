@@ -1,0 +1,17 @@
+{
+  "name": "uneatn",
+  "version": "1.0.0",
+  "description": "uneatn project for se2 class",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Giuliani Daniele",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "jest": "^21.2.1",
+    "node-telegram-bot-api": "^0.29.0",
+    "request": "^2.83.0"
+  }
+}
