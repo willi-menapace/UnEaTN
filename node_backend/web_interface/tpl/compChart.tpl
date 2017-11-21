@@ -7,7 +7,7 @@
 
     Valori necessari:
     - selectedDay :: id or string :: default 1 :: Giorno della settimana selezionato
-    1 -> Lunedì, ..., 5 -> Venerdì
+    0 -> Lunedì, ..., 6 -> Domenica
 
     GET:
     compChart?day=x
@@ -60,7 +60,7 @@
 
     <!-- CHART -->
     <div class="row">
-        <div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 col-lg-8 col-lg-offset-2 body-padding" id="chart">
+        <div class="col-sm-12 col-sm-offset-0 col-md-12 col-md-offset-0 col-lg-8 col-lg-offset-2 body-padding chart" id="chart">
         </div>
     </div>
         <!-- BUTTON  -->
@@ -76,11 +76,13 @@
                                         <i class="zmdi zmdi-chevron-down"></i>
                                     </div>
                                     <select title="Seleziona Giorno" class="form-control btn-primary expand" id="dayOfTheWeek">
-                                        <option value="1">LUNED&Igrave;</option>
-                                        <option value="2">MARTED&Igrave;</option>
-                                        <option value="3">MERCOLED&Igrave;</option>
-                                        <option value="4">GIOVED&Igrave;</option>
-                                        <option value="5">VENERD&Igrave;</option>
+                                        <option value="0">LUNED&Igrave;</option>
+                                        <option value="1">MARTED&Igrave;</option>
+                                        <option value="2">MERCOLED&Igrave;</option>
+                                        <option value="3">GIOVED&Igrave;</option>
+                                        <option value="4">VENERD&Igrave;</option>
+                                        <option value="5">SABATO</option>
+                                        <option value="6">DOMENICA</option>
                                     </select>
                                 </div>
                             </div>
@@ -103,6 +105,7 @@
     </div>
 </div>
 
+<!-- SELEZIONE GIORNO DA DATI -->
 <script type="text/javascript">
     var selector = document.getElementById("dayOfTheWeek");
 
@@ -119,25 +122,30 @@
     }
 </script>
 
+<!-- ELABORAZIONE DATI GRAFICO -->
+<script type="text/javascript">
+    var jsonTxt = '(:dailyStatistics:)';
+    var jsonObj = JSON.parse(jsonTxt);
+    var xValuesNum = jsonObj.statistics.length;
+    var xValues = [];
+    var i;
+    for (i = 0; i < xValuesNum; i++) {
+        var value = [
+            jsonObj.statistics[i].time,
+            jsonObj.statistics[i].waitingTimes[0],
+            jsonObj.statistics[i].waitingTimes[1],
+            jsonObj.statistics[i].waitingTimes[2]
+        ];
+        xValues.push(value);
+    }
+</script>
+
+<!-- GRAFICO COMPARATIVO -->
 <script type="text/javascript">
     anychart.onDocumentReady(function() {
+
         // DATI DEL GRAFICO
-        var dataSet = anychart.data.set([
-            ['11:50', 3, 2, 0],
-            ['12:00', 10, 5, 3],
-            ['12:10', 12, 7, 3],
-            ['12:20', 13, 6, 2],
-            ['12:30', 7, 3, 2],
-            ['12:40', 16, 7, 6],
-            ['12:50', 22, 32, 10],
-            ['13:00', 2, 8, 10],
-            ['13:10', 12, 7, 3],
-            ['13:20', 13, 6, 2],
-            ['13:30', 7, 3, 2],
-            ['13:40', 16, 7, 6],
-            ['13:50', 22, 12, 10],
-            ['14:00', 18, 8, 10]
-        ]);
+        var dataSet = anychart.data.set(xValues);
 
         // MAPPATURA DATI MENSA "POVO 0"
         var seriesData_1 = dataSet.mapAs({

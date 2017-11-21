@@ -64,7 +64,7 @@
         <div class="col-sm-12 col-sm-offset-0 col-md-4 col-md-offset-2 col-lg-4 col-lg-offset-2 body-padding">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-sm-12 bottom-margin cursor-pointer" onclick="window.location='/weekChart?canteen=1';">
+                    <div class="col-sm-12 bottom-margin cursor-pointer" onclick="window.location='/weekChart?canteen=0';">
                         <div class="alignment-wrapper float-right">
                             <div class="icon-img" id="icon-img-1"></div>
                             <div class="icon-txt">
@@ -73,7 +73,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 bottom-margin cursor-pointer" onclick="window.location='/weekChart?canteen=2';">
+                    <div class="col-sm-12 bottom-margin cursor-pointer" onclick="window.location='/weekChart?canteen=1';">
                         <div class="alignment-wrapper float-right">
                             <div class="icon-img" id="icon-img-2"></div>
                             <div class="icon-txt">
@@ -82,7 +82,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 bottom-margin cursor-pointer" onclick="window.location='/weekChart?canteen=3';">
+                    <div class="col-sm-12 bottom-margin cursor-pointer" onclick="window.location='/weekChart?canteen=2';">
                         <div class="alignment-wrapper float-right">
                             <div class="icon-img" id="icon-img-3"></div>
                             <div class="icon-txt">
