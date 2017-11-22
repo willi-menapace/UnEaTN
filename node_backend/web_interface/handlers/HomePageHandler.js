@@ -100,7 +100,7 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
                     if(waitingTime >= 0) {
                         if(waitingTime <= CanteenStatus.FREE.threshold) {
                             canteenStatus[i] = CanteenStatus.FREE.id;
-                        } else if(waitingTimes[i] <= CanteenStatus.BUSY.threshold) {
+                        } else if(waitingTime <= CanteenStatus.BUSY.threshold) {
                             canteenStatus[i] = CanteenStatus.BUSY.id;
                         } else {
                             canteenStatus[i] = CanteenStatus.FULL.id;
