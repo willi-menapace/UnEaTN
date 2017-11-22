@@ -7,9 +7,9 @@
 
     Valori necessari:
     - selectedCanteen :: id or string :: default 1 :: Mensa selezionata
-    1 -> Povo 0
-    2 -> Povo 1
-    3 -> Pasto Lesto
+    1 -> Pasto Lesto
+    2 -> Povo 0
+    3 -> Povo 1
 
     GET:
     weekChart?canteen=x
@@ -27,7 +27,7 @@
     <!-- TITLE -->
     <title>unEATn</title>
     <!-- FAVICON -->
-    <link rel="icon" href="/img/favicon.png" type="image/png" />
+    <link rel="icon" href="img/favicon.png" type="image/png" />
     <!-- THEME COLOR -->
     <meta name="theme-color" content="#222222">
     <meta name="msapplication-navbutton-color" content="#222222">
@@ -101,9 +101,9 @@
                                         <i class="zmdi zmdi-chevron-down"></i>
                                     </div>
                                     <select title="Seleziona Mensa" class="form-control btn-primary expand" id="canteenToShow">
-                                        <option value="1">MENSA POVO 0</option>
-                                        <option value="2">MENSA POVO 1</option>
-                                        <option value="3">PASTO LESTO</option>
+                                        <option value="1">PASTO LESTO</option>
+                                        <option value="2">MENSA POVO 0</option>
+                                        <option value="3">MENSA POVO 1</option>
                                     </select>
                                 </div>
                             </div>
@@ -139,7 +139,7 @@
 
     function redirectByCanteen(selector) {
         var canteen = selector.options[selector.selectedIndex].value;
-        window.location = '/weekChart?day='.concat(canteen);
+        window.location = '/weekChart?canteenId='.concat(canteen);
     }
 </script>
 
@@ -153,10 +153,17 @@
     var i;
     for (i = 0; i < 7; i++) {
         var thisChart = document.getElementById("chart-".concat(i));
-        var xValuesNum = jsonObj.statistics[i].length;
+        var xValuesNum = -1;
+        if (jsonObj.statistics[i] === null){
+            xValuesNum = 0;
+        }
+        else {
+            xValuesNum = jsonObj.statistics[i].length;
+        }
+
         var dailyValues = [];
         // IN BASE AL CONTENUTO DEI DATI, DECIDE SE MOSTRARE O MENO UN DETERMINATO GRAFICO
-        if(jsonObj.statistics[i].toString() !== "") {
+        if(xValuesNum > 0) {
             thisChart.style.display = 'block';
             var j;
             for (j = 0; j < xValuesNum; j++) {
@@ -250,11 +257,11 @@
         var canteenName = "non corretta: mensa non selezionata.";
         series = chart.area(seriesData_1);
         if(cCanteen.toString() === "1") {
-            canteenName = "Mensa Povo 0";
-        } else if(cCanteen.toString() === "2") {
-            canteenName = "Mensa Povo 1";
-        } else if(cCanteen.toString() === "3") {
             canteenName = "Pasto Lesto";
+        } else if(cCanteen.toString() === "2") {
+            canteenName = "Mensa Povo 0";
+        } else if(cCanteen.toString() === "3") {
+            canteenName = "Mensa Povo 1";
         } else {
             canteenName = "non corretta: mensa inesistente."
         }
@@ -307,4 +314,4 @@
 </script>
 
 </body>
-</html
+</html>

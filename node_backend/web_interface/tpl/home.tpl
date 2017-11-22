@@ -6,9 +6,9 @@
     Note:       OK, needs debug
 
     Valori necessari:
-    - canteenAffStatus_1 :: int or string :: default 4 :: Stato Affluenza Mensa di Povo 0
-    - canteenAffStatus_2 :: int or string :: default 4 :: Stato Affluenza Mensa di Povo 1
-    - canteenAffStatus_3 :: int or string :: default 4 :: Stato Affluenza Mensa Pasto Lesto
+    - canteenAffStatus_1 :: int or string :: default 4 :: Stato Affluenza Mensa Pasto Lesto
+    - canteenAffStatus_2 :: int or string :: default 4 :: Stato Affluenza Mensa di Povo 0
+    - canteenAffStatus_3 :: int or string :: default 4 :: Stato Affluenza Mensa di Povo 1
     0 -> Mensa chiusa
     1 -> Mensa libera
     2 -> Mensa trafficata
@@ -27,7 +27,7 @@
     <!-- TITLE -->
     <title>unEATn</title>
     <!-- FAVICON -->
-    <link rel="icon" href="/img/favicon.png" type="image/png" />
+    <link rel="icon" href="img/favicon.png" type="image/png" />
     <!-- THEME COLOR -->
     <meta name="theme-color" content="#222222">
     <meta name="msapplication-navbutton-color" content="#222222">
@@ -67,7 +67,7 @@
                         <div class="alignment-wrapper float-right">
                             <div class="icon-img" id="icon-img-1"></div>
                             <div class="icon-txt">
-                                <span class="icon-txt-title">Mensa Povo 0</span>
+                                <span class="icon-txt-title">Pasto Lesto</span>
                                 <span class="icon-txt-message" id="icon-txt-message-1">Oops, qualcuno pagher&agrave; per questo</span>
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                         <div class="alignment-wrapper float-right">
                             <div class="icon-img" id="icon-img-2"></div>
                             <div class="icon-txt">
-                                <span class="icon-txt-title">Mensa Povo 1</span>
+                                <span class="icon-txt-title">Mensa Povo 0</span>
                                 <span class="icon-txt-message" id="icon-txt-message-2">Oops, qualcuno pagher&agrave; per questo</span>
                             </div>
                         </div>
@@ -85,7 +85,7 @@
                         <div class="alignment-wrapper float-right">
                             <div class="icon-img" id="icon-img-3"></div>
                             <div class="icon-txt">
-                                <span class="icon-txt-title">Pasto Lesto</span>
+                                <span class="icon-txt-title">Mensa Povo 1</span>
                                 <span class="icon-txt-message" id="icon-txt-message-3">Oops, qualcuno pagher&agrave; per questo</span>
                             </div>
                         </div>
@@ -165,4 +165,4 @@
     }
 </script>
 </body>
-</html
+</html>

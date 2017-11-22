@@ -25,7 +25,7 @@
     <!-- TITLE -->
     <title>unEATn</title>
     <!-- FAVICON -->
-    <link rel="icon" href="/img/favicon.png" type="image/png" />
+    <link rel="icon" href="img/favicon.png" type="image/png" />
     <!-- THEME COLOR -->
     <meta name="theme-color" content="#222222">
     <meta name="msapplication-navbutton-color" content="#222222">
@@ -109,7 +109,7 @@
     var selector = document.getElementById("dayOfTheWeek");
 
     // QUANDO VIENE CARICATA LA PAGINA, IL SELETTORE SI PORTA SUL GIORNO SELEZIONATO
-    var selectedDay = "(:selectedDay ~ 1:)";
+    var selectedDay = "(:selectedDay ~ 0:)";
     selector.value = selectedDay.toString();
 
     // QUANDO VIENE EFFETTUATA UNA SELEZIONE, VIENE EFFETTUATO IL REINDIRIZZAMENTO SUL GIORNO CORRETTO
@@ -125,7 +125,12 @@
 <script type="text/javascript">
     var jsonTxt = '(:dailyStatistics:)';
     var jsonObj = JSON.parse(jsonTxt);
-    var xValuesNum = jsonObj.statistics.length;
+    if (jsonObj.statistics === null){
+        xValuesNum = 0;
+    }
+    else {
+        xValuesNum = jsonObj.statistics.length;
+    }
     var xValues = [];
     var i;
     for (i = 0; i < xValuesNum; i++) {
@@ -146,19 +151,19 @@
         // DATI DEL GRAFICO
         var dataSet = anychart.data.set(xValues);
 
-        // MAPPATURA DATI MENSA "POVO 0"
+        // MAPPATURA DATI MENSA "PASTO LESTO"
         var seriesData_1 = dataSet.mapAs({
             'x': 0,
             'value': 1
         });
 
-        // MAPPATURA DATI MENSA "POVO 1"
+        // MAPPATURA DATI MENSA "POVO 0"
         var seriesData_2 = dataSet.mapAs({
             'x': 0,
             'value': 2
         });
 
-        // MAPPATURA DATI MENSA "PASTO LESTO"
+        // MAPPATURA DATI MENSA "POVO 1"
         var seriesData_3 = dataSet.mapAs({
             'x': 0,
             'value': 3
@@ -213,17 +218,17 @@
         // VARIABILE TEMPORANEA CONTENENTE LE SERIE
         var series;
 
-        // PRIMA SERIE CON I DATI MAPPATI (POVO 0)
+        // PRIMA SERIE CON I DATI MAPPATI (PASTO LESTO)
         series = chart.area(seriesData_1);
-        setupSeriesLabels(series, 'Povo 0', '#FF6767');
+        setupSeriesLabels(series, 'Pasto Lesto', '#FF6767');
 
-        // SECONDA SERIE CON I DATI MAPPATI (POVO 1)
+        // SECONDA SERIE CON I DATI MAPPATI (POVO 0)
         series = chart.area(seriesData_2);
-        setupSeriesLabels(series, 'Povo 1', '#FFDD67');
+        setupSeriesLabels(series, 'Mensa Povo 0', '#FFDD67');
 
-        // TERZA SERIE CON I DATI MAPPATI (PASTO LESTO)
+        // TERZA SERIE CON I DATI MAPPATI (POVO 1)
         series = chart.area(seriesData_3);
-        setupSeriesLabels(series, 'Pasto Lesto', '#67C1FF');
+        setupSeriesLabels(series, 'Mensa Povo 1', '#67C1FF');
 
         // IMPOSTAZIONE DELLA LEGENDA GRAFICI
         chart.legend()
@@ -271,4 +276,4 @@
     });
 </script>
 </body>
-</html
+</html>

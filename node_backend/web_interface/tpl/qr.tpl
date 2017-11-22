@@ -20,7 +20,7 @@
     <!-- TITLE -->
     <title>unEATn</title>
     <!-- FAVICON -->
-    <link rel="icon" href="/img/favicon.png" type="image/png" />
+    <link rel="icon" href="img/favicon.png" type="image/png" />
     <!-- THEME COLOR -->
     <meta name="theme-color" content="#222222">
     <meta name="msapplication-navbutton-color" content="#222222">
@@ -90,4 +90,4 @@
     </div>
 </div>
 </body>
-</html
+</html>
