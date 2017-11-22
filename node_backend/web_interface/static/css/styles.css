@@ -1,0 +1,223 @@
+/*
+ * Page Name:  CSS Stylesheet (static)
+ * Project:    unEATn
+ * Author:     Simone Lorengo
+ * Date:       21.11.2017
+ * Note:       OK, needs debug
+ */
+
+/* BODY SETTING */
+body {
+    background: #222222;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 18px;
+    color: #FFFFFF;
+}
+
+.body-padding {
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+
+/* COMMON SETTINGS FOR DIVS */
+.bottom-margin {
+    margin-bottom: 10px;
+}
+
+.alignment-wrapper {
+    margin: 0 auto;
+    height: 60px;
+    display: table;
+    vertical-align: middle;
+    max-width: 500px;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* GRAPHICAL ELEMENTS */
+
+/* MAIN LOGO */
+.logo {
+    background-image: url('/img/uneatn_logo.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: auto auto;
+    background-origin: content-box;
+    height: 80px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 20px;
+}
+
+/* HOMEPAGE EMOJI ICON */
+.icon-img {
+    background-image: url('/img/unloaded.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 60px auto;
+    background-origin: content-box;
+    height: 60px;
+    width: 60px;
+    padding: 0 0 0 0;
+    float: left;
+}
+
+/* HOMEPAGE EMOJI-SIDE TEXT CONTAINER */
+.icon-txt {
+    height: 60px;
+    width: 210px;
+    padding: 7px 0 0 7px;
+    float: left;
+}
+
+/* HOMEPAGE EMOJI-SIDE TEXT TITLE */
+.icon-txt-title {
+    display: block;
+    font-weight: bold;
+}
+
+/* HOMEPAGE EMOJI-SIDE TEXT MESSAGE */
+.icon-txt-message {
+    display: block;
+    font-size: 12px;
+    line-height: 12px;
+}
+
+/* COMMON SETTINGS FOR TEXT */
+.txt-center {
+    text-align: center;
+}
+
+.txt-justify {
+    text-align: justify;
+}
+
+.txt-bold {
+    font-weight: bold;
+}
+
+.chart {
+    height: 500px;
+    padding-top: 12px;
+}
+
+/* BLUE BUTTONS */
+.btn-primary,
+.btn-primary:active,
+.btn-primary:visited {
+    background-color: #67C1FF;
+    border-color: #67C1FF;
+    border: none;
+    width: 270px;
+    height: 60px;
+    font-weight: bold;
+    text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #4D91BF;
+    border-color: #4D91BF;
+    border: none;
+}
+
+/* RED BUTTONS */
+.btn-danger,
+.btn-danger:active,
+.btn-danger:visited {
+    background-color: #FF6767;
+    border-color: #FF6767;
+    border: none;
+    width: 270px;
+    height: 60px;
+    font-weight: bold;
+    text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+}
+
+.btn-danger:hover,
+.btn-danger:focus {
+    background-color: #BF4C4C;
+    border-color: #BF4C4C;
+    border: none;
+}
+
+/* DROP DOWN LIST */
+.rail-select {
+    position: relative;
+    width: 270px;
+}
+.rail-select select {
+    padding-left: 20px;
+    height: 60px;
+}
+.rail-select select:focus {
+    outline: none;
+    box-shadow: none;
+    border: 0;
+}
+.rail-select .select-side {
+    pointer-events: none;
+    width: 60px;
+    position: absolute;
+    top: 0;
+    background-color: #4D91BF;
+    height: 100%;
+    left: 210px;
+    border-radius: 0 4px 4px 0;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 0;
+}
+.rail-select .select-side:before {
+    border-left: 0;
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    width: 1px;
+}
+.rail-select .select-side i {
+    width: 100%;
+    text-align: center;
+    top: 30px;
+    margin-top: 15px;
+    font-size: 30px;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    font-size: 12px;
+    font-style: italic;
+    color: #888888;
+}
+
+/* RESPONSIVE MEDIA QUERY */
+@media screen and (min-width: 992px) {
+    .float-left {
+        float: left;
+    }
+
+    .float-right {
+        float: right;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .margin-left-null {
+        margin-left: 0px;
+    }
+
+    .margin-right-null {
+        margin-right: 0px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .chart {
+        height: 300px;
+    }
+}
