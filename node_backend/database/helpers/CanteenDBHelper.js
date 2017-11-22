@@ -1,28 +1,21 @@
 var CanteenEntity = require('../entities/CanteenEntity.js');
-var mysql = require('mysql');
+var pool = require('./pool.js');
 
 module.exports = class CanteenDBHelper {
     
     constructor() {
-        this.pool = mysql.createPool({
-            //connectionLimit: 
-            host: "nanobit.eu",
-            user: "mluser",
-            password: "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ",
-            database: "uneatn"
-        });
+        // DEFAULT CONSTRUCTOR
     }
     
 	// returns an array of canteens
     // if doesn't exist any canteen then will return an empty array;
 	getAllCanteens() {
-        var self = this;
         var promiseFunction = function(resolve, reject) { 
             var sql = 'SELECT * FROM canteens ORDER BY canteen_id';
             var canteens = [];
             var canteen = null;
 
-            self.pool.getConnection(function(err, connection) {
+            pool.getConnection(function(err, connection) {
                 if(err) {
                     reject(err);
                 } else {
@@ -55,12 +48,11 @@ module.exports = class CanteenDBHelper {
 	// given a canteenId returns the canteen which has that id
     // if doesn't exist a canteen with that id then will return null
 	getCanteenById(canteenId) {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var sql = 'SELECT * FROM canteens WHERE canteen_id = ?';
             var canteen = null;
 
-            self.pool.getConnection(function(err, connection) {
+            pool.getConnection(function(err, connection) {
                 if(err) {
                     reject(err);
                 } else {
@@ -98,7 +90,7 @@ module.exports = class CanteenDBHelper {
             var sql = 'SELECT * FROM canteens WHERE name = ?';
             var canteen = null;
 
-            self.pool.getConnection(function(err, connection) {
+            pool.getConnection(function(err, connection) {
                 if(err) {
                     reject(err);    
                 } else {
@@ -129,13 +121,12 @@ module.exports = class CanteenDBHelper {
     
 	// returns the number of canteens
 	getNumberOfCanteens() {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var sql = 'SELECT COUNT(*) AS num_of_canteens FROM canteens';
             var con = DatabaseHelper.getConnection();
             var numOfCanteens = 0;
 
-            self.pool.getConnection(function(err, connection) {
+            pool.getConnection(function(err, connection) {
                 if(err) {
                     reject(err);    
                 } else {

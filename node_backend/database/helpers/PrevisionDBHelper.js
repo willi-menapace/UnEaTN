@@ -1,21 +1,14 @@
 var PrevisionEntity = require('../entities/PrevisionEntity.js');
-var mysql = require('mysql');
+var pool = require('./pool.js');
 
 module.exports = class PrevisionDBHelper {
     
     constructor() {
-        this.pool = mysql.createPool({
-            //connectionLimit: 
-            host: "nanobit.eu",
-            user: "mluser",
-            password: "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ",
-            database: "uneatn"
-        });
+        // DEFAULT CONSTRUCTOR
     }
     
     // returns the latest prevision object of a given day of a given canteen
     getLatestPrevisionByCanteenIdAndDay(canteenId, day) {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var sql = 'SELECT previsions.prevision_id, previsions.opening_hour_id, previsions.generation_date'
             + ' FROM opening_hours, previsions'
@@ -24,7 +17,7 @@ module.exports = class PrevisionDBHelper {
             + ' LIMIT 1';
             var prevision = null;
 
-            self.pool.getConnection(function(err, connection) {
+            pool.getConnection(function(err, connection) {
                 if(err) {
                     reject(err);    
                 } else {
@@ -48,5 +41,5 @@ module.exports = class PrevisionDBHelper {
         }
         return new Promise(promiseFunction);
     } 
-    
+
 }

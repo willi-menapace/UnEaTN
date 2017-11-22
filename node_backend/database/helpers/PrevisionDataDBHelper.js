@@ -1,24 +1,17 @@
 var PrevisionEntity = require('../entities/PrevisionEntity.js');
 var PrevisionDBHelper = require('../helpers/PrevisionDBHelper.js');
 var PrevisionDataEntity = require('../entities/PrevisionDataEntity.js');
-var mysql = require('mysql');
+var pool = require('./pool.js');
 
 module.exports = class PrevisionDataDBHelper {
     
     constructor() {
-        this.pool = mysql.createPool({
-            //connectionLimit: 
-            host: "nanobit.eu",
-            user: "mluser",
-            password: "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ",
-            database: "uneatn"
-        });
+        // DEFAULT CONSTRUCTOR
     }
     
     // returns an array of prevision data of a given canteen and a given day
     // param day: day of the week. 0 means MONDAY, 4 means FRIDAY
     getPrevisionDataByCanteenIdAndDay(canteenId, day) {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var previsionDBHelper = new PrevisionDBHelper();
             previsionDBHelper.getLatestPrevisionByCanteenIdAndDay(canteenId, day).then(function(prevision) {
@@ -33,7 +26,7 @@ module.exports = class PrevisionDataDBHelper {
                 
                 
                 if(prevision !== null) {
-                    self.pool.getConnection(function(err, connection) {
+                    pool.getConnection(function(err, connection) {
                         if(err) {
                             reject(err);
                         } else {
@@ -76,7 +69,6 @@ module.exports = class PrevisionDataDBHelper {
     
     // returns a prevision data of a given canteen in a given day and in a given time
     getPrevisionDataByCanteenIdAndTime(canteenId, day, time) {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var previsionDBHelper = new PrevisionDBHelper(); 
             previsionDBHelper.getLatestPrevisionByCanteenIdAndDay(canteenId, day).then(function(prevision) {
@@ -86,7 +78,7 @@ module.exports = class PrevisionDataDBHelper {
                 var previsionData = null; 
                 
                 if(prevision !== null) {
-                    self.pool.getConnection(function(err, connection) {
+                    pool.getConnection(function(err, connection) {
                         if(err) {
                             reject(err);    
                         } else {
@@ -124,7 +116,6 @@ module.exports = class PrevisionDataDBHelper {
     
     // returns the best prevision data of a given canteen in a given time range in a given day
     getBestPrevisionDataByCanteenIdAndTimeRange(canteenId, day, startTime, endTime) {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var previsionDBHelper = new PrevisionDBHelper();
             previsionDBHelper.getLatestPrevisionByCanteenIdAndDay(canteenId, day).then(function(prevision) {
@@ -136,7 +127,7 @@ module.exports = class PrevisionDataDBHelper {
                 var previsionData = null;
 
                 if(prevision !== null) {
-                    self.pool.getConnection(function(err, connection) {
+                    pool.getConnection(function(err, connection) {
                         if(err) {
                             reject(err);    
                         } else {

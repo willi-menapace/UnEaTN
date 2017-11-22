@@ -59,7 +59,7 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
         else
             weekDay = requestDate.getDay()-1;
         
-        canteenDBHelper.getAllCanteens().then(function(canteens) {         
+        canteenDBHelper.getAllCanteens().then(function(canteens) {
             savedCanteens = canteens; 
             var promiseArray = [];
             
@@ -67,13 +67,14 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
                 promiseArray.push(openingHourDBHelper.getOpeningHourByCanteenIdAndDay(canteens[i].canteenId, weekDay));
             }
             
+            
+            
             return Promise.all(promiseArray);
             
               
         }, function(err) {
             console.log(err);
         }).then(function(openingHours) {
-
             var promiseArray = [];
             
             for(var i = 0; i < openingHours.length; i++) {
@@ -111,12 +112,6 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
                     }
                 }
             }
-            
-            // TEST
-            for(var i = 0; i < savedCanteens.length; i++) {
-                console.log(savedCanteens[i].name, ": ", canteenStatus[i]);
-            } 
-            //
             
             bind.toFile('./web_interface/tpl/home.tpl', {
                     canteenAffStatus_1: canteenStatus[0],

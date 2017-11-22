@@ -13,6 +13,8 @@ var bodyParser = require('body-parser');
 // Instantiate express
 var app = express();
 
+app.use(express.static('./web_interface/static'));
+
 app.use(bodyParser.json());
 
 //handle requests on /

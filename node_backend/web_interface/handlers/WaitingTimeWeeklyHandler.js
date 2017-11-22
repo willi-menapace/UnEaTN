@@ -7,9 +7,9 @@ var PrevisionDataDBHelper = require('../../database/helpers/PrevisionDataDBHelpe
 var bind = require('bind');
 
 class StatisticalData {
-    constructor(time, waitingTimes) {
+    constructor(time, waitingTime) {
         this.time = time;
-        this.waitingTimes = waitingTimes;
+        this.waitingTime = waitingTime;
     }
 }
 
@@ -43,10 +43,22 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
         return dateTime;
     }
     
-    getPrevisionDataByTime(previsionsData, time) {
-        var previsionData = null;
+    getTimeByDate(date) {
         const HOURS_INDEX = 0;
         const MINUTES_INDEX = 1;
+        var dateText = date.toTimeString();
+        dateText = dateText.split(' ')[0];
+        var timeSeparator = ":";
+        var splittedTime = dateText.split(timeSeparator);
+        var hoursText = splittedTime[HOURS_INDEX];
+        var minutesText = splittedTime[MINUTES_INDEX];
+        var timeText = hoursText.concat(timeSeparator.concat(minutesText));
+        
+        return timeText;
+    }
+    
+    getPrevisionDataByTime(previsionsData, time) {
+        var previsionData = null;
         for(var i = 0; i < previsionsData.length && previsionData === null; i++) {
             // TODO: Change the follow condition by calling function of TimeChecker to check if hours and minutes correspond
             var arriveTimeDate = this.getDateByTime(previsionsData[i].arriveTime);
@@ -62,7 +74,6 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
         var self = this;
         var openingHourDBHelper = new OpeningHourDBHelper();
         var previsionDataDBHelper = new PrevisionDataDBHelper();
-        var weeklyStatistics = [];
         var previsionsData = [];
         var canteenId = waitingTimeWeeklyAttributes.getCanteenId();
         var statisticalData = null;
@@ -88,38 +99,49 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
         }, function(err) {
             console.log(err);
         }).then(function(previsionDataForEachDay) {
-            if(typeof previsionDataForEachDay !== 'undefined' && previsionDataForEachDay.length > 0) {
-                for(var i = 0; i < previsionDataForEachDay.length; i++) {
-                    if(previsionDataForEachDay[i] === null) {
-                        weeklyStatistics[i] = null;
-                    } else {
-                        weeklyStatistics[i] = [];
-                        var openTime = savedOpeningHours[i].openTime;
-                        var openTimeDate = self.getDateByTime(openTime);
-                        console.log("openTimeDate: ", openTimeDate);
-                        var closeTime = savedOpeningHours[i].closeTime;
-                        var closeTimeDate = self.getDateByTime(closeTime);
-                        console.log("closeTimeDate: ", closeTimeDate);
-                        for(var timeIterator = openTimeDate; timeIterator <= closeTimeDate; timeIterator = self.addMinutes(timeIterator, 10)) {
-                            canteenPrevision = self.getPrevisionDataByTime(previsionDataForEachDay[i], timeIterator);
-                            statisticalData = new StatisticalData(timeIterator, canteenPrevision.waitSeconds / 60);
-                            //console.log("statisticalData: ", statisticalData);
-                            //console.log(weeklyStatistics[i]);
-                            weeklyStatistics[i].push(statisticalData);
-                        } 
-                    }  
+            var isEmptyPrevisionDataForEachDay = true;
+            
+            for(var i = 0; i < previsionDataForEachDay.length && previsionDataForEachDay; i++) {
+                if(previsionDataForEachDay[i] !== null) {
+                    isEmptyPrevisionDataForEachDay = false;
                 }
+            }
+            
+            if(!isEmptyPrevisionDataForEachDay) {
+                // In this case there will be at least one day in which the provided canteen contains some previsions
+                var weeklyStatistics = [];
+                if(typeof previsionDataForEachDay !== 'undefined' && previsionDataForEachDay.length > 0) {
+                    for(var i = 0; i < previsionDataForEachDay.length; i++) {
+                        if(previsionDataForEachDay[i] === null) {
+                            // In this case the provided canteen doesn't have any previsions in weekDay i
+                            weeklyStatistics[i] = null;
+                        } else {
+                            // In this case the provided canteen has some previsions in weekDay i
+                            weeklyStatistics[i] = [];
+                            var openTime = savedOpeningHours[i].openTime;
+                            var openTimeDate = self.getDateByTime(openTime);
+                            var closeTime = savedOpeningHours[i].closeTime;
+                            var closeTimeDate = self.getDateByTime(closeTime);
+
+                            for(var timeIterator = openTimeDate; timeIterator <= closeTimeDate; timeIterator = self.addMinutes(timeIterator, 10)) {
+                                canteenPrevision = self.getPrevisionDataByTime(previsionDataForEachDay[i], timeIterator);
+                                statisticalData = new StatisticalData(self.getTimeByDate(timeIterator), Math.round(canteenPrevision.waitSeconds / 60));
+                                weeklyStatistics[i].push(statisticalData);
+                            } 
+                        }  
+                    }
+                }    
+            } else {
+                // In this case there won't be any day in which the provided canteen contains some previsions
+                var weeklyStatistics = null;
             }
             
             var weeklyStatisticsJSON = {
                 statistics: weeklyStatistics
             };
             
-            // TEST
-            console.log(JSON.stringify(weeklyStatisticsJSON));
-            //
-            
             bind.toFile('./web_interface/tpl/weekChart.tpl', {
+                selectedCanteen: canteenId,
                 weeklyStatistics: JSON.stringify(weeklyStatisticsJSON)
             }, function(data) {
                 res.writeHead(200, {'Content-Type': 'text/html'});

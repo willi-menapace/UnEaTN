@@ -46,13 +46,28 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
         return dateTime;
     }
     
+    getTimeByDate(date) {
+        const HOURS_INDEX = 0;
+        const MINUTES_INDEX = 1;
+        var dateText = date.toTimeString();
+        dateText = dateText.split(' ')[0];
+        var timeSeparator = ":";
+        var splittedTime = dateText.split(timeSeparator);
+        var hoursText = splittedTime[HOURS_INDEX];
+        var minutesText = splittedTime[MINUTES_INDEX];
+        var timeText = hoursText.concat(timeSeparator.concat(minutesText));
+        
+        return timeText;
+    }
+    
     // Search for a previsionData which has an arrive time equal to time
     getPrevisionDataByTime(previsionsData, time) {
         var previsionData = null;
         for(var i = 0; i < previsionsData.length && previsionData === null; i++) {
-            var arriveTime = this.getDateByTime(previsionsData[i].arriveTime);
-            console.log("arriveTime in getPrevisionDataByTime: ", arriveTime);
-            if(TimeChecker.compareHoursMinutesTimes(arriveTime, time) == 0)
+            var arriveTimeDate = this.getDateByTime(previsionsData[i].arriveTime);
+            var arriveTimeHours = arriveTimeDate.getHours();
+            var arriveTimeMinutes = arriveTimeDate.getMinutes();
+            if(arriveTimeHours == time.getHours() && arriveTimeMinutes == time.getMinutes())
                 previsionData = previsionsData[i];
         }
         return previsionData;
@@ -87,14 +102,13 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
         var previsionDataDBHelper = new PrevisionDataDBHelper();
         var openingHourDBHelper = new OpeningHourDBHelper();
         var weekDay = waitingTimeDailyAttributes.getDay();
-        var dailyStatistics = [];
         var previsionsData = [];
         var openingHours = [];
         var isEmptyOpeningHours = true;
         var statisticalData = null;
-        var canteensPrevisionData = [];
         var savedCanteens;
         var savedOpeningHours;
+        var canteenPrevision;
         canteenDBHelper.getAllCanteens().then(function(canteens) {
             savedCanteens = canteens;
             var promiseArray = [];
@@ -125,42 +139,48 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
         }, function(err) {
             console.log(err);
         }).then(function(previsionDataArray) {
-            //console.log("previsionDataArray in dailyHandler: ", previsionDataArray);
-            var minOpenDateTime = self.getMinOpenDateTime(savedOpeningHours);
-            console.log("minOpenDateTime: ", minOpenDateTime);
-            var maxCloseDateTime = self.getMaxCloseDateTime(savedOpeningHours);
-            console.log("maxCloseDateTime: ", maxCloseDateTime);
-       
-            for(var timeIterator = minOpenDateTime; timeIterator <= maxCloseDateTime; timeIterator = self.addMinutes(timeIterator, 10)) {
-                console.log("index timeIterator: ", timeIterator);
-                for(var j = 0; j < previsionDataArray.length; j++) {
-                    console.log("index j: ", j);
-                    // If canteen[j] is open at a given time then waiting time will be set to number of 
-                    // minutes of waiting at that time, else waiting time will be set to null
-                    if(previsionDataArray[j] === null) {
-                        console.log("Enter in if");
-                        canteensPrevisionData[j] = null; // Closed canteen due to closed canteen or no prevision for that canteen
-                    } else {
-                        console.log("Enter in else");
-                        canteensPrevisionData[j] = (self.getPrevisionDataByTime(previsionDataArray[j], timeIterator)).waitSeconds / 60;
-                    }
-                    
+            var isEmptyPrevisionDataArray = true;
+            
+            for(var i = 0; i < previsionDataArray.length && isEmptyPrevisionDataArray; i++) {
+                if(previsionDataArray[i] !== null) {
+                    isEmptyPrevisionDataArray = false;
                 }
+            }
+            
+            if(!isEmptyPrevisionDataArray) {
+                var minOpenDateTime = self.getMinOpenDateTime(savedOpeningHours);
+                var maxCloseDateTime = self.getMaxCloseDateTime(savedOpeningHours);
+                var dailyStatistics = [];
+                // In this case there will be at least one canteen open at that day with its corresponding previsionData
+                for(var timeIterator = minOpenDateTime; timeIterator <= maxCloseDateTime; timeIterator = self.addMinutes(timeIterator, 10)) {
+                    var canteensPrevisionData = [];
+                    for(var j = 0; j < previsionDataArray.length; j++) {
+                        // If canteen[j] is open at a given time then waiting time will be set to number of 
+                        // minutes of waiting at that time, else waiting time will be set to null
+                        if(previsionDataArray[j] === null) {
+                            canteensPrevisionData[j] = null; // Closed canteen due to closed canteen or no prevision for that canteen
+                        } else {
+                            canteenPrevision = self.getPrevisionDataByTime(previsionDataArray[j], timeIterator);
+                            canteensPrevisionData[j] = Math.round(canteenPrevision.waitSeconds / 60);
+                        }
 
-                var statisticalData = new StatisticalData(timeIterator, canteensPrevisionData);    
-                dailyStatistics.push(statisticalData);
-                
+                    }
+
+                    var statisticalData = new StatisticalData(self.getTimeByDate(timeIterator), canteensPrevisionData);    
+                    dailyStatistics.push(statisticalData);
+
+                }
+            } else {
+                // In this case there won't be any canteen open at that day
+                var dailyStatistics = null
             }
             
             var dailyStatisticsJSON = {
                 statistics: dailyStatistics
             };
-            
-            // TEST
-            console.log(JSON.stringify(dailyStatisticsJSON));
-            //
 
             bind.toFile('./web_interface/tpl/compChart.tpl', {
+                selectedDay: weekDay,
                 dailyStatistics: JSON.stringify(dailyStatisticsJSON)
             }, function(data) {
                 res.writeHead(200, {'Content-Type': 'text/html'});

@@ -1,7 +1,7 @@
 module.exports = class MeasureEntity {
-	constructor(measureId, telegramId, canteenId, arriveTime, waitSeconds) {
+	constructor(measureId, userId, canteenId, arriveTime, waitSeconds) {
 		this.measureId = measureId;
-        this.telegramId = telegramId;
+        this.userId = userId;
 		this.canteenId = canteenId;
 		this.arriveTime = arriveTime;
 		this.waitSeconds = waitSeconds;

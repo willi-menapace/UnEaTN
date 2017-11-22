@@ -1,26 +1,19 @@
 var OpeningHourEntity = require('../entities/OpeningHourEntity.js');
-var mysql = require('mysql');
+var pool = require('./pool.js');
 
 module.exports = class OpeningHourDBHelper {
     
     constructor() {
-        this.pool = mysql.createPool({
-            //connectionLimit: 
-            host: "nanobit.eu",
-            user: "mluser",
-            password: "sfHEROWIFJ45EFH8fj38spL937234SDF9$@AkwpcuFoH4DFHjfDSD3432BZ",
-            database: "uneatn"
-        }); 
+        // DEFAULT CONSTRUCTOR
     }
     
     // returns opening hour of a given canteen in a given day
     getOpeningHourByCanteenIdAndDay(canteenId, day) {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var sql = 'SELECT * FROM opening_hours WHERE canteen_id = ? AND weekday = ?';
             var openingHour = null;
 
-            self.pool.getConnection(function(err, connection) {
+            pool.getConnection(function(err, connection) {
                 if(err) {
                     reject(err);
                 } else {
@@ -57,14 +50,13 @@ module.exports = class OpeningHourDBHelper {
     // Returns an empty array in case of the given canteen
     // doesn't contain any opening hour
     getOpeningHoursByCanteenId(canteenId) {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var sql = 'SELECT * FROM opening_hours WHERE canteen_id = ? ORDER BY opening_hours.weekday';
             var openingHours = [];
             var openingHour = null;
             const DAY_PER_WEEK = 7;
             
-            self.pool.getConnection(function(err, connection) {
+            pool.getConnection(function(err, connection) {
                 if(err) {
                     reject(err);
                 } else {
