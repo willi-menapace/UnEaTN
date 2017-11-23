@@ -17,6 +17,17 @@ beforeAll(function() {
 });
 
 
+/* getCanteenList() test cases */
+var responseArray = ['povo0', 'povo1', 'pastoLesto', 'testOK', 'testNO'];
+test('getCanteenList()', function() {
+    expect.assertions(1);
+    return expect(UNEATN.getCanteenList()).resolves.toEqual(responseArray);
+});
+
+test('getCanteenList(123, \'useless\', \'parameters\')', function() {
+    expect.assertions(1);
+    return expect(UNEATN.getCanteenList(123, 'useless', 'parameters')).resolves.toEqual(responseArray);
+});
 
 /* waitingTimeCanteen() test cases */
 

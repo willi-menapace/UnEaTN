@@ -17,6 +17,39 @@ const BAD_PARAM = "Bad parameters!";
 const REQ_FAIL = "Request failed!";
 
 /*
+* Method for fetching the list of available canteen codenames
+* Returns a promise containing:
+*   an array of codenames - if request was completed succesfully
+*   error message - otherwise
+*/
+function getCanteenList() {
+    const URL_POSTFIX = '/api/codeNames';
+
+    return new Promise(function(resolve, reject) {
+        var options = {
+            uri: URL_UNEATN + URL_POSTFIX,
+            method: 'GET'
+        };
+
+        request(options, function(error, response, body) {
+            if(!error && response.statusCode === 200) {
+                //controllo parametro errore sul json
+                var jsonBody = JSON.parse(body);
+                if(jsonBody.error === false) {
+                    resolve(jsonBody.codeNames);
+                    return;
+                } else {
+                    reject(jsonBody.errorDescription);
+                    return;
+                }
+            }
+            reject(REQ_FAIL);
+            return;
+        });
+    });
+}
+
+/*
 * Method for querying the waiting time of a specific canteen in a certain moment
 * Returns a promise containing:
 *   waitingTime - if promise was resolved succesfully (will be null if no time is available)
@@ -66,7 +99,6 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
 
     });
 }
-
 
 /*
 * Method for querying the best time to eat of all the canteen provided a time intrval
@@ -182,6 +214,7 @@ function addWaitingTime(telegramID, canteenName, waitingTime, arriveHour, arrive
     });
 }
 
+
 /*
 * Method used to set another URL for the api server
 * should never be used exept for testing purposes
@@ -200,6 +233,7 @@ function overrideServerAPI(url) {
 /* EXPORT OF FUNCTIONS */
 module.exports = {
     //function
+    getCanteenList: getCanteenList,
     waitingTimeCanteen: waitingTimeCanteen,
     bestWaitingTime: bestWaitingTime,
     addWaitingTime: addWaitingTime,

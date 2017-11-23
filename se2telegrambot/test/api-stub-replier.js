@@ -17,6 +17,23 @@ var httpServer = require('http').createServer(app);
 
 app.use(bodyParser.json()); //for parsing application/json
 
+app.get('/api/codeNames', function(req, res) {
+    if(DEBUG) {
+        console.log('GET /api/codeNames');
+    }
+
+    jsonResponse = {
+        'error':false,
+        'codeNames':['povo0', 'povo1', 'pastoLesto', 'testOK', 'testNO']
+    };
+
+    if(DEBUG) {
+        console.log('------------ RESPONSE ------------');
+        console.log(jsonResponse);
+    }
+
+    res.json(jsonResponse);
+});
 
 app.get('/api/waitingTimeCanteen', function (req, res) {
     var reqParam = req.query;
