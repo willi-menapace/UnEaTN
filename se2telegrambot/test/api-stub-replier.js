@@ -19,13 +19,13 @@ app.use(bodyParser.json()); //for parsing application/json
 
 
 app.get('/api/waitingTimeCanteen', function (req, res) {
-    var jsonRequest = req.body;
+    var reqParam = req.query;
     var jsonResponse;
 
     if(DEBUG) {
         console.log('GET /api/waitingTimeCanteen');
         console.log('------------ REQUEST ------------');
-        console.log(jsonRequest);
+        console.log(reqParam);
     }
 
     //sets error as default
@@ -34,8 +34,8 @@ app.get('/api/waitingTimeCanteen', function (req, res) {
         'errorDescription':'description of the error'
     };
 
-    if(jsonRequest.hasOwnProperty('canteenName')) {
-        if(jsonRequest.canteenName.localeCompare('testOK') === 0) {   //setted value for passing the test
+    if(reqParam.hasOwnProperty('codeName')) {
+        if(reqParam.codeName.localeCompare('testOK') === 0) {   //setted value for passing the test
             jsonResponse = {
                 'error':false,
                 'waitingTime':11
@@ -53,13 +53,13 @@ app.get('/api/waitingTimeCanteen', function (req, res) {
 
 
 app.get('/api/bestWaitingTime', function (req, res) {
-    var jsonRequest = req.body;
+    var reqParam = req.query;
     var jsonResponse;
 
     if(DEBUG) {
         console.log('GET /api/bestWaitingTime');
         console.log('------------ REQUEST ------------');
-        console.log(jsonRequest);
+        console.log(reqParam);
     }
 
     jsonResponse = {
@@ -67,8 +67,8 @@ app.get('/api/bestWaitingTime', function (req, res) {
         'errorDescription':'description of the error'
     };
 
-    if(jsonRequest.hasOwnProperty('startTime')) {
-        if(jsonRequest.startTime.localeCompare('99:99') === 0) {   //setted value for passing the test
+    if(reqParam.hasOwnProperty('startTime')) {
+        if(reqParam.startTime.localeCompare('99:99') === 0) {   //setted value for passing the test
             jsonResponse = {
                 'error':false,
                 'bestWaitingTimes':
@@ -106,8 +106,8 @@ app.put('/addWaitingTime', function (req, res) {
     };
 
 
-    if(jsonRequest.hasOwnProperty('canteenName')) {
-        if(jsonRequest.canteenName.localeCompare('testOK') === 0) {   //setted value for passing the test
+    if(jsonRequest.hasOwnProperty('codeName')) {
+        if(jsonRequest.codeName.localeCompare('testOK') === 0) {   //setted value for passing the test
             jsonResponse = {
                 'error':false
             };
