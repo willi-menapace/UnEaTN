@@ -7,7 +7,7 @@
 * Author: Giuliani Daniele
 */
 
-var URL_UNEATN = 'http://localhost:8080'; //todo set correct default url
+var URL_UNEATN = process.env.UNEATN_URL || 'http://localhost:8080'; //second url is used for testing purpuses only
 
 var request = require('request');
 
@@ -36,8 +36,8 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
         }
         var time = hour + ':' + minute;
 
-        var jsonBody = {
-            'canteenName':canteenName,
+        var propertiesObject = {
+            'codeName':canteenName,
             'time':time,
             'day':dayOfTheWeek
         };
@@ -45,18 +45,18 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
         var options = {
             uri: URL_UNEATN + URL_POSTFIX,
             method: 'GET',
-            body: jsonBody,
-            json:true
+            qs: propertiesObject
         };
 
         request(options, function(error, response, body) {
             if(!error && response.statusCode === 200) {
                 //controllo parametro errore sul json
-                if(body.error === false) {
-                    resolve(body.waitingTime);
+                var jsonBody = JSON.parse(body);
+                if(jsonBody.error === false) {
+                    resolve(jsonBody.waitingTime);
                     return;
                 } else {
-                    reject(body.errorDescription);
+                    reject(jsonBody.errorDescription);
                     return;
                 }
             }
@@ -100,7 +100,7 @@ function bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWee
         var startTime = startHour + ':' + startMinute;
         var endTime = endHour + ':' + endMinute;
 
-        var jsonBody = {
+        var propertiesObject = {
             'startTime':startTime,
             'endTime':endTime,
             'day':dayOfTheWeek
@@ -109,18 +109,18 @@ function bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWee
         var options = {
             uri: URL_UNEATN + URL_POSTFIX,
             method: 'GET',
-            body: jsonBody,
-            json:true
+            qs: propertiesObject
         };
 
         request(options, function(error, response, body) {
             if(!error && response.statusCode === 200) {
                 //controllo parametro errore sul json
-                if(body.error === false) {
-                    resolve(body);
+                var jsonBody = JSON.parse(body);
+                if(jsonBody.error === false) {
+                    resolve(jsonBody);
                     return;
                 } else {
-                    reject(body.errorDescription);
+                    reject(jsonBody.errorDescription);
                     return;
                 }
             }
@@ -153,7 +153,7 @@ function addWaitingTime(telegramID, canteenName, waitingTime, arriveHour, arrive
 
         var jsonBody = {
             'telegramID':telegramID,
-            'canteenName':canteenName,
+            'codeName':canteenName,
             'waitingTime':waitingTime,
             'arriveTime':arriveTime
         };
