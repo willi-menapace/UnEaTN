@@ -6,6 +6,7 @@
 
 const UTIL = require('./utilities');
 const UNEATN = require('./uneatn-api');
+const DFINTERACTION = require('./dialogflow-interaction');
 
 /* Canteen list */
 const canteenList = ['povo0', 'povo1', 'pastoLesto'];
@@ -282,7 +283,9 @@ function helpSA(msg, resolve, reject) {
 
 
 function messageSA(msg, resolve, reject) {
-    resolve("Dialgoflow interactrion is still wip!"); //TODO implement
+	//Richiamo il modulo di interazione con DialogFlow per l'utilizzo del Linguaggio Naturale al posto
+	//dei comandi.
+	DFINTERACTION.NLrequestParser(msg,resolve,reject);
 }
 
 
