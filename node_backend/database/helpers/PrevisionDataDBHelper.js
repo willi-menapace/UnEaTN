@@ -19,7 +19,7 @@ module.exports = class PrevisionDataDBHelper {
                 var sql = 'SELECT *'
                 + ' FROM prevision_data'
                 + ' WHERE prevision_id = ?'
-                + ' ORDER BY arrive_time';
+                + ' ORDER BY wait_seconds';
 
                 var previsionsData = [];
                 var previsionData = null;
@@ -122,7 +122,7 @@ module.exports = class PrevisionDataDBHelper {
                 var sql = 'SELECT *'
                 + ' FROM prevision_data'
                 + ' WHERE prevision_id = ? AND arrive_time >= MAKETIME(?, ?, ?) AND arrive_time <= MAKETIME(?, ?, ?)'
-                + ' ORDER BY arrive_time'
+                + ' ORDER BY wait_seconds'
                 + ' LIMIT 1'; 
                 var previsionData = null;
 
@@ -132,7 +132,7 @@ module.exports = class PrevisionDataDBHelper {
                             reject(err);    
                         } else {
                             // Use the connection
-                            connection.query(sql, [prevision.previsionId, startTime.getHours(), startTime.getMinutes(), startTime.getSeconds, endTime.getHours(), endTime.getMinutes(), endTime.getSeconds], function(err, result) {
+                            connection.query(sql, [prevision.previsionId, startTime.getHours(), startTime.getMinutes(), startTime.getSeconds(), endTime.getHours(), endTime.getMinutes(), endTime.getSeconds()], function(err, result) {
                                 // If there is a previsionData associated to that canteen at that time range in that day then returns the best
                                 if(typeof result !== 'undefined' && result.length > 0) {
                                     var i = 0;
