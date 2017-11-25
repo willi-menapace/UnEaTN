@@ -20,6 +20,9 @@ const HEROKU_URL = process.env.HEROKU_URL || 'https://se2telegrambot.herokuapp.c
 var TelegramBot = require('node-telegram-bot-api');
 var commandParser = require('./command-parser');
 
+/* Error messages */
+const BAD_INPUT = 'Non riesco a capirti, prova con la chat!';
+
 
 /* BOT CONFIGURATION */
 
@@ -48,17 +51,18 @@ console.log('Bot started in ' + NODE_ENV + ' mode');
 /* Bot logic */
 
 bot.on('message', function(msg){
-
-    var answer = commandParser.parse(msg).then(function(val) {
-        bot.sendMessage(msg.chat.id, val, {parse_mode: 'markdown'});
-        console.log('SUCCESFULL REQUEST: ' + msg.text); //todo remove this line (debug only)
-    }).catch(function(res) {
-        bot.sendMessage(msg.chat.id, res, {parse_mode: 'markdown'});
-        console.log('BAD REQUEST RECEIVED');
-        console.log('Req:');
-        console.log(msg.text);
-        console.log('Res:');
-        console.log(res);
-    });
-
+    if(msg.text === undefined) {
+        bot.sendMessage(msg.chat.id,  BAD_INPUT, {parse_mode: 'markdown'})
+    } else {
+        var answer = commandParser.parse(msg).then(function(val) {
+            bot.sendMessage(msg.chat.id, val, {parse_mode: 'markdown'});
+        }).catch(function(res) {
+            bot.sendMessage(msg.chat.id, res, {parse_mode: 'markdown'});
+            console.log('BAD REQUEST RECEIVED');
+            console.log('Req:');
+            console.log(msg.text);
+            console.log('Res:');
+            console.log(res);
+        });
+    }
 });

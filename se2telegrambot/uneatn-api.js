@@ -7,7 +7,7 @@
 * Author: Giuliani Daniele
 */
 
-var URL_UNEATN = 'http://localhost:8080'; //todo set correct default url
+var URL_UNEATN = process.env.UNEATN_URL || 'http://localhost:8080'; //second url is used for testing purpuses only
 
 var request = require('request');
 
@@ -15,6 +15,39 @@ var request = require('request');
 const MISSING_PARAM = "Missing parameters!";
 const BAD_PARAM = "Bad parameters!";
 const REQ_FAIL = "Request failed!";
+
+/*
+* Method for fetching the list of available canteen codenames
+* Returns a promise containing:
+*   an array of codenames - if request was completed succesfully
+*   error message - otherwise
+*/
+function getCanteenList() {
+    const URL_POSTFIX = '/api/codeNames';
+
+    return new Promise(function(resolve, reject) {
+        var options = {
+            uri: URL_UNEATN + URL_POSTFIX,
+            method: 'GET'
+        };
+
+        request(options, function(error, response, body) {
+            if(!error && response.statusCode === 200) {
+                //controllo parametro errore sul json
+                var jsonBody = JSON.parse(body);
+                if(jsonBody.error === false) {
+                    resolve(jsonBody.codeNames);
+                    return;
+                } else {
+                    reject(jsonBody.errorDescription);
+                    return;
+                }
+            }
+            reject(REQ_FAIL);
+            return;
+        });
+    });
+}
 
 /*
 * Method for querying the waiting time of a specific canteen in a certain moment
@@ -36,8 +69,8 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
         }
         var time = hour + ':' + minute;
 
-        var jsonBody = {
-            'canteenName':canteenName,
+        var propertiesObject = {
+            'codeName':canteenName,
             'time':time,
             'day':dayOfTheWeek
         };
@@ -45,18 +78,18 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
         var options = {
             uri: URL_UNEATN + URL_POSTFIX,
             method: 'GET',
-            body: jsonBody,
-            json:true
+            qs: propertiesObject
         };
 
         request(options, function(error, response, body) {
             if(!error && response.statusCode === 200) {
                 //controllo parametro errore sul json
-                if(body.error === false) {
-                    resolve(body.waitingTime);
+                var jsonBody = JSON.parse(body);
+                if(jsonBody.error === false) {
+                    resolve(jsonBody.waitingTime);
                     return;
                 } else {
-                    reject(body.errorDescription);
+                    reject(jsonBody.errorDescription);
                     return;
                 }
             }
@@ -66,7 +99,6 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
 
     });
 }
-
 
 /*
 * Method for querying the best time to eat of all the canteen provided a time intrval
@@ -100,7 +132,7 @@ function bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWee
         var startTime = startHour + ':' + startMinute;
         var endTime = endHour + ':' + endMinute;
 
-        var jsonBody = {
+        var propertiesObject = {
             'startTime':startTime,
             'endTime':endTime,
             'day':dayOfTheWeek
@@ -109,18 +141,18 @@ function bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWee
         var options = {
             uri: URL_UNEATN + URL_POSTFIX,
             method: 'GET',
-            body: jsonBody,
-            json:true
+            qs: propertiesObject
         };
 
         request(options, function(error, response, body) {
             if(!error && response.statusCode === 200) {
                 //controllo parametro errore sul json
-                if(body.error === false) {
-                    resolve(body);
+                var jsonBody = JSON.parse(body);
+                if(jsonBody.error === false) {
+                    resolve(jsonBody);
                     return;
                 } else {
-                    reject(body.errorDescription);
+                    reject(jsonBody.errorDescription);
                     return;
                 }
             }
@@ -153,7 +185,7 @@ function addWaitingTime(telegramID, canteenName, waitingTime, arriveHour, arrive
 
         var jsonBody = {
             'telegramID':telegramID,
-            'canteenName':canteenName,
+            'codeName':canteenName,
             'waitingTime':waitingTime,
             'arriveTime':arriveTime
         };
@@ -182,6 +214,7 @@ function addWaitingTime(telegramID, canteenName, waitingTime, arriveHour, arrive
     });
 }
 
+
 /*
 * Method used to set another URL for the api server
 * should never be used exept for testing purposes
@@ -200,6 +233,7 @@ function overrideServerAPI(url) {
 /* EXPORT OF FUNCTIONS */
 module.exports = {
     //function
+    getCanteenList: getCanteenList,
     waitingTimeCanteen: waitingTimeCanteen,
     bestWaitingTime: bestWaitingTime,
     addWaitingTime: addWaitingTime,
