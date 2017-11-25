@@ -98,12 +98,16 @@ def generatePrevisions(connection, measuresAgeLimitDays = 30, previsionIntervalS
 def fillDatabase(beginDay, previsionBeginDay, endDay, connection, generationDailyCount = 20, generationVariance = 5, previsionIntervalSeconds = 60, debugMode = False, userbaseSize = 400):
     cursor = connection.cursor()
 
-    pivotsList = [(0, 0 * 60), (900 * 1, 25 * 60), (900 * 3, 10 * 60), (900 * 4, 10 * 60), (900 * 5, 40 * 60), (900 * 6, 40 * 60), (900 * 8, 10 * 60), (900 * 9, 15 * 60), (900 * 11, 0 * 60),]
+    pivotsList = [(0, 0 * 60), (900 * 1, 25 * 60), (900 * 3, 10 * 60), (900 * 4, 10 * 60), (900 * 5, 40 * 60),
+                  (900 * 6, 40 * 60), (900 * 8, 10 * 60), (900 * 9, 15 * 60), (900 * 11, 0 * 60)]
+
+    pastoLestoPivotsList = [(0, 0 * 60), (900 * 1, 20 * 60), (900 * 3, 7 * 60), (900 * 4, 7 * 60), (900 * 5, 33 * 60),
+                  (900 * 6, 33 * 60), (900 * 8, 7 * 60), (900 * 9, 12 * 60), (900 * 11, 0 * 60)]
 
     #Generates pivots for each canteen
-    pastoLestoWeeklyPivots = WeeklyPivotGenreator(pivotsList).getWeeklyMap(450, 0.2)
-    povo0WeeklyPivots = WeeklyPivotGenreator(pivotsList).getWeeklyMap(450, 0.2)
-    povo1WeeklyPivots = WeeklyPivotGenreator(pivotsList).getWeeklyMap(450, 0.2)
+    pastoLestoWeeklyPivots = WeeklyPivotGenreator(pastoLestoPivotsList).getWeeklyMap(600, 0.4)
+    povo0WeeklyPivots = WeeklyPivotGenreator(pivotsList).getWeeklyMap(600, 0.4)
+    povo1WeeklyPivots = WeeklyPivotGenreator(pivotsList).getWeeklyMap(600, 0.4)
 
     canteenList = CanteensDbHelper.getAllCanteens(cursor);
 

@@ -1,7 +1,7 @@
-DROP DATABASE IF EXISTS uneatn;
+DROP DATABASE IF EXISTS uneatn_sandbox;
 
-CREATE DATABASE uneatn;
-USE uneatn;
+CREATE DATABASE uneatn_sandbox;
+USE uneatn_sandbox;
 
 #DROP USER IF EXISTS 'mluser'@'%';
 
