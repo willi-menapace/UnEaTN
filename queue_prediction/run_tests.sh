@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 echo "Testing PrevisionDbHelper"
 python3 -m unittest test.prevision_db_helper_test_case

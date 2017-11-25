@@ -23,7 +23,7 @@ class WeeklyPivotGenreator:
 
     # Builds newly generated pivots for each day of the week
     #
-    # @param xMaxSeconds maxNumber of seconds the arrive time offser of a certain pivot can be moved
+    # @param xMaxSeconds maxNumber of seconds the arrive time offset of a certain pivot can be moved
     # @param yFactor maximum percentage of variation of the wait time in each pivot
     def getWeeklyMap(self, xMaxSeconds, yFactor):
 
