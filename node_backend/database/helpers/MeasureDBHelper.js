@@ -27,7 +27,11 @@ module.exports = class MeasureDBHelper {
                     connection.release();
 
                     // Handle error after the release
-                    if(err) reject(err);
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
                     
                 });
             });

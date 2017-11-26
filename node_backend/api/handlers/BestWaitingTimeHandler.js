@@ -13,8 +13,8 @@ class Values{
 }
 
 class BestTime{
-    constructor(name, error, values){
-        this.name = name;
+    constructor(codeName, error, values){
+        this.codeName = codeName;
         this.error = error;
         this.values = values;
     }
@@ -65,9 +65,9 @@ module.exports = class BestWaitingTimeHandler extends ApplicationHandlerSkeleton
         }).then(function(previsionDataArray){
             for(var i = 0; i < previsionDataArray.length; i++){
                 if(previsionDataArray[i] === null){
-                    var bestTime = new BestTime(canteensArray[i].name, true, new Values(null, null));
+                    var bestTime = new BestTime(canteensArray[i].codeName, true, new Values(null, null));
                 } else{
-                    var bestTime = new BestTime(canteensArray[i].name, false, new Values(TimeChecker.fromTimeToStringHoursAndMinutes(previsionDataArray[i].arriveTime), Math.floor(previsionDataArray[i].waitSeconds / 60)) );
+                    var bestTime = new BestTime(canteensArray[i].codeName, false, new Values(TimeChecker.fromTimeToStringHoursAndMinutes(previsionDataArray[i].arriveTime), Math.floor(previsionDataArray[i].waitSeconds / 60)) );
                 }
                 bestTimesArray.push(bestTime);
             }

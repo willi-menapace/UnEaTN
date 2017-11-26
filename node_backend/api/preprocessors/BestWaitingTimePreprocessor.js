@@ -1,6 +1,6 @@
 
 var TimeChecker = require('../../common/TimeChecker.js');
-var CanteenDBHelper = require('../../database/helpers/CanteenDBHelper.js')
+var CanteenDBHelper = require('../../database/helpers/CanteenDBHelper.js');
 var OpeningDBHelper = require('../../database/helpers/OpeningHourDBHelper.js');
 
 
