@@ -23,8 +23,8 @@ class AddWaitingTimeAttributes{
     getCanteen(){
         return this.canteen;
     }
-    setCanteen(canteenName){
-        this.canteen = canteenName;
+    setCanteen(canteenCodeName){
+        this.canteen = canteenCodeName;
     }
     getWaitingTime(){
         return this.waitingTime;
@@ -51,7 +51,7 @@ module.exports = class AddWaitingTimePreprocessor{
 
             //import http data into javascript variables
             var telegramIdAttribute = req.body.telegramId;
-            var canteenNameAttribute = req.body.canteenName;
+            var canteenCodeNameAttribute = req.body.codeName;
             var waitingTimeAttribute = req.body.waitingTime;
             var arriveTimeAttribute = req.body.arriveTime;
 
@@ -64,7 +64,7 @@ module.exports = class AddWaitingTimePreprocessor{
             var openingHourDBHelper = new OpeningHourDBHelper();
 
             
-            canteenDBHelper.getCanteenByName(canteenNameAttribute).then(function(canteen){
+            canteenDBHelper.getCanteenByCodeName(canteenCodeNameAttribute).then(function(canteen){
                 canteenObject = canteen;
                 //telegramIdAttribute is null if there is any key "telegramIdAttribute" in json file
                 if(arriveDate === null){
@@ -73,12 +73,13 @@ module.exports = class AddWaitingTimePreprocessor{
                     return Promise.reject("Invalid or missing telegramId attribute");
                 } else if (!Number.isInteger(waitingTimeAttribute)){       //check if waitingTime is an integer that rapresent the waiting time
                     return Promise.reject("Invalid waitingTimeAttribute");
-                } else if(typeof canteenNameAttribute != 'string' && !(canteenNameAttribute instanceof String)){ //check if CanteenName exist and it is a string
-                    return Promise.reject("Invalid or missing Canteen Name");
+                } else if(typeof canteenCodeNameAttribute != 'string' && !(canteenCodeNameAttribute instanceof String)){ //check if CanteenName exist and it is a strCodeing
+                    return Promise.reject("Invalid or missing Canteen CodeName");
                 } else if(canteenObject !== null){
                     return openingHourDBHelper.getOpeningHourByCanteenIdAndDay(canteenObject.canteenId, currentDate.getDay());
                 } else{
-                    return Promise.reject("Doesn't exist canteen with that name");
+                    
+                    return Promise.reject("Doesn't exist canteen with that CodeName");
                 }
             }, function(err){  //relatives to canteenDBHelper
                

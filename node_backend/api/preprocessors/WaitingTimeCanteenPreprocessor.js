@@ -42,7 +42,7 @@ module.exports = class WaitingTimeCanteenPreprocessor{
 
             var attributes = new WaitingTimeCanteenAttributes();
 
-            var canteenNameAttribute = req.query.canteenName;
+            var codeNameAttribute = req.query.codeName;
             var timeAttribute = req.query.time;  
             var dayAttribute = req.query.day;
 
@@ -50,12 +50,12 @@ module.exports = class WaitingTimeCanteenPreprocessor{
             
             var canteenGlobal;
             var timeDate = TimeChecker.getDateFromHoursAndMinutesByString(timeAttribute);
-            canteenDBHelper.getCanteenByName(canteenNameAttribute).then(function(canteen){
+            canteenDBHelper.getCanteenByCodeName(codeNameAttribute).then(function(canteen){
                 canteenGlobal = canteen;
-                if(!(canteenNameAttribute instanceof String) && typeof canteenNameAttribute != 'string'){
+                if(!(codeNameAttribute instanceof String) && typeof codeNameAttribute != 'string'){
                     return Promise.reject("Missing Canteen Attribute");
                 } else if(canteen === null){
-                    return Promise.reject("Doesn't exixt any canteen with that name");
+                    return Promise.reject("Doesn't exixt any canteen with that codeName");
                 } else if(timeDate === null){
                     return Promise.reject("Missing time or Incorrect date format");
                 } else if(isNaN(dayAttribute)){
