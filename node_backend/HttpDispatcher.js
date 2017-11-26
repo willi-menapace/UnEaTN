@@ -7,6 +7,7 @@ var WaitingTimeWeeklyHandler = require('./web_interface/handlers/WaitingTimeWeek
 var AddWaitingTimeHandler = require('./telegram_bot/handlers/AddWaitingTimeHandler.js');
 var BestWaitingTimeHandler = require('./api/handlers/BestWaitingTimeHandler.js');
 var WaitingTimeCanteenHandler = require('./api/handlers/WaitingTimeCanteenHandler.js');
+var CodeNamesHandler = require('./api/handlers/CodeNamesHandler.js');
 var bodyParser = require('body-parser');
 
 
@@ -68,6 +69,12 @@ app.get('/api/bestWaitingTime', function (req, res) {
 app.get('/api/waitingTimeCanteen', function (req, res) {
     var waitingTimeCanteenHandler = new WaitingTimeCanteenHandler();
     waitingTimeCanteenHandler.dispatch(req,res);
+});
+
+app.get('/api/codeNames', function(req, res){
+    var codeNamesHandler = new CodeNamesHandler();
+    codeNamesHandler.dispatch(req, res);
+    
 });
 
 //handle requests on /api/ranking
