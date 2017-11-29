@@ -113,7 +113,7 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
                 }
             }
             
-            bind.toFile('./web_interface/tpl/home.tpl', {
+            bind.toFile('./node_backend/web_interface/tpl/home.tpl', {
                     canteenAffStatus_1: canteenStatus[0],
                     canteenAffStatus_2: canteenStatus[1],
                     canteenAffStatus_3: canteenStatus[2]
