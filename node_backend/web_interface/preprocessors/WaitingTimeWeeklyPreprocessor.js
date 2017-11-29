@@ -1,17 +1,5 @@
 var enumify = require('enumify');
 
-class WaitingTimeWeeklyAttributes {
-    constructor(canteenId) {
-        this.canteenId = canteenId;    
-    }
-    getCanteenId() {
-        return this.canteenId;
-    }
-    setCanteenId(canteenId) {
-        this.canteenId = canteenId;
-    }
-}
-
 class Canteens extends enumify.Enum {};
 Canteens.initEnum({
     PASTO_LESTO: {
@@ -25,13 +13,24 @@ Canteens.initEnum({
     },
 });
 
+class WaitingTimeWeeklyAttributes {
+    constructor(canteenId) {
+        this.canteenId = canteenId;    
+    }
+    getCanteenId() {
+        return this.canteenId;
+    }
+    setCanteenId(canteenId) {
+        this.canteenId = canteenId;
+    }
+}
+
 module.exports = class WaitingTimeDailyPreprocessor {
     constructor() {
         // DEFAULT CONSTRUCTOR
     }
     
     parseAndValidate(req) {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var waitingTimeWeeklyAttributes = null;
             var canteenId = null;

@@ -6,11 +6,8 @@ var PrevisionDataDBHelper = require('../../database/helpers/PrevisionDataDBHelpe
 var PrevisionDataEntity = require('../../database/entities/PrevisionDataEntity.js');
 var OpeningHourDBHelper = require('../../database/helpers/OpeningHourDBHelper.js');
 var OpeningHourEntity = require('../../database/entities/OpeningHourEntity.js');
-var bind = require('bind');
 var enumify = require('enumify');
-
-class Days extends enumify.Enum {};
-Days.initEnum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']);
+var bind = require('bind');
 
 class CanteenStatus extends enumify.Enum {};
 CanteenStatus.initEnum({
@@ -19,11 +16,11 @@ CanteenStatus.initEnum({
     },
     FREE: {
         id: 1,
-        threshold: 14,
+        threshold: 10,
     },
     BUSY: {
         id: 2,
-        threshold: 29,
+        threshold: 20,
     },
     FULL: {
         id: 3,
@@ -44,21 +41,14 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
     }
 
     processRequest(res, homePageAttributes) {
-        
-        // Methods to define kind of waiting for each canteen
         var canteenDBHelper = new CanteenDBHelper();
         var previsionDataDBHelper = new PrevisionDataDBHelper();
         var openingHourDBHelper = new OpeningHourDBHelper();
-        var requestDate = new Date();
         var canteenStatus = [];
+        var weekDay = homePageAttributes.getDay();
+        var requestDate = new Date();
         var savedCanteens;
-        var weekDay;
-        // If today is SUNDAY
-        if(requestDate.getDay() == 0)
-            weekDay = Days.SUNDAY.ordinal;
-        else
-            weekDay = requestDate.getDay()-1;
-        
+             
         canteenDBHelper.getAllCanteens().then(function(canteens) {
             savedCanteens = canteens; 
             var promiseArray = [];
@@ -67,10 +57,7 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
                 promiseArray.push(openingHourDBHelper.getOpeningHourByCanteenIdAndDay(canteens[i].canteenId, weekDay));
             }
             
-            
-            
             return Promise.all(promiseArray);
-            
               
         }, function(err) {
             console.log(err);
@@ -89,18 +76,18 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
             
         }, function(err) {
             console.log(err);
-        }).then(function(previsionDataArray){
+        }).then(function(previsionDataArray) {
             for(var i = 0; i < previsionDataArray.length; i++) {
                 if(previsionDataArray[i] == CanteenStatus.CLOSED.id) {
                     canteenStatus[i] = CanteenStatus.CLOSED.id
                 } else if(previsionDataArray[i] === null) {
                     canteenStatus[i] = CanteenStatus.CLOSED.id
                 } else {
-                    var waitingTime = previsionDataArray[i].waitSeconds / 60;
-                    if(waitingTime >= 0) {
-                        if(waitingTime <= CanteenStatus.FREE.threshold) {
+                    var waitMinutes = previsionDataArray[i].waitSeconds / 60;
+                    if(waitMinutes >= 0) {
+                        if(waitMinutes <= CanteenStatus.FREE.threshold) {
                             canteenStatus[i] = CanteenStatus.FREE.id;
-                        } else if(waitingTime <= CanteenStatus.BUSY.threshold) {
+                        } else if(waitMinutes <= CanteenStatus.BUSY.threshold) {
                             canteenStatus[i] = CanteenStatus.BUSY.id;
                         } else {
                             canteenStatus[i] = CanteenStatus.FULL.id;
@@ -124,8 +111,8 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
         }, function(err) {
             console.log(err);
         });
-
     }
+    
 }
                                              
                                               

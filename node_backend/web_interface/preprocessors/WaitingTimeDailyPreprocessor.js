@@ -21,7 +21,6 @@ module.exports = class WaitingTimeDailyPreprocessor {
     }
     
     parseAndValidate(req) {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var waitingTimeDailyAttributes = null;
             var day = null;
