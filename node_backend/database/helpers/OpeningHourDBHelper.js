@@ -77,6 +77,9 @@ module.exports = class OpeningHourDBHelper {
                                 }
                             }
                         }
+                        
+                        // Done with the connetion
+                        connection.release();
 
                         // Handle error after the release
                         if(err) {
