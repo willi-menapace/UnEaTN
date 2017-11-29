@@ -11,7 +11,6 @@ module.exports = class JoinProjectPreprocessor {
     }
     
     parseAndValidate(req) {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var joinProjectAttributes = new JoinProjectAttributes();
             
@@ -19,4 +18,5 @@ module.exports = class JoinProjectPreprocessor {
         }
         return new Promise(promiseFunction);
     }
+    
 }

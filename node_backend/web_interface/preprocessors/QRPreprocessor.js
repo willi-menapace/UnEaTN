@@ -11,7 +11,6 @@ module.exports = class QRPreprocessor {
     }
     
     parseAndValidate(req) {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var qrAttributes = new QRAttributes();
         
@@ -19,4 +18,5 @@ module.exports = class QRPreprocessor {
         } 
         return new Promise(promiseFunction); 
     }
+    
 }
