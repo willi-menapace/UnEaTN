@@ -140,7 +140,7 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
                 statistics: weeklyStatistics
             };
             
-            bind.toFile('./web_interface/tpl/weekChart.tpl', {
+            bind.toFile('./node_backend/web_interface/tpl/weekChart.tpl', {
                 selectedCanteen: canteenId,
                 weeklyStatistics: JSON.stringify(weeklyStatisticsJSON)
             }, function(data) {

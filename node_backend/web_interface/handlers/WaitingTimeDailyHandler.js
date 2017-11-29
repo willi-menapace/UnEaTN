@@ -179,7 +179,7 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
                 statistics: dailyStatistics
             };
 
-            bind.toFile('./web_interface/tpl/compChart.tpl', {
+            bind.toFile('./node_backend/web_interface/tpl/compChart.tpl', {
                 selectedDay: weekDay,
                 dailyStatistics: JSON.stringify(dailyStatisticsJSON)
             }, function(data) {
