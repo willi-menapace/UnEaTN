@@ -66,12 +66,13 @@ module.exports = class WaitingTimeDailyPreprocessor {
                     // At this point day will be equal to null and some error occurs
             }
 
-            waitingTimeDailyAttributes = new WaitingTimeDailyAttributes(day);
+            
 
             if(day === null) {
                 var errorDescription = "Invalid day";
                 reject(errorDescription);
             } else {
+                waitingTimeDailyAttributes = new WaitingTimeDailyAttributes(day);
                 resolve(waitingTimeDailyAttributes);    
             }
         }   

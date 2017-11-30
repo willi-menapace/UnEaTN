@@ -51,16 +51,15 @@ module.exports = class WaitingTimeDailyPreprocessor {
                 case Canteens.POVO_1.id:
                     canteenId = Canteens.POVO_1.id;
                     break;
+                default:
+                    // At this point canteenId will be equal to null
             }
-
-            canteenId = canteenIdAttribute;
-
-            waitingTimeWeeklyAttributes = new WaitingTimeWeeklyAttributes(canteenId);
 
             if(canteenId === null) {
                 var errorDescription = "Invalid canteen";
                 reject(errorDescription);
             } else {
+                waitingTimeWeeklyAttributes = new WaitingTimeWeeklyAttributes(canteenId);
                 resolve(waitingTimeWeeklyAttributes);
             }
         }   
