@@ -89,8 +89,8 @@ function waitSA(msg, resolve, reject) {
         dayOfTheWeek = new Date().getDay();
     }
 
-    UNEATN.waitingTimeCanteen(canteen, hour, minute, dayOfTheWeek).then(function(val) {
-        if(val === null) {
+    UNEATN.getWaitTime(canteen, hour, minute, dayOfTheWeek).then(function(val) {
+        if(val.localeCompare(UNEATN.NO_PREVISION) === 0) {
             answer = 'Nessuna previsione per l\'orario specificato';
         } else {
             answer = 'Tempo di attesa: ' + val + ' min';
@@ -149,10 +149,10 @@ function bestTimeSA(msg, resolve, reject) {
         dayOfTheWeek = new Date().getDay();
     }
 
-    UNEATN.bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek).then(function(val) {
-        var responseArray = val.bestWaitingTimes;
+    UNEATN.getBestTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek).then(function(val) {
+        var responseArray = val.bestTime;
         for(var i = 0; i < responseArray.length; i++) {
-            if(responseArray[i].error === false) {
+            if(responseArray[i].isClosed === false) {
                 answer += responseArray[i].name + ' -- Miglior orario: ' + responseArray[i].values.bestTime + ' Tempo di attesa: ' + responseArray[i].values.waitingTime + '\n';
             } else {
                 answer += responseArray[i].name + ' -- Nessun orario trovato' + '\n';
@@ -236,7 +236,7 @@ function submitSA(msg, resolve, reject) {
         while(hour < 0) {hour += 24}
     }
 
-    UNEATN.addWaitingTime(telegramID, canteen, waitingTime, hour, minute).then(function(val) {
+    UNEATN.addTime(telegramID, canteen, waitingTime, hour, minute).then(function(val) {
         answer = 'Grazie per il tuo contributo!';
         resolve(answer);
     }).catch(function(res) {

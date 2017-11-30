@@ -12,9 +12,10 @@ var URL_UNEATN = process.env.UNEATN_URL || 'http://localhost:8080'; //second url
 var request = require('request');
 
 /* ERROR MESSAGES */
-const MISSING_PARAM = "Missing parameters!";
-const BAD_PARAM = "Bad parameters!";
-const REQ_FAIL = "Request failed!";
+const MISSING_PARAM = 'Missing parameters!';
+const BAD_PARAM = 'Bad parameters!';
+const REQ_FAIL = 'Request failed!';
+const NO_PREVISION = 'The canteen is closed!';
 
 /*
 * Method for fetching the list of available canteen codenames
@@ -23,8 +24,7 @@ const REQ_FAIL = "Request failed!";
 *   error message - otherwise
 */
 function getCanteenList() {
-    const URL_POSTFIX = '/api/codeNames';
-
+    const URL_POSTFIX = '/api/v1/codeName';
     return new Promise(function(resolve, reject) {
         var options = {
             uri: URL_UNEATN + URL_POSTFIX,
@@ -32,16 +32,15 @@ function getCanteenList() {
         };
 
         request(options, function(error, response, body) {
-            if(!error && response.statusCode === 200) {
-                //controllo parametro errore sul json
-                var jsonBody = JSON.parse(body);
-                if(jsonBody.error === false) {
-                    resolve(jsonBody.codeNames);
-                    return;
-                } else {
-                    reject(jsonBody.errorDescription);
+            if(!error) {
+                if(response.statusCode === 200) {
+                    var jsonBody = JSON.parse(body);
+                    resolve(jsonBody.codeName);
                     return;
                 }
+                console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
+                reject(REQ_FAIL);
+                return;
             }
             reject(REQ_FAIL);
             return;
@@ -55,8 +54,8 @@ function getCanteenList() {
 *   waitingTime - if promise was resolved succesfully (will be null if no time is available)
 *   error message - if promise was rejected
 */
-function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
-    const URL_POSTFIX = '/api/waitingTimeCanteen';
+function getWaitTime(canteenName, hour, minute, dayOfTheWeek) {
+    const URL_POSTFIX = '/api/v1/waitTime';
 
     return new Promise(function(resolve, reject) {
         if(canteenName === undefined || hour === undefined || minute === undefined || dayOfTheWeek === undefined) {
@@ -82,16 +81,20 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
         };
 
         request(options, function(error, response, body) {
-            if(!error && response.statusCode === 200) {
-                //controllo parametro errore sul json
-                var jsonBody = JSON.parse(body);
-                if(jsonBody.error === false) {
-                    resolve(jsonBody.waitingTime);
-                    return;
-                } else {
-                    reject(jsonBody.errorDescription);
-                    return;
+            if(!error) {
+                if(response.statusCode === 200) {
+                    var jsonBody = JSON.parse(body);
+                    if(jsonBody.isClosed === false) {
+                        resolve(jsonBody.waitTime);
+                        return;
+                    } else {
+                        reject(NO_PREVISION);
+                        return;
+                    }
                 }
+                console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
+                reject(REQ_FAIL);
+                return;
             }
             reject(REQ_FAIL);
             return;
@@ -105,19 +108,18 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
 * Returns a promise containing:
 *   A json object with this pattern:
 *       {
-*           'error':false,
             'bestWaitingTimes':
                 [
-                    {'name':'povo0', 'error':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
-                    {'name':'povo0', 'error':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
-                    {'name':'povo0', 'error':true, 'values':{'bestTime':null, 'waitingTime':null}}
+                    {'name':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+                    {'name':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+                    {'name':'povo0', 'isClosed':true, 'values':{'bestTime':null, 'waitingTime':null}}
                 ]
 *       }
 *       if the promise was resolved succesfully
 *   error message - if promise was rejected
 */
-function bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek) {
-    const URL_POSTFIX = '/api/bestWaitingTime';
+function getBestTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek) {
+    const URL_POSTFIX = '/api/v1/bestTime';
 
     return new Promise(function(resolve, reject) {
         if(startHour === undefined || startMinute === undefined || endHour === undefined || endMinute === undefined || dayOfTheWeek === undefined) {
@@ -145,16 +147,15 @@ function bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWee
         };
 
         request(options, function(error, response, body) {
-            if(!error && response.statusCode === 200) {
-                //controllo parametro errore sul json
-                var jsonBody = JSON.parse(body);
-                if(jsonBody.error === false) {
+            if(!error) {
+                if(response.statusCode === 200) {
+                    var jsonBody = JSON.parse(body);
                     resolve(jsonBody);
                     return;
-                } else {
-                    reject(jsonBody.errorDescription);
-                    return;
                 }
+                console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
+                reject(REQ_FAIL);
+                return;
             }
             reject(REQ_FAIL);
             return;
@@ -168,11 +169,11 @@ function bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWee
 *   true - if request was completed succesfully
 *   error message - otherwise
 */
-function addWaitingTime(telegramID, canteenName, waitingTime, arriveHour, arriveMinute) {
-    const URL_POSTFIX = '/addWaitingTime';
+function addTime(authToken, telegramID, canteenName, waitingTime, arriveHour, arriveMinute) {
+    const URL_POSTFIX = '/addTime';
 
     return new Promise(function(resolve, reject) {
-        if(telegramID === undefined || canteenName === undefined || waitingTime === undefined || arriveHour === undefined || arriveMinute === undefined) {
+        if(authToken === undefined || telegramID === undefined || canteenName === undefined || waitingTime === undefined || arriveHour === undefined || arriveMinute === undefined) {
             reject(MISSING_PARAM);
             return;
         }
@@ -184,6 +185,7 @@ function addWaitingTime(telegramID, canteenName, waitingTime, arriveHour, arrive
         var arriveTime = arriveHour + ':' + arriveMinute;
 
         var jsonBody = {
+            'authToken':authToken,
             'telegramID':telegramID,
             'codeName':canteenName,
             'waitingTime':waitingTime,
@@ -192,21 +194,20 @@ function addWaitingTime(telegramID, canteenName, waitingTime, arriveHour, arrive
 
         var options = {
             uri: URL_UNEATN + URL_POSTFIX,
-            method: 'PUT',
+            method: 'POST',
             body: jsonBody,
             json:true
         };
 
         request(options, function(error, response, body) {
-            if(!error && response.statusCode === 200) {
-                //controllo parametro errore sul json
-                if(body.error === false) {
+            if(!error) {
+                if(response.statusCode === 200) {
                     resolve(true);
                     return;
-                } else {
-                    reject(body.errorDescription);
-                    return;
                 }
+                console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
+                reject(REQ_FAIL);
+                return;
             }
             reject(REQ_FAIL);
             return;
@@ -234,13 +235,14 @@ function overrideServerAPI(url) {
 module.exports = {
     //function
     getCanteenList: getCanteenList,
-    waitingTimeCanteen: waitingTimeCanteen,
-    bestWaitingTime: bestWaitingTime,
-    addWaitingTime: addWaitingTime,
+    getWaitTime: getWaitTime,
+    getBestTime: getBestTime,
+    addTime: addTime,
     //error messages
     MISSING_PARAM: MISSING_PARAM,
     BAD_PARAM: BAD_PARAM,
     REQ_FAIL: REQ_FAIL,
+    NO_PREVISION: NO_PREVISION,
     //testing function
     overrideServerAPI: overrideServerAPI
 };
