@@ -114,12 +114,13 @@ app.post('/addTime', function (req, res) {
         console.log(jsonRequest);
     }
 
-    jsonResponse = {};
+    jsonResponse = {'isClosed':true};
     res.statusCode = 550;
 
 
     if(jsonRequest.hasOwnProperty('authToken')) {
         if(jsonRequest.authToken.localeCompare('tokenOK') === 0) {   //setted value for passing the test
+            jsonResponse = {'isClosed':false};
             res.statusCode = 200;
         }
     }

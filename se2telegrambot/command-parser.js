@@ -18,6 +18,7 @@ const BAD_CANTEEN = 'Mensa non esistente!';
 const TIME_PARSING_ERROR = 'Orario non valido!';
 const INVALID_WAITING_TIME = 'Il tempo di attesa inserito non è valido!';
 const INTERNAL_ERROR = 'Si è verificato un errore, riprovare più tardi!';
+const BAD_SUBMISSION = 'I dati forniti risultano non essere validi!';
 
 /* Data structure for regular expressions and semantic actions */
 var regExps = [];
@@ -237,7 +238,11 @@ function submitSA(msg, resolve, reject) {
     }
 
     UNEATN.addTime(telegramID, canteen, waitingTime, hour, minute).then(function(val) {
-        answer = 'Grazie per il tuo contributo!';
+        if(val.localeCompare(UNEATN.BAD_DATA) === 0) {
+            answer = BAD_SUBMISSION;
+        } else {
+            answer = 'Grazie per il tuo contributo!';
+        }
         resolve(answer);
     }).catch(function(res) {
         answer = INTERNAL_ERROR;
