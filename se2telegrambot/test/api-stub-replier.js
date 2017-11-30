@@ -82,7 +82,7 @@ app.get('/api/v1/bestTime', function (req, res) {
     res.statusCode = 550;
 
     if(reqParam.hasOwnProperty('startTime')) {
-        if(reqParam.startTime.localeCompare('99:99') === 0) {   //setted value for passing the test
+        if(reqParam.startTime.localeCompare('11:11') === 0) {   //setted value for passing the test
             jsonResponse = {
                 'bestTime':
                     [

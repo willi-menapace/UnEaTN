@@ -19,6 +19,7 @@ const HEROKU_URL = process.env.HEROKU_URL || 'https://se2telegrambot.herokuapp.c
 /* Import of different modules */
 var TelegramBot = require('node-telegram-bot-api');
 var commandParser = require('./command-parser');
+var STUB_SERVER = require('./test/api-stub-replier');
 
 /* Error messages */
 const BAD_INPUT = 'Non riesco a capirti, prova con la chat!';
@@ -26,7 +27,9 @@ const BAD_INPUT = 'Non riesco a capirti, prova con la chat!';
 
 /* BOT CONFIGURATION */
 
-console.log("Starting bot...");
+console.log('BOT: Starting bot...');
+console.log('BOT: Fetching codenames...');
+commandParser.initCodenameList();
 
 var bot;
 
@@ -34,6 +37,7 @@ var bot;
 if(NODE_ENV === 'development') {
     //starts the bot in polling mode (development only)
     bot = new TelegramBot(TELEGRAM_TOKEN, {polling: true});
+    STUB_SERVER.start(8080, false);
 } else {
     //starts the bot in webhook mode (production only)
     var options = {
@@ -45,7 +49,7 @@ if(NODE_ENV === 'development') {
     bot.setWebHook(HEROKU_URL + bot.token)
 }
 
-console.log('Bot started in ' + NODE_ENV + ' mode');
+console.log('BOT: Bot started in ' + NODE_ENV + ' mode');
 
 
 /* Bot logic */
@@ -58,10 +62,10 @@ bot.on('message', function(msg){
             bot.sendMessage(msg.chat.id, val, {parse_mode: 'markdown'});
         }).catch(function(res) {
             bot.sendMessage(msg.chat.id, res, {parse_mode: 'markdown'});
-            console.log('BAD REQUEST RECEIVED');
-            console.log('Req:');
+            console.log('BOT: bad request received!');
+            console.log('Request:');
             console.log(msg.text);
-            console.log('Res:');
+            console.log('Response:');
             console.log(res);
         });
     }
