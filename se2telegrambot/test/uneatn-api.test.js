@@ -65,7 +65,7 @@ var positiveResponse = {
 
 test('getBestTime(99, 99, 13, 0, 3)', function() {
     expect.assertions(1);
-    return expect(UNEATN.getBestTime(99, 99, 13, 0, 3)).resolves.toEqual(positiveResponse);
+    return expect(UNEATN.getBestTime(11, 11, 13, 0, 3)).resolves.toEqual(positiveResponse);
 });
 
 test('getBestTime(12, 30, 13, 0, 3)', function() {

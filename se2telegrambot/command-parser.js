@@ -7,9 +7,10 @@
 const UTIL = require('./utilities');
 const UNEATN = require('./uneatn-api');
 const DFINTERACTION = require('./dialogflow-interaction');
+var AUTH_TOKEN = process.env.AUTH_TOKEN || 'tokenOK';
 
 /* Canteen list */
-const canteenList = ['povo0', 'povo1', 'pastoLesto'];
+var canteenList = [];
 
 /* Error messages */
 const PARAM_NUMBER_ERROR = 'Numero di parametri errato, vedi /help';
@@ -52,12 +53,14 @@ function waitSA(msg, resolve, reject) {
     if(parameters.length < 1 || parameters.length > 3) {
         answer = PARAM_NUMBER_ERROR;
         reject(answer);
+        return;
     }
 
     //controllo sulla validità della mensa
     if(!UTIL.isCanteenValid(parameters[0], canteenList)) {
         answer = BAD_CANTEEN;
         reject(answer);
+        return;
     } else {
         canteen = parameters[0];
     }
@@ -69,6 +72,7 @@ function waitSA(msg, resolve, reject) {
             //parsing error
             answer = TIME_PARSING_ERROR;
             reject(answer);
+            return;
         }
         hour = time.hour;
         minute = time.minute;
@@ -85,20 +89,21 @@ function waitSA(msg, resolve, reject) {
             //parsing error
             answer = TIME_PARSING_ERROR;
             reject(answer);
+            return;
         }
     } else {
         dayOfTheWeek = new Date().getDay();
     }
 
     UNEATN.getWaitTime(canteen, hour, minute, dayOfTheWeek).then(function(val) {
-        if(val.localeCompare(UNEATN.NO_PREVISION) === 0) {
-            answer = 'Nessuna previsione per l\'orario specificato';
-        } else {
-            answer = 'Tempo di attesa: ' + val + ' min';
-        }
+        answer = 'Tempo di attesa: ' + val + ' min';
         resolve(answer);
     }).catch(function(res) {
-        answer = INTERNAL_ERROR;
+        if(res.localeCompare(UNEATN.NO_PREVISION) === 0) {
+            answer = 'Nessuna previsione per l\'orario specificato';
+        } else {
+            answer = INTERNAL_ERROR;
+        }
         console.log('ERROR reason: ' + res);
         reject(answer);
     });
@@ -124,6 +129,7 @@ function bestTimeSA(msg, resolve, reject) {
     if(parameters.length < 2 || parameters.length > 3) {
         answer = PARAM_NUMBER_ERROR;
         reject(answer);
+        return;
     }
 
     //controllo intervallo orario
@@ -132,6 +138,7 @@ function bestTimeSA(msg, resolve, reject) {
     if(startTime === null || endTime === null) {
         answer = TIME_PARSING_ERROR;
         reject(answer);
+        return;
     } else {
         startHour = startTime.hour;
         startMinute = startTime.minute;
@@ -145,6 +152,7 @@ function bestTimeSA(msg, resolve, reject) {
         if(dayOfTheWeek === null) {
             answer = TIME_PARSING_ERROR;
             reject(answer);
+            return;
         }
     } else {
         dayOfTheWeek = new Date().getDay();
@@ -187,12 +195,14 @@ function submitSA(msg, resolve, reject) {
     if(parameters.length < 2 || parameters.length > 3) {
         answer = PARAM_NUMBER_ERROR;
         reject(answer);
+        return;
     }
 
     //controllo telegramID
     if(isNaN(parseInt(msg.from.id))) {
         answer = INTERNAL_ERROR;
         reject(answer);
+        return;
     } else {
         telegramID = parseInt(msg.chat.id);
     }
@@ -201,6 +211,7 @@ function submitSA(msg, resolve, reject) {
     if(!UTIL.isCanteenValid(parameters[0], canteenList)) {
         answer = BAD_CANTEEN;
         reject(answer);
+        return;
     } else {
         canteen = parameters[0];
     }
@@ -210,6 +221,7 @@ function submitSA(msg, resolve, reject) {
     if(isNaN(waitingTime)) {
         answer = INVALID_WAITING_TIME;
         reject(answer);
+        return;
     }
 
     //controllo esistenza e validità orario
@@ -218,6 +230,7 @@ function submitSA(msg, resolve, reject) {
         if(time === null) {
             answer = TIME_PARSING_ERROR;
             reject(answer);
+            return;
         } else {
             hour = time.hour;
             minute = time.minute;
@@ -237,15 +250,15 @@ function submitSA(msg, resolve, reject) {
         while(hour < 0) {hour += 24}
     }
 
-    UNEATN.addTime(telegramID, canteen, waitingTime, hour, minute).then(function(val) {
-        if(val.localeCompare(UNEATN.BAD_DATA) === 0) {
-            answer = BAD_SUBMISSION;
-        } else {
-            answer = 'Grazie per il tuo contributo!';
-        }
+    UNEATN.addTime(AUTH_TOKEN, telegramID, canteen, waitingTime, hour, minute).then(function(val) {
+        answer = 'Grazie per il tuo contributo!';
         resolve(answer);
     }).catch(function(res) {
-        answer = INTERNAL_ERROR;
+        if(res.localeCompare(UNEATN.BAD_DATA) === 0) {
+            answer = BAD_SUBMISSION;
+        } else {
+            answer = INTERNAL_ERROR;
+        }
         console.log('ERROR reason: ' + res);
         reject(answer);
     });
@@ -315,6 +328,7 @@ semActs.push(messageSA);
 
 
 /* Function available outside the module */
+/* Parses an incoming message */
 exports.parse = function(msg) {
 
     return new Promise(function(resolve, reject) {
@@ -332,3 +346,12 @@ exports.parse = function(msg) {
     });
 
 };
+
+/* Function used to init the list of the avaliable canteen */
+exports.initCodenameList = function() {
+    UNEATN.getCanteenList().then(function(val) {
+        canteenList = val;
+    }).catch(function(res) {
+        console.log('BOT: Failed to init codename list!');
+    });
+}

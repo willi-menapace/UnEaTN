@@ -207,7 +207,7 @@ function addTime(authToken, telegramID, canteenName, waitingTime, arriveHour, ar
                         resolve(true);
                         return;
                     }
-                    resolve(BAD_DATA);
+                    reject(BAD_DATA);
                     return;
                 }
                 console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
