@@ -189,7 +189,7 @@ function submitSA(msg, resolve, reject) {
     }
 
     //controllo telegramID
-    if(isNaN(parseInt(msg.chat.id))) {
+    if(isNaN(parseInt(msg.from.id))) {
         answer = INTERNAL_ERROR;
         reject(answer);
     } else {
