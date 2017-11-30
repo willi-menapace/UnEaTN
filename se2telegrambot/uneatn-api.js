@@ -16,6 +16,7 @@ const MISSING_PARAM = 'Missing parameters!';
 const BAD_PARAM = 'Bad parameters!';
 const REQ_FAIL = 'Request failed!';
 const NO_PREVISION = 'The canteen is closed!';
+const BAD_DATA = 'Submitted data is not valid!';
 
 /*
 * Method for fetching the list of available canteen codenames
@@ -202,7 +203,11 @@ function addTime(authToken, telegramID, canteenName, waitingTime, arriveHour, ar
         request(options, function(error, response, body) {
             if(!error) {
                 if(response.statusCode === 200) {
-                    resolve(true);
+                    if(body.isClosed === false) {
+                        resolve(true);
+                        return;
+                    }
+                    resolve(BAD_DATA);
                     return;
                 }
                 console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
@@ -243,6 +248,7 @@ module.exports = {
     BAD_PARAM: BAD_PARAM,
     REQ_FAIL: REQ_FAIL,
     NO_PREVISION: NO_PREVISION,
+    BAD_DATA: BAD_DATA,
     //testing function
     overrideServerAPI: overrideServerAPI
 };
