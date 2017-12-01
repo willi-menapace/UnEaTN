@@ -50,7 +50,8 @@ mv package.json.bot package.json
 git status
 
 # updating branch configuration files
-git add *
+git add .
+git status
 git commit -m "Configure branch for push"
 
 # setting up telegram-bot heroku reopository
