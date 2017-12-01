@@ -201,7 +201,7 @@
             .fontWeight('bold')
             .padding([0, 0, 25, 5]);
 
-        // IMPOSTAZIONI DELLE ETICHETTE DELLE SERIE
+        // IMPOSTAZIONI LEGENDE
         var setupSeriesLabels = function(series, name, color) {
             series.name(name)
                 .stroke('3 #fff 1')
@@ -219,15 +219,15 @@
         var series;
 
         // PRIMA SERIE CON I DATI MAPPATI (PASTO LESTO)
-        series = chart.area(seriesData_1);
+        series = chart.splineArea(seriesData_1);
         setupSeriesLabels(series, 'Pasto Lesto', '#FF6767');
 
         // SECONDA SERIE CON I DATI MAPPATI (POVO 0)
-        series = chart.area(seriesData_2);
+        series = chart.splineArea(seriesData_2);
         setupSeriesLabels(series, 'Mensa Povo 0', '#FFDD67');
 
         // TERZA SERIE CON I DATI MAPPATI (POVO 1)
-        series = chart.area(seriesData_3);
+        series = chart.splineArea(seriesData_3);
         setupSeriesLabels(series, 'Mensa Povo 1', '#67C1FF');
 
         // IMPOSTAZIONE DELLA LEGENDA GRAFICI
@@ -267,6 +267,14 @@
             .fontSize(13)
             .fontColor('#FFFFFF')
             .fontFamily('Ubuntu');
+
+        // ETICHETTA IN CASO DI MANCANZA DATI
+        noDataLabel = chart.noData().label();
+        noDataLabel.enabled(true);
+        noDataLabel.text("Tutte le mense sono attualmente chiuse.");
+        noDataLabel.fontSize(18);
+        noDataLabel.fontColor('#FFFFFF');
+        noDataLabel.fontFamily('Ubuntu');
 
         // IMPOSTA L'ID DEL CONTAINER DA USARE PER IL GRAFICO
         chart.container('chart');

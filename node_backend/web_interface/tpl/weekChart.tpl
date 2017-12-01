@@ -148,6 +148,7 @@
     // LEGGE IL TESTO E NE RICAVA IL JSON
     var jsonTxt = '(:weeklyStatistics:)';
     var jsonObj = JSON.parse(jsonTxt);
+
     // ESEGUE LA LETTURA E LA CONVERSIONE DEI DATI
     var xValues = [];
     var i;
@@ -167,7 +168,8 @@
             thisChart.style.display = 'block';
             var j;
             for (j = 0; j < xValuesNum; j++) {
-                var value = [
+                var value;
+                value = [
                     jsonObj.statistics[i][j].time,
                     jsonObj.statistics[i][j].waitingTime
                 ];
@@ -236,7 +238,7 @@
             .fontWeight('bold')
             .padding([0, 0, 25, 5]);
 
-        // IMPOSTAZIONI DELLE ETICHETTE DELLE SERIE
+        // IMPOSTAZIONI DELLE LEGENDE
         var setupSeriesLabels = function(series, name, color) {
             series.name(name)
                 .stroke('3 #fff 1')
@@ -255,7 +257,7 @@
 
         // MAPPATURA DATI
         var canteenName = "non corretta: mensa non selezionata.";
-        series = chart.area(seriesData_1);
+        series = chart.splineArea(seriesData_1);
         if(cCanteen.toString() === "1") {
             canteenName = "Pasto Lesto";
         } else if(cCanteen.toString() === "2") {
@@ -304,6 +306,14 @@
             .fontSize(13)
             .fontColor('#FFFFFF')
             .fontFamily('Ubuntu');
+
+        // ETICHETTA IN CASO DI MANCANZA DATI
+        noDataLabel = chart.noData().label();
+        noDataLabel.enabled(true);
+        noDataLabel.text("Tutte le mense sono attualmente chiuse.");
+        noDataLabel.fontSize(18);
+        noDataLabel.fontColor('#FFFFFF');
+        noDataLabel.fontFamily('Ubuntu');
 
         // IMPOSTA L'ID DEL CONTAINER DA USARE PER IL GRAFICO
         chart.container(cContainer);

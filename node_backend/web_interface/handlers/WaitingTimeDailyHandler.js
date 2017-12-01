@@ -81,7 +81,7 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
                 dailyStatistics = [];
                 
                 // In this case there will be at least one canteen open at that day with its corresponding previsionData
-                for(var timeIterator = minOpenDateTime; timeIterator <= maxCloseDateTime; timeIterator = TimeHelper.addMinutes(timeIterator, 10)) {
+                for(var timeIterator = minOpenDateTime; timeIterator <= maxCloseDateTime; timeIterator = TimeHelper.addMinutes(timeIterator, 5)) {
                     var canteensPrevisionData = [];
                     for(var j = 0; j < previsionDataArray.length; j++) {
                         // If canteen[j] is open at a given time then waiting time will be set to number of 
