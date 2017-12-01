@@ -12,9 +12,9 @@
 */
 
 /* Fetching of enviroment variables */
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || '453354176:AAEsyCqr-LdNhjADBY_Z1xLxIytwLRjHVyM';
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || '483884774:AAGbt5DFB214pfoisaMXfMqyLOoGaJKsNdc';
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const HEROKU_URL = process.env.HEROKU_URL || 'https://se2telegrambot.herokuapp.com/';
+const HEROKU_URL = process.env.HEROKU_URL;
 
 /* Import of different modules */
 var TelegramBot = require('node-telegram-bot-api');
