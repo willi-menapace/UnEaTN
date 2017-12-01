@@ -4,10 +4,11 @@
 * Author: Giuliani Daniele
 */
 
+var AUTH_TOKEN = process.env.AUTH_TOKEN || 'tokenOK';
+
 const UTIL = require('./utilities');
 const UNEATN = require('./uneatn-api');
 const DFINTERACTION = require('./dialogflow-interaction');
-var AUTH_TOKEN = process.env.AUTH_TOKEN || 'tokenOK';
 
 /* Canteen list */
 var canteenList = [];

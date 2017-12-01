@@ -14,7 +14,7 @@
 /* Fetching of enviroment variables */
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || '483884774:AAGbt5DFB214pfoisaMXfMqyLOoGaJKsNdc';
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const HEROKU_URL = process.env.HEROKU_URL;
+const HOST_URL = process.env.HOST_URL;
 
 /* Import of different modules */
 var TelegramBot = require('node-telegram-bot-api');
@@ -46,7 +46,7 @@ if(NODE_ENV === 'development') {
         }
     };
     bot = new TelegramBot(TELEGRAM_TOKEN, options);
-    bot.setWebHook(HEROKU_URL + bot.token)
+    bot.setWebHook(HOST_URL + bot.token)
 }
 
 console.log('BOT: Bot started in ' + NODE_ENV + ' mode');
