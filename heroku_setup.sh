@@ -4,8 +4,9 @@ BRANCH="master"
 
 if [ -z "$1" ]
 	then
-    	echo "Missing parameter!"
-    	echo "Usage: $0 branchToPush"
+    	echo "Missing parameters!"
+    	echo "Usage:"
+    	echo "$0 <branch>"
 	else
   		BRANCH=$1
   		echo "Branch $BRANCH selected"
