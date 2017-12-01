@@ -1,0 +1,21 @@
+{
+  "name": "se2telegrambot",
+  "version": "1.0.0",
+  "description": "uneatn telegram bot",
+  "directories": {
+    "test": "jest"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Giuliani Daniele",
+  "license": "ISC",
+  "dependencies": {
+    "apiai": "^4.0.3",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "jest": "^21.2.1",
+    "node-telegram-bot-api": "^0.29.0",
+    "request": "^2.83.0"
+  }
+}
