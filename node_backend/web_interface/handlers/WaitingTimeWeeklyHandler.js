@@ -123,7 +123,7 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
                             var closeTime = savedOpeningHours[i].closeTime;
                             var closeTimeDate = self.getDateByTime(closeTime);
 
-                            for(var timeIterator = openTimeDate; timeIterator <= closeTimeDate; timeIterator = self.addMinutes(timeIterator, 10)) {
+                            for(var timeIterator = openTimeDate; timeIterator <= closeTimeDate; timeIterator = self.addMinutes(timeIterator, 5)) {
                                 canteenPrevision = self.getPrevisionDataByTime(previsionDataForEachDay[i], timeIterator);
                                 statisticalData = new StatisticalData(self.getTimeByDate(timeIterator), Math.round(canteenPrevision.waitSeconds / 60));
                                 weeklyStatistics[i].push(statisticalData);
