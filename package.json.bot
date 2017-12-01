@@ -2,7 +2,6 @@
   "name": "se2telegrambot",
   "version": "1.0.0",
   "description": "uneatn telegram bot",
-  "main": "index.js",
   "directories": {
     "test": "jest"
   },
