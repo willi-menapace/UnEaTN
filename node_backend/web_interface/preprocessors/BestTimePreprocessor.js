@@ -53,12 +53,6 @@ module.exports = class BestWaitingTimePreprocessor{
             var endDate = null;
             var error = null;
             
-            //TEST
-            console.log("dayAttribute: ", dayAttribute);
-            console.log("startTimeAttribute: ", startTimeAttribute);
-            console.log("endTimeAttribute: ", endTimeAttribute);
-            //
-            
             if((typeof dayAttribute === 'undefined' || dayAttribute === null) &&
             (typeof startTimeAttribute === 'undefined' || startTimeAttribute === null) &&
             (typeof endTimeAttribute === 'undefined' || endTimeAttribute === null)) {
