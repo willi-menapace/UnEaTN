@@ -1,5 +1,8 @@
 var PrevisionEntity = require('../entities/PrevisionEntity.js');
 var pool = require('./pool.js');
+var Error = require('../../common/Error.js');
+var HttpStatus = require('../../common/HttpStatus.js');
+var ErrorType = require('../../common/ErrorType.js');
 
 module.exports = class PrevisionDBHelper {
     
@@ -16,10 +19,12 @@ module.exports = class PrevisionDBHelper {
             + ' ORDER BY previsions.generation_date DESC'
             + ' LIMIT 1';
             var prevision = null;
+            var error = null;
 
             pool.getConnection(function(err, connection) {
                 if(err) {
-                    reject(err);    
+                    error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_CONNECTION_ERROR);
+                    reject(error);    
                 } else {
                     // Use the connection
                     connection.query(sql, [canteenId, day], function(err, result) {
@@ -31,7 +36,8 @@ module.exports = class PrevisionDBHelper {
 
                         // Handle error after the release
                         if(err) {
-                            reject(err);    
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_QUERY_ERROR);
+                            reject(error);    
                         } else {
                             resolve(prevision);    
                         }
