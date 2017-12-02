@@ -7,7 +7,7 @@
 * Author: Giuliani Daniele
 */
 
-var URL_UNEATN = process.env.UNEATN_URL || 'http://localhost:8080'; //second url is used for testing purpuses only
+var URL_UNEATN = process.env.UNEATN_URL || 'http://localhost:8080/'; //second url is used for testing purpuses only
 
 var request = require('request');
 
@@ -25,7 +25,7 @@ const BAD_DATA = 'Submitted data is not valid!';
 *   error message - otherwise
 */
 function getCanteenList() {
-    const URL_POSTFIX = '/api/v1/codeName';
+    const URL_POSTFIX = 'api/v1/codeName';
     return new Promise(function(resolve, reject) {
         var options = {
             uri: URL_UNEATN + URL_POSTFIX,
@@ -60,7 +60,7 @@ function getCanteenList() {
 *   error message - if promise was rejected
 */
 function getWaitTime(canteenName, hour, minute, dayOfTheWeek) {
-    const URL_POSTFIX = '/api/v1/waitTime';
+    const URL_POSTFIX = 'api/v1/waitTime';
 
     return new Promise(function(resolve, reject) {
         if(canteenName === undefined || hour === undefined || minute === undefined || dayOfTheWeek === undefined) {
@@ -124,7 +124,7 @@ function getWaitTime(canteenName, hour, minute, dayOfTheWeek) {
 *   error message - if promise was rejected
 */
 function getBestTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek) {
-    const URL_POSTFIX = '/api/v1/bestTime';
+    const URL_POSTFIX = 'api/v1/bestTime';
 
     return new Promise(function(resolve, reject) {
         if(startHour === undefined || startMinute === undefined || endHour === undefined || endMinute === undefined || dayOfTheWeek === undefined) {
