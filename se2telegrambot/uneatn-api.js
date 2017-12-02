@@ -39,14 +39,12 @@ function getCanteenList() {
                     resolve(jsonBody.codeName);
                     return;
                 }
-                console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
+                console.log('UNEATN-API: response status code: ' + response.statusCode);
                 reject(REQ_FAIL);
                 return;
+            } else {
+                console.log('UNEATN-API: fetching canteen returned: ' + error);
             }
-            console.log('CenteenListError\n');
-            console.log('error: ' + error + '\n');
-            console.log('response: ' + response + '\n');
-            console.log('body: ' + body + '\n');
             reject(REQ_FAIL);
             return;
         });
@@ -97,7 +95,7 @@ function getWaitTime(canteenName, hour, minute, dayOfTheWeek) {
                         return;
                     }
                 }
-                console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
+                console.log('UNEATN-API: response status code: ' + response.statusCode);
                 reject(REQ_FAIL);
                 return;
             }
@@ -158,7 +156,7 @@ function getBestTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek) {
                     resolve(jsonBody);
                     return;
                 }
-                console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
+                console.log('UNEATN-API: response status code: ' + response.statusCode);
                 reject(REQ_FAIL);
                 return;
             }
@@ -214,7 +212,7 @@ function addTime(authToken, telegramID, canteenName, waitingTime, arriveHour, ar
                     reject(BAD_DATA);
                     return;
                 }
-                console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
+                console.log('UNEATN-API: response status code: ' + response.statusCode);
                 reject(REQ_FAIL);
                 return;
             }
