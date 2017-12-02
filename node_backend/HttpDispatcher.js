@@ -4,6 +4,7 @@ var QRHandler = require('./web_interface/handlers/QRHandler.js');
 var JoinProjectHandler = require('./web_interface/handlers/JoinProjectHandler.js');
 var WaitingTimeDailyHandler = require('./web_interface/handlers/WaitingTimeDailyHandler.js');
 var WaitingTimeWeeklyHandler = require('./web_interface/handlers/WaitingTimeWeeklyHandler.js');
+var BestTimeHandler = require('./web_interface/handlers/BestTimeHandler.js');
 var AddWaitingTimeHandler = require('./telegram_bot/handlers/AddWaitingTimeHandler.js');
 var BestWaitingTimeHandler = require('./api/handlers/BestWaitingTimeHandler.js');
 var WaitingTimeCanteenHandler = require('./api/handlers/WaitingTimeCanteenHandler.js');
@@ -58,12 +59,11 @@ app.get('/weekChart', function (req, res) {
     waitingTimeWeeklyHandler.dispatch(req, res);
 });
 
-/*
-//handle requests on /webcam
-app.get('/webcam', function (req, res) {
-
+//handle requests on /bestTime
+app.get('/bestTime', function (req, res) {
+    var bestTimeHandler = new BestTimeHandler();
+    bestTimeHandler.dispatch(req, res);
 });
-*/
 
 //handle requests on /api/addWaitingTime
 app.post('/addTime', function (req, res) {
@@ -88,13 +88,6 @@ app.get('/api/v1/codeName', function(req, res){
     codeNamesHandler.dispatch(req, res);
     
 });
-
-/*
-//handle requests on /api/ranking
-app.get('/ranking', function (req, res) {
-
-});
-*/
 
 //handle other requests
 app.all('*', function (req, res) {
