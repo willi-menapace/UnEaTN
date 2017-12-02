@@ -1,5 +1,8 @@
 var CanteenEntity = require('../entities/CanteenEntity.js');
 var pool = require('./pool.js');
+var Error = require('../../common/Error.js');
+var HttpStatus = require('../../common/HttpStatus.js');
+var ErrorType = require('../../common/ErrorType.js');
 
 module.exports = class CanteenDBHelper {
     
@@ -14,10 +17,12 @@ module.exports = class CanteenDBHelper {
             var sql = 'SELECT * FROM canteens ORDER BY canteen_id';
             var canteens = [];
             var canteen = null;
+            var error = null;
 
             pool.getConnection(function(err, connection) {
                 if(err) {
-                    reject(err);
+                    error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_CONNECTION_ERROR);
+                    reject(error);
                 } else {
                     // Use the connection
                     connection.query(sql, function(err, result) {
@@ -33,7 +38,8 @@ module.exports = class CanteenDBHelper {
 
                         // Handle error after the release
                         if(err) {
-                            reject(err);     
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_QUERY_ERROR);
+                            reject(error);     
                         } else {
                             resolve(canteens);
                         }                    
@@ -51,10 +57,12 @@ module.exports = class CanteenDBHelper {
         var promiseFunction = function(resolve, reject) {
             var sql = 'SELECT * FROM canteens WHERE canteen_id = ?';
             var canteen = null;
+            var error = null;
 
             pool.getConnection(function(err, connection) {
                 if(err) {
-                    reject(err);
+                    error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_CONNECTION_ERROR);
+                    reject(error);
                 } else {
                     // Use the connection
                     connection.query(sql, [canteenId], function (err, result) {
@@ -67,9 +75,11 @@ module.exports = class CanteenDBHelper {
 
                         // Handle error after the release   
                         if (err) {
-                            reject(err);
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_QUERY_ERROR);
+                            reject(error);
                         } else if (result.length > 1) {
-                            reject(err);
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_INTERNAL_ERROR);
+                            reject(error);
                         } else {
                             resolve(canteen);    
                         }
@@ -89,10 +99,12 @@ module.exports = class CanteenDBHelper {
         var promiseFunction = function(resolve, reject) {
             var sql = 'SELECT * FROM canteens WHERE codename = ?';
             var canteen = null;
+            var error = null;
 
             pool.getConnection(function(err, connection) {
                 if(err) {
-                    reject(err);    
+                    error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_CONNECTION_ERROR);
+                    reject(error);    
                 } else {
                     // Use the connection
                     connection.query(sql, [codeName], function (err, result) {
@@ -105,9 +117,11 @@ module.exports = class CanteenDBHelper {
 
                         // Handle error after the release
                         if (err) {
-                            reject(err);    
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_QUERY_ERROR);
+                            reject(error);    
                         } else if (result.length > 1) {
-                            reject(err);   
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_INTERNAL_ERROR);
+                            reject(error);   
                         } else {
                             resolve(canteen);    
                         } 
@@ -125,10 +139,12 @@ module.exports = class CanteenDBHelper {
             var sql = 'SELECT COUNT(*) AS num_of_canteens FROM canteens';
             var con = DatabaseHelper.getConnection();
             var numOfCanteens = 0;
+            var error = null;
 
             pool.getConnection(function(err, connection) {
                 if(err) {
-                    reject(err);    
+                    error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_CONNECTION_ERROR);
+                    reject(error);    
                 } else {
                     // Use the connection
                     connection.query(sql, function (err, result) {
@@ -141,9 +157,11 @@ module.exports = class CanteenDBHelper {
 
                         // Handle error after the release
                         if (err) {
-                            reject(err);    
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_QUERY_ERROR);
+                            reject(error);    
                         } else if (result.length > 1) {
-                            reject(err);    
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_INTERNAL_ERROR);
+                            reject(error);    
                         } else {
                             resolve(numOfCanteens);    
                         }                  

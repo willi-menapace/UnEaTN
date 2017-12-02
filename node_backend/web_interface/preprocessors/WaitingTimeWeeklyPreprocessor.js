@@ -1,4 +1,7 @@
 var enumify = require('enumify');
+var Error = require('../../common/Error.js');
+var HttpStatus = require('../../common/HttpStatus.js');
+var ErrorType = require('../../common/ErrorType.js');
 
 class Canteens extends enumify.Enum {};
 Canteens.initEnum({
@@ -35,6 +38,7 @@ module.exports = class WaitingTimeDailyPreprocessor {
             var waitingTimeWeeklyAttributes = null;
             var canteenId = null;
             var canteenIdAttribute = parseInt(req.query.canteenId);
+            var error = null;
 
             // If canteen id which is passed by front-end is null then PASTO_LESTO will be set
             if(typeof canteenIdAttribute === 'undefined' || canteenIdAttribute === null || isNaN(canteenIdAttribute)) {
@@ -56,8 +60,8 @@ module.exports = class WaitingTimeDailyPreprocessor {
             }
 
             if(canteenId === null) {
-                var errorDescription = "Invalid canteen";
-                reject(errorDescription);
+                error = new Error(HttpStatus.BAD_REQUEST, ErrorType.CANTEEN_ERROR);
+                reject(error);
             } else {
                 waitingTimeWeeklyAttributes = new WaitingTimeWeeklyAttributes(canteenId);
                 resolve(waitingTimeWeeklyAttributes);
