@@ -187,7 +187,7 @@ function addTime(authToken, telegramID, canteenName, waitingTime, arriveHour, ar
 
         var jsonBody = {
             'authToken':authToken,
-            'telegramID':telegramID,
+            'telegramId':telegramID,
             'codeName':canteenName,
             'waitingTime':waitingTime,
             'arriveTime':arriveTime
