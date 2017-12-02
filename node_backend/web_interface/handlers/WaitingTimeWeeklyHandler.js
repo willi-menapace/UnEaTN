@@ -87,7 +87,7 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
                             var closeTime = savedOpeningHours[i].closeTime;
                             var closeTimeDate = TimeHelper.getDateByTime(closeTime);
 
-                            for(var timeIterator = openTimeDate; timeIterator <= closeTimeDate; timeIterator = TimeHelper.addMinutes(timeIterator, 10)) {
+                            for(var timeIterator = openTimeDate; timeIterator <= closeTimeDate; timeIterator = TimeHelper.addMinutes(timeIterator, 5)) {
                                 canteenPrevision = TimeHelper.getPrevisionDataByTime(previsionDataForEachDay[i], timeIterator);
                                 var arriveTime = TimeHelper.getTimeByDate(timeIterator);
                                 var waitMinutes = Math.round(canteenPrevision.waitSeconds / SECONDS_PER_MINUTE);
