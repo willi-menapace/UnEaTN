@@ -63,7 +63,7 @@ if [ -z "$1" ]
 		# setting enviroment variables
 		heroku config:set TELEGRAM_TOKEN=$TELEGRAM_TOKEN
 		heroku config:set HOST_URL=$BOT_URL
-		heroku config:set URL_UNEATN=$BACKEND_URL
+		heroku config:set UNEATN_URL=$BACKEND_URL
 		heroku config:set DIALOGFLOW_TOKEN=$DIALOGFLOW_TOKEN
 		heroku config:set AUTH_TOKEN=$AUTH_TOKEN
 
