@@ -57,9 +57,9 @@ test('getWaitTime(\'testOK\', \'abbas\', \'are great\')', function() {
 var positiveResponse = {
     'bestTime':
         [
-            {'name':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
-            {'name':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
-            {'name':'povo0', 'isClosed':true, 'values':{'bestTime':null, 'waitingTime':null}}
+            {'codeName':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+            {'codeName':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+            {'codeName':'povo0', 'isClosed':true, 'values':{'bestTime':null, 'waitingTime':null}}
         ]
 };
 
