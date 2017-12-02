@@ -8,11 +8,11 @@ module.exports = class ApplicationHandlerSkeleton {
         this.preprocessor.parseAndValidate(req).then(function(attributes) {
             self.processRequest(res, attributes);
         }, function(err) {
-            self.processParseOfValidationFailure(res, err);
+            self.processFailure(res, err);
         });
     }
     
-    processParseOfValidationFailure(res, errorDescription) {
+    processFailure(res, err) {
         // METHOD WILL BE OVERRIDED IN SUBCLASSES
     }
     

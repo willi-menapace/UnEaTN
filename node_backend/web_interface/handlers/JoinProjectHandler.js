@@ -1,5 +1,6 @@
 var ApplicationHandlerSkeleton = require('../../ApplicationHandlerSkeleton.js');
 var JoinProjectPreprocessor = require('../preprocessors/JoinProjectPreprocessor.js');
+var HttpStatus = require('../../common/HttpStatus.js');
 var bind = require('bind');
 
 module.exports = class JoinProjectHandler extends ApplicationHandlerSkeleton {  
@@ -8,9 +9,16 @@ module.exports = class JoinProjectHandler extends ApplicationHandlerSkeleton {
         super(preprocessor);
     }
     
-    processParseOfValidationFailure(res, errorDescription) {
-        res.status(500);
-        res.end(errorDescription);
+    processFailure(res, err) {
+        var errorStatus = err.statusType.status;
+        var errorDescription = err.descriptionType.errorDescription;
+        bind.toFile('./node_backend/web_interface/tpl/error.tpl', {
+            errorStatus: errorStatus,
+            errorDescription: errorDescription
+        }, function(data) {
+            res.writeHead(errorStatus, {'Content-Type': 'text/html'});
+            res.end(data);
+        });
     }
     
     processRequest(res, joinProjectAttributes) {
@@ -18,7 +26,7 @@ module.exports = class JoinProjectHandler extends ApplicationHandlerSkeleton {
         bind.toFile('./node_backend/web_interface/tpl/joinProject.tpl', {
             // NOTHING TO PASS
         }, function(data) {
-            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.writeHead(HttpStatus.OK.status, {'Content-Type': 'text/html'});
             res.end(data);
         });
     }

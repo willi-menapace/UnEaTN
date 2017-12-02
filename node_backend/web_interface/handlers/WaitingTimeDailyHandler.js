@@ -7,6 +7,7 @@ var PrevisionDataDBHelper = require('../../database/helpers/PrevisionDataDBHelpe
 var OpeningHourEntity = require('../../database/entities/OpeningHourEntity.js');
 var OpeningHourDBHelper = require('../../database/helpers/OpeningHourDBHelper.js');
 var TimeHelper = require('../../common/TimeHelper.js');
+var HttpStatus = require('../../common/HttpStatus.js');
 var bind = require('bind');
 
 class StatisticalData {
@@ -22,12 +23,21 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
         super(preprocessor);
     }
     
-    processParseOfValidationFailure(res, errorDescription) {
-        res.status(500);
-        res.end(errorDescription);
+    processFailure(res, err) {
+        var errorStatus = err.statusType.status;
+        var errorDescription = err.descriptionType.errorDescription;
+        bind.toFile('./node_backend/web_interface/tpl/error.tpl', {
+            errorStatus: errorStatus,
+            errorDescription: errorDescription
+        }, function(data) {
+            res.writeHead(errorStatus, {'Content-Type': 'text/html'});
+            res.end(data);
+        });
     }
     
     processRequest(res, waitingTimeDailyAttributes) {
+        const SECONDS_PER_MINUTE = 60;
+        var self = this;
         var canteenDBHelper = new CanteenDBHelper();
         var previsionDataDBHelper = new PrevisionDataDBHelper();
         var openingHourDBHelper = new OpeningHourDBHelper();
@@ -48,7 +58,7 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
             return Promise.all(promiseArray);
             
         }, function(err) {
-            console.log(err);
+            self.processFailure(res, err);
         }).then(function(openingHours) {
             savedOpeningHours = openingHours;
             var promiseArray = [];
@@ -64,7 +74,7 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
             return Promise.all(promiseArray);
             
         }, function(err) {
-            console.log(err);
+            self.processFailure(res, err);
         }).then(function(previsionDataArray) {
             var isEmptyPrevisionDataArray = true;
             var dailyStatistics;
@@ -90,7 +100,7 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
                             canteensPrevisionData[j] = null; // Closed canteen due to closed canteen or no prevision for that canteen
                         } else {
                             canteenPrevision = TimeHelper.getPrevisionDataByTime(previsionDataArray[j], timeIterator);
-                            var waitMinutes = Math.round(canteenPrevision.waitSeconds / 60);
+                            var waitMinutes = Math.round(canteenPrevision.waitSeconds / SECONDS_PER_MINUTE);
                             canteensPrevisionData[j] = waitMinutes;
                         }
                     }
@@ -112,12 +122,12 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
                 selectedDay: weekDay,
                 dailyStatistics: JSON.stringify(dailyStatisticsJSON)
             }, function(data) {
-                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.writeHead(HttpStatus.OK.status, {'Content-Type': 'text/html'});
                 res.end(data);
             });
 
         }, function(err) {
-            console.log(err);
+            self.processFailure(res, err);
         });
     }
         

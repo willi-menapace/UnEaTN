@@ -1,4 +1,7 @@
 var enumify = require('enumify');
+var Error = require('../../common/Error.js');
+var HttpStatus = require('../../common/HttpStatus.js');
+var ErrorType = require('../../common/ErrorType.js');
 
 class WaitingTimeDailyAttributes {
     constructor(day) {
@@ -25,6 +28,7 @@ module.exports = class WaitingTimeDailyPreprocessor {
             var waitingTimeDailyAttributes = null;
             var day = null;
             var dayAttribute = req.query.day;
+            var error = null;
 
             if(typeof dayAttribute === 'undefined' || dayAttribute === null) {
                 var todayDate = new Date();
@@ -66,11 +70,9 @@ module.exports = class WaitingTimeDailyPreprocessor {
                     // At this point day will be equal to null and some error occurs
             }
 
-            
-
             if(day === null) {
-                var errorDescription = "Invalid day";
-                reject(errorDescription);
+                error = new Error(HttpStatus.BAD_REQUEST, ErrorType.DAY_ERROR);
+                reject(error);
             } else {
                 waitingTimeDailyAttributes = new WaitingTimeDailyAttributes(day);
                 resolve(waitingTimeDailyAttributes);    

@@ -10,7 +10,7 @@ module.exports = class CodeNameListHandler extends ApplicationHandlerSkeleton{
         var preprocessor = new CodeNameListPreprocessor();
         super(preprocessor);
     }
-    processParseOfValidationFailure(res, errorDescription) {
+    processFailure(res, errorDescription) {
         
         var json = JSON.stringify({
             error: true,  //to test
@@ -27,22 +27,20 @@ module.exports = class CodeNameListHandler extends ApplicationHandlerSkeleton{
         canteenDBHelper.getAllCanteens().then(function(canteensArray){
             if(canteensArray.length == 0){
                 var json = JSON.stringify({
-                    error: false,
-                    codeNames: null
+                    codeName: null
                 });
             } else{
                 for(var i = 0; i < canteensArray.length; i++){
                     codeNames[i] = canteensArray[i].codeName;
                 }
                 var json = JSON.stringify({
-                    error: false,
-                    codeNames: codeNames
+                    codeName: codeNames
                 });
             }
             res.writeHead(200, {'Content-Type': 'application/json', 'Accept': 'application/json'});
             res.end(json);
         }, function(err){
-            console.log(err);
+            this.processFailure(res, err);
         });
         
     }

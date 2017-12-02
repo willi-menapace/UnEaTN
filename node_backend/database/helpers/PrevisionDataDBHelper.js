@@ -2,6 +2,9 @@ var PrevisionEntity = require('../entities/PrevisionEntity.js');
 var PrevisionDBHelper = require('../helpers/PrevisionDBHelper.js');
 var PrevisionDataEntity = require('../entities/PrevisionDataEntity.js');
 var pool = require('./pool.js');
+var Error = require('../../common/Error.js');
+var HttpStatus = require('../../common/HttpStatus.js');
+var ErrorType = require('../../common/ErrorType.js');
 
 module.exports = class PrevisionDataDBHelper {
     
@@ -23,12 +26,13 @@ module.exports = class PrevisionDataDBHelper {
 
                 var previsionsData = [];
                 var previsionData = null;
-                
+                var error = null;
                 
                 if(prevision !== null) {
                     pool.getConnection(function(err, connection) {
                         if(err) {
-                            reject(err);
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_CONNECTION_ERROR);
+                            reject(error);
                         } else {
                             // Use the connection
                             connection.query(sql, [prevision.previsionId], function(err, result) {
@@ -48,7 +52,8 @@ module.exports = class PrevisionDataDBHelper {
 
                                 // Handle error after the release
                                 if(err) {
-                                    reject(err); 
+                                    error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_QUERY_ERROR);
+                                    reject(error);
                                 } else {
                                     // If there isn't any previsionData then returns null
                                     resolve(previsionsData);  
@@ -76,11 +81,13 @@ module.exports = class PrevisionDataDBHelper {
                 + ' FROM prevision_data'
                 + ' WHERE prevision_id = ? AND HOUR(arrive_time) = ? AND MINUTE(arrive_time) = ?';
                 var previsionData = null; 
+                var error = null;
                 
                 if(prevision !== null) {
                     pool.getConnection(function(err, connection) {
                         if(err) {
-                            reject(err);    
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_CONNECTION_ERROR);
+                            reject(error);   
                         } else {
                             // Use the connection
                             connection.query(sql, [prevision.previsionId, time.getHours(), time.getMinutes()], function(err, result) {
@@ -95,7 +102,8 @@ module.exports = class PrevisionDataDBHelper {
 
                                 // Handle error after the release
                                 if(err) {
-                                    reject(err);    
+                                    error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_QUERY_ERROR);
+                                    reject(error);    
                                 } else {
                                     // If there isn't any previsionData at that hour in that day then returns null
                                     resolve(previsionData);    
@@ -125,11 +133,13 @@ module.exports = class PrevisionDataDBHelper {
                 + ' ORDER BY wait_seconds'
                 + ' LIMIT 1'; 
                 var previsionData = null;
+                var error = null;
 
                 if(prevision !== null) {
                     pool.getConnection(function(err, connection) {
                         if(err) {
-                            reject(err);    
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_CONNECTION_ERROR);
+                            reject(error);    
                         } else {
                             // Use the connection
                             connection.query(sql, [prevision.previsionId, startTime.getHours(), startTime.getMinutes(), startTime.getSeconds(), endTime.getHours(), endTime.getMinutes(), endTime.getSeconds()], function(err, result) {
@@ -144,7 +154,8 @@ module.exports = class PrevisionDataDBHelper {
 
                                 // Handle error after the release
                                 if(err) {
-                                    reject(err);    
+                                    error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_QUERY_ERROR);
+                                    reject(error);    
                                 } else {
                                     // If there isn't any previsionData at that hour in that day then returns null
                                     resolve(previsionData);    
