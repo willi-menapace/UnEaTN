@@ -37,7 +37,7 @@ var bot;
 if(NODE_ENV === 'development') {
     //starts the bot in polling mode (development only)
     bot = new TelegramBot(TELEGRAM_TOKEN, {polling: true});
-    STUB_SERVER.start(8080, false);
+    //STUB_SERVER.start(8080, false); //start server for local testing
 } else {
     //starts the bot in webhook mode (production only)
     var options = {

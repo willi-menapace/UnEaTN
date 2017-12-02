@@ -47,14 +47,14 @@ app.get('/api/v1/waitTime', function (req, res) {
     //sets error as default
     jsonResponse = {
         'isClosed':true,
-        'waitTime':null
+        'waitingTime':null
     };
 
     if(reqParam.hasOwnProperty('codeName')) {
         if(reqParam.codeName.localeCompare('testOK') === 0) {   //setted value for passing the test
             jsonResponse = {
                 'isClosed':false,
-                'waitTime':11
+                'waitingTime':11
             };
         }
     }
@@ -86,9 +86,9 @@ app.get('/api/v1/bestTime', function (req, res) {
             jsonResponse = {
                 'bestTime':
                     [
-                        {'name':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
-                        {'name':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
-                        {'name':'povo0', 'isClosed':true, 'values':{'bestTime':null, 'waitingTime':null}}
+                        {'codeName':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+                        {'codeName':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+                        {'codeName':'povo0', 'isClosed':true, 'values':{'bestTime':null, 'waitingTime':null}}
                     ]
             };
             res.statusCode = 200;

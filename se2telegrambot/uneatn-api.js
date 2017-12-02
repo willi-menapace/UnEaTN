@@ -86,7 +86,7 @@ function getWaitTime(canteenName, hour, minute, dayOfTheWeek) {
                 if(response.statusCode === 200) {
                     var jsonBody = JSON.parse(body);
                     if(jsonBody.isClosed === false) {
-                        resolve(jsonBody.waitTime);
+                        resolve(jsonBody.waitingTime);
                         return;
                     } else {
                         reject(NO_PREVISION);

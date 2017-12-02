@@ -163,9 +163,9 @@ function bestTimeSA(msg, resolve, reject) {
         var responseArray = val.bestTime;
         for(var i = 0; i < responseArray.length; i++) {
             if(responseArray[i].isClosed === false) {
-                answer += responseArray[i].name + ' -- Miglior orario: ' + responseArray[i].values.bestTime + ' Tempo di attesa: ' + responseArray[i].values.waitingTime + '\n';
+                answer += responseArray[i].codeName + ' -- Miglior orario: ' + responseArray[i].values.bestTime + ' Tempo di attesa: ' + responseArray[i].values.waitingTime + '\n';
             } else {
-                answer += responseArray[i].name + ' -- Nessun orario trovato' + '\n';
+                answer += responseArray[i].codeName + ' -- Nessun orario trovato' + '\n';
             }
         }
         resolve(answer);
