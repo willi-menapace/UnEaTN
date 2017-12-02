@@ -4,6 +4,8 @@ BRANCH="master"
 TELEGRAM_TOKEN="483884774:AAGbt5DFB214pfoisaMXfMqyLOoGaJKsNdc"
 DIALOGFLOW_TOKEN="957a68d0a11d4ac8b28396d199d79b65"
 AUTH_TOKEN="]VsM°O&>KIc{=qdZP8({qVZlExK8yN;bXYE}EWMa{Ptg|.#%zk1q4kkgu!pPBC)tr)"
+BACKEND_URL=""	#leave empty
+BOT_URL=""		#leave empty
 
 if [ -z "$1" ]
 	then
@@ -31,6 +33,8 @@ if [ -z "$1" ]
 				git push heroku $BRANCH:master
 		fi
 
+		BACKEND_URL=$(heroku info -s | grep web_url | cut -d= -f2)
+
 
 		# remove main heroku remote
 		git remote remove heroku
@@ -54,10 +58,12 @@ if [ -z "$1" ]
 		heroku buildpacks:clear
 		heroku buildpacks:add --index 1 heroku/nodejs
 
+		BOT_URL=$(heroku info -s | grep web_url | cut -d= -f2)
+
 		# setting enviroment variables
 		heroku config:set TELEGRAM_TOKEN=$TELEGRAM_TOKEN
-		heroku config:set HOST_URL=$(heroku info -s | grep web_url | cut -d= -f2)
-		heroku config:set URL_UNEATN=$(heroku info -s | grep web_url | cut -d= -f2)
+		heroku config:set HOST_URL=$BOT_URL
+		heroku config:set UNEATN_URL=$BACKEND_URL
 		heroku config:set DIALOGFLOW_TOKEN=$DIALOGFLOW_TOKEN
 		heroku config:set AUTH_TOKEN=$AUTH_TOKEN
 
