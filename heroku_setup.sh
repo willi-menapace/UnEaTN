@@ -38,12 +38,9 @@ if [ -z "$1" ]
 		git branch heroku-tmp
 		git checkout heroku-tmp
 
-		# switch Procfile end package.json to configure telegram bot
+		# switch Procfile to configure telegram bot
 		mv Procfile Procfile.main
-		mv package.json package.json.main
-
 		mv Procfile.bot Procfile
-		mv package.json.bot package.json
 
 		# updating branch configuration files
 		git add .			#NOTE "git add *" does not keep track of deleted files!!!
