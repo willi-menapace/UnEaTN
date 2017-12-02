@@ -6,6 +6,7 @@ var PrevisionDataDBHelper = require('../../database/helpers/PrevisionDataDBHelpe
 var PrevisionDataEntity = require('../../database/entities/PrevisionDataEntity.js');
 var OpeningHourDBHelper = require('../../database/helpers/OpeningHourDBHelper.js');
 var OpeningHourEntity = require('../../database/entities/OpeningHourEntity.js');
+var HttpStatus = require('../../common/HttpStatus.js');
 var enumify = require('enumify');
 var bind = require('bind');
 
@@ -35,18 +36,27 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
         super(homePagePreprocessor);
     }
 
-    processParseOfValidationFailure(res, errorDescription) {
-        res.status(500);
-        res.end(errorDescription);
+    processFailure(res, err) {
+        var errorStatus = err.statusType.status;
+        var errorDescription = err.descriptionType.errorDescription;
+        bind.toFile('./node_backend/web_interface/tpl/error.tpl', {
+            errorStatus: errorStatus,
+            errorDescription: errorDescription
+        }, function(data) {
+            res.writeHead(errorStatus, {'Content-Type': 'text/html'});
+            res.end(data);
+        });
     }
 
     processRequest(res, homePageAttributes) {
+        const SECONDS_PER_MINUTE = 60;
+        var self = this;
         var canteenDBHelper = new CanteenDBHelper();
         var previsionDataDBHelper = new PrevisionDataDBHelper();
         var openingHourDBHelper = new OpeningHourDBHelper();
         var canteenStatus = [];
         var weekDay = homePageAttributes.getDay();
-        var requestDate = new Date();
+        var requestDate = homePageAttributes.getRequestDate();
         var savedCanteens;
              
         canteenDBHelper.getAllCanteens().then(function(canteens) {
@@ -60,7 +70,7 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
             return Promise.all(promiseArray);
               
         }, function(err) {
-            console.log(err);
+            self.processFailure(res, err);
         }).then(function(openingHours) {
             var promiseArray = [];
             
@@ -75,7 +85,7 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
             return Promise.all(promiseArray);
             
         }, function(err) {
-            console.log(err);
+            self.processFailure(res, err);
         }).then(function(previsionDataArray) {
             for(var i = 0; i < previsionDataArray.length; i++) {
                 if(previsionDataArray[i] == CanteenStatus.CLOSED.id) {
@@ -83,7 +93,7 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
                 } else if(previsionDataArray[i] === null) {
                     canteenStatus[i] = CanteenStatus.CLOSED.id
                 } else {
-                    var waitMinutes = previsionDataArray[i].waitSeconds / 60;
+                    var waitMinutes = previsionDataArray[i].waitSeconds / SECONDS_PER_MINUTE;
                     if(waitMinutes >= 0) {
                         if(waitMinutes <= CanteenStatus.FREE.threshold) {
                             canteenStatus[i] = CanteenStatus.FREE.id;
@@ -93,9 +103,8 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
                             canteenStatus[i] = CanteenStatus.FULL.id;
                         }
                     } else {
-                        res.status(500);
                         var errorDescription = "Invalid result from database";
-                        res.end(errorDescription);
+                        self.processInternalServerFailure(res, errorDescription);
                     }
                 }
             }
@@ -105,11 +114,11 @@ module.exports = class HomePageHandler extends ApplicationHandlerSkeleton {
                     canteenAffStatus_2: canteenStatus[1],
                     canteenAffStatus_3: canteenStatus[2]
             }, function(data) {
-                    res.writeHead(200, {'Content-Type': 'text/html'});
+                    res.writeHead(HttpStatus.OK.status, {'Content-Type': 'text/html'});
                     res.end(data);
             }); 
         }, function(err) {
-            console.log(err);
+            self.processFailure(res, err);
         });
     }
     
