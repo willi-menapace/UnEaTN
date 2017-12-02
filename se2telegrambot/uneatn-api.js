@@ -43,6 +43,10 @@ function getCanteenList() {
                 reject(REQ_FAIL);
                 return;
             }
+            console.log('CenteenListError\n');
+            console.log('error: ' + error + '\n');
+            console.log('response: ' + response + '\n');
+            console.log('body: ' + body + '\n');
             reject(REQ_FAIL);
             return;
         });
