@@ -1,6 +1,9 @@
 #!/bin/bash
 
 BRANCH="master"
+TELEGRAM_TOKEN="483884774:AAGbt5DFB214pfoisaMXfMqyLOoGaJKsNdc"
+DIALOGFLOW_TOKEN="957a68d0a11d4ac8b28396d199d79b65"
+AUTH_TOKEN="]VsM°O&>KIc{=qdZP8({qVZlExK8yN;bXYE}EWMa{Ptg|.#%zk1q4kkgu!pPBC)tr)"
 
 if [ -z "$1" ]
 	then
@@ -52,11 +55,11 @@ if [ -z "$1" ]
 		heroku buildpacks:add --index 1 heroku/nodejs
 
 		# setting enviroment variables
-		heroku config:set TELEGRAM_TOKEN=483884774:AAGbt5DFB214pfoisaMXfMqyLOoGaJKsNdc
+		heroku config:set TELEGRAM_TOKEN=$TELEGRAM_TOKEN
 		heroku config:set HOST_URL=$(heroku info -s | grep web_url | cut -d= -f2)
 		heroku config:set URL_UNEATN=$(heroku info -s | grep web_url | cut -d= -f2)
-		heroku config:set DIALOGFLOW_TOKEN=957a68d0a11d4ac8b28396d199d79b65
-		heroku config:set AUTH_TOKEN=]VsM°O&>KIc{=qdZP8({qVZlExK8yN;bXYE}EWMa{Ptg|.#%zk1q4kkgu!pPBC)tr)
+		heroku config:set DIALOGFLOW_TOKEN=$DIALOGFLOW_TOKEN
+		heroku config:set AUTH_TOKEN=$AUTH_TOKEN
 
 		# push on heroku bot remote
 		git push heroku heroku-tmp:master
@@ -67,10 +70,6 @@ if [ -z "$1" ]
 		# checkout previous branch
 		git checkout $BRANCH
 
-		git status
-
 		# delete temporary branch
 		git branch -D heroku-tmp
-
-		git status
 fi
