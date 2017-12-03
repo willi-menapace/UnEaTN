@@ -32,7 +32,7 @@ module.exports = class HomePagePreprocessor {
     parseAndValidate(req) {
         var promiseFunction = function(resolve, reject) {
             var homePageAttributes = null;
-            var requestDate = new Date();
+            var requestDate = TimeHelper.getDateByTime(TimeHelper.getTimeByDate(new Date()));
             var weekDay;
             
             // If today is SUNDAY
