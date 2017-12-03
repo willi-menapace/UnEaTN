@@ -173,7 +173,7 @@ function getBestTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek) {
 *   error message - otherwise
 */
 function addTime(authToken, telegramID, canteenName, waitingTime, arriveHour, arriveMinute) {
-    const URL_POSTFIX = '/addTime';
+    const URL_POSTFIX = 'addTime';
 
     return new Promise(function(resolve, reject) {
         if(authToken === undefined || telegramID === undefined || canteenName === undefined || waitingTime === undefined || arriveHour === undefined || arriveMinute === undefined) {
