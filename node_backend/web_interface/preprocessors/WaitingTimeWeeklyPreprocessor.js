@@ -37,14 +37,15 @@ module.exports = class WaitingTimeDailyPreprocessor {
         var promiseFunction = function(resolve, reject) {
             var waitingTimeWeeklyAttributes = null;
             var canteenId = null;
-            var canteenIdAttribute = parseInt(req.query.canteenId);
+            var canteenIdAttribute = req.query.canteenId;
             var error = null;
 
             // If canteen id which is passed by front-end is null then PASTO_LESTO will be set
-            if(typeof canteenIdAttribute === 'undefined' || canteenIdAttribute === null || isNaN(canteenIdAttribute)) {
+            if(typeof canteenIdAttribute === 'undefined' || canteenIdAttribute === null) {
                 canteenIdAttribute = Canteens.PASTO_LESTO.id;
             }
-
+            
+            canteenIdAttribute = parseInt(canteenIdAttribute);
             switch(canteenIdAttribute) {
                 case Canteens.PASTO_LESTO.id:
                     canteenId = Canteens.PASTO_LESTO.id;
