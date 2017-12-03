@@ -64,7 +64,7 @@ module.exports = class BestWaitingTimePreprocessor{
             } else if(typeof endTimeAttribute === 'undefined' || endTimeAttribute === null && !isFirstRequest) {
                 error = new Error(HttpStatus.BAD_REQUEST, ErrorType.END_TIME_ERROR);
             } else {
-                day = dayAttribute;
+                day = parseInt(dayAttribute);
                 startDate = TimeHelper.getDateByTime(startTimeAttribute);
                 endDate = TimeHelper.getDateByTime(endTimeAttribute);
             }
