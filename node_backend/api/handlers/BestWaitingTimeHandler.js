@@ -3,8 +3,12 @@ var BestWaitingTimePreprocessor = require('../preprocessors/BestWaitingTimePrepr
 var CanteenDBHelper = require('../../database/helpers/CanteenDBHelper.js');
 var PrevisionDataDBHelper = require("../../database/helpers/PrevisionDataDBHelper.js");
 var PrevisionData = require("../../database/entities/PrevisionDataEntity.js");
-var TimeChecker = require("../../common/TimeChecker.js");
+var TimeHelper = require("../../common/TimeHelper.js");
+var HttpStatus = require("../../common/HttpStatus.js");
 
+//                                  JSON RESPONSE STRUCTURE
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class Values{
     constructor(bestTime, waitingTime){
         this.bestTime = bestTime;
@@ -13,19 +17,19 @@ class Values{
 }
 
 class BestTime{
-    constructor(name, error, values){
-        this.name = name;
-        this.error = error;
+    constructor(codeName, isClosed, values){
+        this.codeName = codeName;
+        this.isClosed = isClosed;
         this.values = values;
     }
 }
 class JsonResponse{
-    constructor(error, bestTimesArray){
-        this.error = error;
-        this.bestWaitingTimes = bestTimesArray;  //array
+    constructor(bestTimesArray){
+        this.bestTime = bestTimesArray;  //array
     } 
 }
-
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 module.exports = class BestWaitingTimeHandler extends ApplicationHandlerSkeleton{
     
@@ -33,14 +37,8 @@ module.exports = class BestWaitingTimeHandler extends ApplicationHandlerSkeleton
         var preprocessor = new BestWaitingTimePreprocessor();
         super(preprocessor);
     }
-    processParseOfValidationFailure(res, errorDescription) {
-        
-        var json = JSON.stringify({
-            error: true,  //to test
-            errorDescription: errorDescription
-        });
-        res.writeHead(200, {'Content-Type': 'application/json', 'Accept': 'application/json'});
-        res.end(json);
+    processFailure(res, err) {
+        res.status(err.statusType.status).send(err.descriptionType.errorDescription);
     }
     
     processRequest(res, attributes) {
@@ -61,23 +59,23 @@ module.exports = class BestWaitingTimeHandler extends ApplicationHandlerSkeleton
             
             return Promise.all(promiseArray);
         }, function(err){
-            console.log("error");
+            this.processFailure(res, err);
         }).then(function(previsionDataArray){
             for(var i = 0; i < previsionDataArray.length; i++){
                 if(previsionDataArray[i] === null){
-                    var bestTime = new BestTime(canteensArray[i].name, true, new Values(null, null));
+                    var bestTime = new BestTime(canteensArray[i].codeName, true, new Values(null, null));
                 } else{
-                    var bestTime = new BestTime(canteensArray[i].name, false, new Values(TimeChecker.fromTimeToStringHoursAndMinutes(previsionDataArray[i].arriveTime), Math.floor(previsionDataArray[i].waitSeconds / 60)) );
+                    var bestTime = new BestTime(canteensArray[i].codeName, false, new Values(TimeHelper.fromTimeToStringHoursAndMinutes(previsionDataArray[i].arriveTime), Math.floor(previsionDataArray[i].waitSeconds / 60)) );
                 }
                 bestTimesArray.push(bestTime);
             }
-            var jsonResponse = new JsonResponse(false, bestTimesArray);
+            var jsonResponse = new JsonResponse(bestTimesArray);
             
             var json = JSON.stringify(jsonResponse);
             res.writeHead(200, {'Content-Type': 'application/json', 'Accept': 'application/json'});
             res.end(json);
-        }, function(){
-            console.log("error");
+        }, function(err){
+            this.processFailure(res, err);
         });
         
     }

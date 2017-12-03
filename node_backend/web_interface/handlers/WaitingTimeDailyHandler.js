@@ -6,7 +6,8 @@ var PrevisionDataEntity = require('../../database/entities/PrevisionDataEntity.j
 var PrevisionDataDBHelper = require('../../database/helpers/PrevisionDataDBHelper.js');
 var OpeningHourEntity = require('../../database/entities/OpeningHourEntity.js');
 var OpeningHourDBHelper = require('../../database/helpers/OpeningHourDBHelper.js');
-var TimeChecker = require('../../common/TimeChecker.js');
+var TimeHelper = require('../../common/TimeHelper.js');
+var HttpStatus = require('../../common/HttpStatus.js');
 var bind = require('bind');
 
 class StatisticalData {
@@ -22,93 +23,29 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
         super(preprocessor);
     }
     
-    processParseOfValidationFailure(res, errorDescription) {
-        res.status(500);
-        res.end(errorDescription);
+    processFailure(res, err) {
+        var errorStatus = err.statusType.status;
+        var errorDescription = err.descriptionType.errorDescription;
+        bind.toFile('./node_backend/web_interface/tpl/error.tpl', {
+            errorStatus: errorStatus,
+            errorDescription: errorDescription
+        }, function(data) {
+            res.writeHead(errorStatus, {'Content-Type': 'text/html'});
+            res.end(data);
+        });
     }
-    
-    addMinutes(date, minutes) {
-        return new Date(date.getTime() + minutes*60000);
-    }
-    
-    getDateByTime(time) {
-        const HOURS_INDEX = 0;
-        const MINUTES_INDEX = 1;
-        var dateTime = new Date();
-        var splittedTime = time.split(":",2);
-        var hours = splittedTime[HOURS_INDEX];
-        var minutes = splittedTime[MINUTES_INDEX];
-        dateTime.setHours(hours);
-        dateTime.setMinutes(minutes);
-        dateTime.setSeconds(0);
-        dateTime.setMilliseconds(0);
-        
-        return dateTime;
-    }
-    
-    getTimeByDate(date) {
-        const HOURS_INDEX = 0;
-        const MINUTES_INDEX = 1;
-        var dateText = date.toTimeString();
-        dateText = dateText.split(' ')[0];
-        var timeSeparator = ":";
-        var splittedTime = dateText.split(timeSeparator);
-        var hoursText = splittedTime[HOURS_INDEX];
-        var minutesText = splittedTime[MINUTES_INDEX];
-        var timeText = hoursText.concat(timeSeparator.concat(minutesText));
-        
-        return timeText;
-    }
-    
-    // Search for a previsionData which has an arrive time equal to time
-    getPrevisionDataByTime(previsionsData, time) {
-        var previsionData = null;
-        for(var i = 0; i < previsionsData.length && previsionData === null; i++) {
-            var arriveTimeDate = this.getDateByTime(previsionsData[i].arriveTime);
-            var arriveTimeHours = arriveTimeDate.getHours();
-            var arriveTimeMinutes = arriveTimeDate.getMinutes();
-            if(arriveTimeHours == time.getHours() && arriveTimeMinutes == time.getMinutes())
-                previsionData = previsionsData[i];
-        }
-        return previsionData;
-    }
-    
-    // This method has to be called if and only if openingHours contains at least a non null element
-    getMinOpenDateTime(openingHours) {
-        var minOpenDateTime = new Date(8640000000000000); // latest date
-        for(var i = 0; i < openingHours.length; i++) {
-            var openDateTime = this.getDateByTime(openingHours[i].openTime);
-            if(openingHours[i] !== null && openDateTime < minOpenDateTime) 
-                minOpenDateTime = openDateTime;
-            }
-        return minOpenDateTime;
-    }  
-        
-    
-    // This method has to be called if and only if openingHours contains at least a non null element
-    getMaxCloseDateTime(openingHours) {
-        var maxCloseDateTime = new Date(-8640000000000000); // earliest date
-        for(var i = 0; i < openingHours.length; i++) {
-            var closeDateTime = this.getDateByTime(openingHours[i].closeTime);
-            if(openingHours[i] !== null && closeDateTime > maxCloseDateTime) 
-                maxCloseDateTime = closeDateTime;
-        }
-        return maxCloseDateTime;
-    }  
     
     processRequest(res, waitingTimeDailyAttributes) {
+        const SECONDS_PER_MINUTE = 60;
         var self = this;
         var canteenDBHelper = new CanteenDBHelper();
         var previsionDataDBHelper = new PrevisionDataDBHelper();
         var openingHourDBHelper = new OpeningHourDBHelper();
         var weekDay = waitingTimeDailyAttributes.getDay();
-        var previsionsData = [];
-        var openingHours = [];
-        var isEmptyOpeningHours = true;
-        var statisticalData = null;
         var savedCanteens;
         var savedOpeningHours;
         var canteenPrevision;
+        
         canteenDBHelper.getAllCanteens().then(function(canteens) {
             savedCanteens = canteens;
             var promiseArray = [];
@@ -121,7 +58,7 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
             return Promise.all(promiseArray);
             
         }, function(err) {
-            console.log(err);
+            self.processFailure(res, err);
         }).then(function(openingHours) {
             savedOpeningHours = openingHours;
             var promiseArray = [];
@@ -137,9 +74,10 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
             return Promise.all(promiseArray);
             
         }, function(err) {
-            console.log(err);
+            self.processFailure(res, err);
         }).then(function(previsionDataArray) {
             var isEmptyPrevisionDataArray = true;
+            var dailyStatistics;
             
             for(var i = 0; i < previsionDataArray.length && isEmptyPrevisionDataArray; i++) {
                 if(previsionDataArray[i] !== null) {
@@ -148,11 +86,12 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
             }
             
             if(!isEmptyPrevisionDataArray) {
-                var minOpenDateTime = self.getMinOpenDateTime(savedOpeningHours);
-                var maxCloseDateTime = self.getMaxCloseDateTime(savedOpeningHours);
-                var dailyStatistics = [];
+                var minOpenDateTime = TimeHelper.getMinOpenDateTime(savedOpeningHours);
+                var maxCloseDateTime = TimeHelper.getMaxCloseDateTime(savedOpeningHours);
+                dailyStatistics = [];
+                
                 // In this case there will be at least one canteen open at that day with its corresponding previsionData
-                for(var timeIterator = minOpenDateTime; timeIterator <= maxCloseDateTime; timeIterator = self.addMinutes(timeIterator, 10)) {
+                for(var timeIterator = minOpenDateTime; timeIterator <= maxCloseDateTime; timeIterator = TimeHelper.addMinutes(timeIterator, 5)) {
                     var canteensPrevisionData = [];
                     for(var j = 0; j < previsionDataArray.length; j++) {
                         // If canteen[j] is open at a given time then waiting time will be set to number of 
@@ -160,37 +99,36 @@ module.exports = class WaitingTimeDailyHandler extends ApplicationHandlerSkeleto
                         if(previsionDataArray[j] === null) {
                             canteensPrevisionData[j] = null; // Closed canteen due to closed canteen or no prevision for that canteen
                         } else {
-                            canteenPrevision = self.getPrevisionDataByTime(previsionDataArray[j], timeIterator);
-                            canteensPrevisionData[j] = Math.round(canteenPrevision.waitSeconds / 60);
+                            canteenPrevision = TimeHelper.getPrevisionDataByTime(previsionDataArray[j], timeIterator);
+                            var waitMinutes = Math.round(canteenPrevision.waitSeconds / SECONDS_PER_MINUTE);
+                            canteensPrevisionData[j] = waitMinutes;
                         }
-
                     }
 
-                    var statisticalData = new StatisticalData(self.getTimeByDate(timeIterator), canteensPrevisionData);    
+                    var statisticalData = new StatisticalData(TimeHelper.getTimeByDate(timeIterator), canteensPrevisionData);    
                     dailyStatistics.push(statisticalData);
-
+                    
                 }
             } else {
                 // In this case there won't be any canteen open at that day
-                var dailyStatistics = null
+                dailyStatistics = null
             }
             
             var dailyStatisticsJSON = {
                 statistics: dailyStatistics
             };
 
-            bind.toFile('./web_interface/tpl/compChart.tpl', {
+            bind.toFile('./node_backend/web_interface/tpl/compChart.tpl', {
                 selectedDay: weekDay,
                 dailyStatistics: JSON.stringify(dailyStatisticsJSON)
             }, function(data) {
-                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.writeHead(HttpStatus.OK.status, {'Content-Type': 'text/html'});
                 res.end(data);
             });
 
         }, function(err) {
-            console.log(err);
+            self.processFailure(res, err);
         });
-
     }
         
 }

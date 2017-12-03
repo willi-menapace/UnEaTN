@@ -7,14 +7,49 @@
 * Author: Giuliani Daniele
 */
 
-var URL_UNEATN = 'http://localhost:8080'; //todo set correct default url
+var URL_UNEATN = process.env.UNEATN_URL || 'http://localhost:8080/'; //second url is used for testing purpuses only
 
 var request = require('request');
 
 /* ERROR MESSAGES */
-const MISSING_PARAM = "Missing parameters!";
-const BAD_PARAM = "Bad parameters!";
-const REQ_FAIL = "Request failed!";
+const MISSING_PARAM = 'Missing parameters!';
+const BAD_PARAM = 'Bad parameters!';
+const REQ_FAIL = 'Request failed!';
+const NO_PREVISION = 'The canteen is closed!';
+const BAD_DATA = 'Submitted data is not valid!';
+
+/*
+* Method for fetching the list of available canteen codenames
+* Returns a promise containing:
+*   an array of codenames - if request was completed succesfully
+*   error message - otherwise
+*/
+function getCanteenList() {
+    const URL_POSTFIX = 'api/v1/codeName';
+    return new Promise(function(resolve, reject) {
+        var options = {
+            uri: URL_UNEATN + URL_POSTFIX,
+            method: 'GET'
+        };
+
+        request(options, function(error, response, body) {
+            if(!error) {
+                if(response.statusCode === 200) {
+                    var jsonBody = JSON.parse(body);
+                    resolve(jsonBody.codeName);
+                    return;
+                }
+                console.log('UNEATN-API: response status code: ' + response.statusCode);
+                reject(REQ_FAIL);
+                return;
+            } else {
+                console.log('UNEATN-API: fetching canteen returned: ' + error);
+            }
+            reject(REQ_FAIL);
+            return;
+        });
+    });
+}
 
 /*
 * Method for querying the waiting time of a specific canteen in a certain moment
@@ -22,8 +57,8 @@ const REQ_FAIL = "Request failed!";
 *   waitingTime - if promise was resolved succesfully (will be null if no time is available)
 *   error message - if promise was rejected
 */
-function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
-    const URL_POSTFIX = '/api/waitingTimeCanteen';
+function getWaitTime(canteenName, hour, minute, dayOfTheWeek) {
+    const URL_POSTFIX = 'api/v1/waitTime';
 
     return new Promise(function(resolve, reject) {
         if(canteenName === undefined || hour === undefined || minute === undefined || dayOfTheWeek === undefined) {
@@ -36,8 +71,8 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
         }
         var time = hour + ':' + minute;
 
-        var jsonBody = {
-            'canteenName':canteenName,
+        var propertiesObject = {
+            'codeName':canteenName,
             'time':time,
             'day':dayOfTheWeek
         };
@@ -45,20 +80,24 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
         var options = {
             uri: URL_UNEATN + URL_POSTFIX,
             method: 'GET',
-            body: jsonBody,
-            json:true
+            qs: propertiesObject
         };
 
         request(options, function(error, response, body) {
-            if(!error && response.statusCode === 200) {
-                //controllo parametro errore sul json
-                if(body.error === false) {
-                    resolve(body.waitingTime);
-                    return;
-                } else {
-                    reject(body.errorDescription);
-                    return;
+            if(!error) {
+                if(response.statusCode === 200) {
+                    var jsonBody = JSON.parse(body);
+                    if(jsonBody.isClosed === false) {
+                        resolve(jsonBody.waitingTime);
+                        return;
+                    } else {
+                        reject(NO_PREVISION);
+                        return;
+                    }
                 }
+                console.log('UNEATN-API: response status code: ' + response.statusCode);
+                reject(REQ_FAIL);
+                return;
             }
             reject(REQ_FAIL);
             return;
@@ -67,25 +106,23 @@ function waitingTimeCanteen(canteenName, hour, minute, dayOfTheWeek) {
     });
 }
 
-
 /*
 * Method for querying the best time to eat of all the canteen provided a time intrval
 * Returns a promise containing:
 *   A json object with this pattern:
 *       {
-*           'error':false,
             'bestWaitingTimes':
                 [
-                    {'name':'povo0', 'error':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
-                    {'name':'povo0', 'error':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
-                    {'name':'povo0', 'error':true, 'values':{'bestTime':null, 'waitingTime':null}}
+                    {'name':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+                    {'name':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+                    {'name':'povo0', 'isClosed':true, 'values':{'bestTime':null, 'waitingTime':null}}
                 ]
 *       }
 *       if the promise was resolved succesfully
 *   error message - if promise was rejected
 */
-function bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek) {
-    const URL_POSTFIX = '/api/bestWaitingTime';
+function getBestTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek) {
+    const URL_POSTFIX = 'api/v1/bestTime';
 
     return new Promise(function(resolve, reject) {
         if(startHour === undefined || startMinute === undefined || endHour === undefined || endMinute === undefined || dayOfTheWeek === undefined) {
@@ -100,7 +137,7 @@ function bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWee
         var startTime = startHour + ':' + startMinute;
         var endTime = endHour + ':' + endMinute;
 
-        var jsonBody = {
+        var propertiesObject = {
             'startTime':startTime,
             'endTime':endTime,
             'day':dayOfTheWeek
@@ -109,20 +146,19 @@ function bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWee
         var options = {
             uri: URL_UNEATN + URL_POSTFIX,
             method: 'GET',
-            body: jsonBody,
-            json:true
+            qs: propertiesObject
         };
 
         request(options, function(error, response, body) {
-            if(!error && response.statusCode === 200) {
-                //controllo parametro errore sul json
-                if(body.error === false) {
-                    resolve(body);
-                    return;
-                } else {
-                    reject(body.errorDescription);
+            if(!error) {
+                if(response.statusCode === 200) {
+                    var jsonBody = JSON.parse(body);
+                    resolve(jsonBody);
                     return;
                 }
+                console.log('UNEATN-API: response status code: ' + response.statusCode);
+                reject(REQ_FAIL);
+                return;
             }
             reject(REQ_FAIL);
             return;
@@ -136,11 +172,11 @@ function bestWaitingTime(startHour, startMinute, endHour, endMinute, dayOfTheWee
 *   true - if request was completed succesfully
 *   error message - otherwise
 */
-function addWaitingTime(telegramID, canteenName, waitingTime, arriveHour, arriveMinute) {
-    const URL_POSTFIX = '/addWaitingTime';
+function addTime(authToken, telegramID, canteenName, waitingTime, arriveHour, arriveMinute) {
+    const URL_POSTFIX = 'addTime';
 
     return new Promise(function(resolve, reject) {
-        if(telegramID === undefined || canteenName === undefined || waitingTime === undefined || arriveHour === undefined || arriveMinute === undefined) {
+        if(authToken === undefined || telegramID === undefined || canteenName === undefined || waitingTime === undefined || arriveHour === undefined || arriveMinute === undefined) {
             reject(MISSING_PARAM);
             return;
         }
@@ -152,35 +188,40 @@ function addWaitingTime(telegramID, canteenName, waitingTime, arriveHour, arrive
         var arriveTime = arriveHour + ':' + arriveMinute;
 
         var jsonBody = {
-            'telegramID':telegramID,
-            'canteenName':canteenName,
+            'authToken':authToken,
+            'telegramId':telegramID,
+            'codeName':canteenName,
             'waitingTime':waitingTime,
             'arriveTime':arriveTime
         };
 
         var options = {
             uri: URL_UNEATN + URL_POSTFIX,
-            method: 'PUT',
+            method: 'POST',
             body: jsonBody,
             json:true
         };
 
         request(options, function(error, response, body) {
-            if(!error && response.statusCode === 200) {
-                //controllo parametro errore sul json
-                if(body.error === false) {
-                    resolve(true);
-                    return;
-                } else {
-                    reject(body.errorDescription);
+            if(!error) {
+                if(response.statusCode === 200) {
+                    if(body.isClosed === false) {
+                        resolve(true);
+                        return;
+                    }
+                    reject(BAD_DATA);
                     return;
                 }
+                console.log('UNEATN-API: response status code: ' + response.statusCode);
+                reject(REQ_FAIL);
+                return;
             }
             reject(REQ_FAIL);
             return;
         });
     });
 }
+
 
 /*
 * Method used to set another URL for the api server
@@ -200,13 +241,16 @@ function overrideServerAPI(url) {
 /* EXPORT OF FUNCTIONS */
 module.exports = {
     //function
-    waitingTimeCanteen: waitingTimeCanteen,
-    bestWaitingTime: bestWaitingTime,
-    addWaitingTime: addWaitingTime,
+    getCanteenList: getCanteenList,
+    getWaitTime: getWaitTime,
+    getBestTime: getBestTime,
+    addTime: addTime,
     //error messages
     MISSING_PARAM: MISSING_PARAM,
     BAD_PARAM: BAD_PARAM,
     REQ_FAIL: REQ_FAIL,
+    NO_PREVISION: NO_PREVISION,
+    BAD_DATA: BAD_DATA,
     //testing function
     overrideServerAPI: overrideServerAPI
 };

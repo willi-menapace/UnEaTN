@@ -28,8 +28,8 @@ class QueuePredictor:
     def __init__(self, openingHours, measureEntityList):
 
         #Minimum number of training iterations. Guards against bad initial training points which cause training to end prematurely
-        self._minIterations = 150
-        self._maxRetries = 20
+        self._minIterations = 250
+        self._maxRetries = 100
 
         #Creates data arrays
         measuresCount = len(measureEntityList)
@@ -80,10 +80,18 @@ class QueuePredictor:
         regressor.fit(self._arriveTimes, self._waitTimes)
 
         retriesCount = 0
+        bestRegressor = regressor
+
         #Guards against premature training failure
         while regressor.n_iter_ < self._minIterations and retriesCount < self._maxRetries:
             regressor.fit(self._arriveTimes, self._waitTimes)
             retriesCount += 1
+            if regressor.n_iter_ > bestRegressor.n_iter_:
+                bestRegressor = regressor
+
+        regressor = bestRegressor
+        if retriesCount == self._maxRetries:
+            print("Warning: training failure of queue predictor model")
 
         predictedValues = []
 

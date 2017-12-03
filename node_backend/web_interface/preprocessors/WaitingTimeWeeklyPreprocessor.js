@@ -1,16 +1,7 @@
 var enumify = require('enumify');
-
-class WaitingTimeWeeklyAttributes {
-    constructor(canteenId) {
-        this.canteenId = canteenId;    
-    }
-    getCanteenId() {
-        return this.canteenId;
-    }
-    setCanteenId(canteenId) {
-        this.canteenId = canteenId;
-    }
-}
+var Error = require('../../common/Error.js');
+var HttpStatus = require('../../common/HttpStatus.js');
+var ErrorType = require('../../common/ErrorType.js');
 
 class Canteens extends enumify.Enum {};
 Canteens.initEnum({
@@ -25,17 +16,29 @@ Canteens.initEnum({
     },
 });
 
+class WaitingTimeWeeklyAttributes {
+    constructor(canteenId) {
+        this.canteenId = canteenId;    
+    }
+    getCanteenId() {
+        return this.canteenId;
+    }
+    setCanteenId(canteenId) {
+        this.canteenId = canteenId;
+    }
+}
+
 module.exports = class WaitingTimeDailyPreprocessor {
     constructor() {
         // DEFAULT CONSTRUCTOR
     }
     
     parseAndValidate(req) {
-        var self = this;
         var promiseFunction = function(resolve, reject) {
             var waitingTimeWeeklyAttributes = null;
             var canteenId = null;
             var canteenIdAttribute = parseInt(req.query.canteenId);
+            var error = null;
 
             // If canteen id which is passed by front-end is null then PASTO_LESTO will be set
             if(typeof canteenIdAttribute === 'undefined' || canteenIdAttribute === null || isNaN(canteenIdAttribute)) {
@@ -52,16 +55,15 @@ module.exports = class WaitingTimeDailyPreprocessor {
                 case Canteens.POVO_1.id:
                     canteenId = Canteens.POVO_1.id;
                     break;
+                default:
+                    // At this point canteenId will be equal to null
             }
 
-            canteenId = canteenIdAttribute;
-
-            waitingTimeWeeklyAttributes = new WaitingTimeWeeklyAttributes(canteenId);
-
             if(canteenId === null) {
-                var errorDescription = "Invalid canteen";
-                reject(errorDescription);
+                error = new Error(HttpStatus.BAD_REQUEST, ErrorType.CANTEEN_ERROR);
+                reject(error);
             } else {
+                waitingTimeWeeklyAttributes = new WaitingTimeWeeklyAttributes(canteenId);
                 resolve(waitingTimeWeeklyAttributes);
             }
         }   

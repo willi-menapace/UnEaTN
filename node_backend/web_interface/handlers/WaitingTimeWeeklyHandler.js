@@ -4,6 +4,8 @@ var OpeningHourEntity = require('../../database/entities/OpeningHourEntity.js');
 var OpeningHourDBHelper = require('../../database/helpers/OpeningHourDBHelper.js');
 var PrevisionDataEntity = require('../../database/entities/PrevisionDataEntity.js');
 var PrevisionDataDBHelper = require('../../database/helpers/PrevisionDataDBHelper.js');
+var TimeHelper = require('../../common/TimeHelper.js');
+var HttpStatus = require('../../common/HttpStatus.js');
 var bind = require('bind');
 
 class StatisticalData {
@@ -19,69 +21,30 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
         super(preprocessor);
     }
     
-    processParseOfValidationFailure(res, errorDescription) {
-        res.status(500);
-        res.end(errorDescription);
-    }
-    
-    addMinutes(date, minutes) {
-        return new Date(date.getTime() + minutes*60000);
-    }
-    
-    getDateByTime(time) {
-        const HOURS_INDEX = 0;
-        const MINUTES_INDEX = 1;
-        var dateTime = new Date();
-        var splittedTime = time.split(":",2);
-        var hours = splittedTime[HOURS_INDEX];
-        var minutes = splittedTime[MINUTES_INDEX];
-        dateTime.setHours(hours);
-        dateTime.setMinutes(minutes);
-        dateTime.setSeconds(0);
-        dateTime.setMilliseconds(0);
-        
-        return dateTime;
-    }
-    
-    getTimeByDate(date) {
-        const HOURS_INDEX = 0;
-        const MINUTES_INDEX = 1;
-        var dateText = date.toTimeString();
-        dateText = dateText.split(' ')[0];
-        var timeSeparator = ":";
-        var splittedTime = dateText.split(timeSeparator);
-        var hoursText = splittedTime[HOURS_INDEX];
-        var minutesText = splittedTime[MINUTES_INDEX];
-        var timeText = hoursText.concat(timeSeparator.concat(minutesText));
-        
-        return timeText;
-    }
-    
-    getPrevisionDataByTime(previsionsData, time) {
-        var previsionData = null;
-        for(var i = 0; i < previsionsData.length && previsionData === null; i++) {
-            // TODO: Change the follow condition by calling function of TimeChecker to check if hours and minutes correspond
-            var arriveTimeDate = this.getDateByTime(previsionsData[i].arriveTime);
-            var arriveTimeHours = arriveTimeDate.getHours();
-            var arriveTimeMinutes = arriveTimeDate.getMinutes();
-            if(arriveTimeHours == time.getHours() && arriveTimeMinutes == time.getMinutes())
-                previsionData = previsionsData[i];
-        }
-        return previsionData;
+    processFailure(res, err) {
+        var errorStatus = err.statusType.status;
+        var errorDescription = err.descriptionType.errorDescription;
+        bind.toFile('./node_backend/web_interface/tpl/error.tpl', {
+            errorStatus: errorStatus,
+            errorDescription: errorDescription
+        }, function(data) {
+            res.writeHead(errorStatus, {'Content-Type': 'text/html'});
+            res.end(data);
+        });
     }
     
     processRequest(res, waitingTimeWeeklyAttributes) {
+        const SECONDS_PER_MINUTE = 60;
         var self = this;
         var openingHourDBHelper = new OpeningHourDBHelper();
         var previsionDataDBHelper = new PrevisionDataDBHelper();
-        var previsionsData = [];
         var canteenId = waitingTimeWeeklyAttributes.getCanteenId();
         var statisticalData = null;
         var canteenPrevision = null;
         var savedOpeningHours;
-        var openingHours = openingHourDBHelper.getOpeningHoursByCanteenId(canteenId).then(function(openingHours) {
+        
+        openingHourDBHelper.getOpeningHoursByCanteenId(canteenId).then(function(openingHours) {
             savedOpeningHours = openingHours;
-            
             var promiseArray = [];
             
             if(typeof openingHours !== 'undefined' && openingHours.length > 0) {
@@ -97,9 +60,10 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
             return Promise.all(promiseArray);
             
         }, function(err) {
-            console.log(err);
+            self.processFailure(res, err);
         }).then(function(previsionDataForEachDay) {
             var isEmptyPrevisionDataForEachDay = true;
+            var weeklyStatistics;
             
             for(var i = 0; i < previsionDataForEachDay.length && previsionDataForEachDay; i++) {
                 if(previsionDataForEachDay[i] !== null) {
@@ -109,7 +73,7 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
             
             if(!isEmptyPrevisionDataForEachDay) {
                 // In this case there will be at least one day in which the provided canteen contains some previsions
-                var weeklyStatistics = [];
+                weeklyStatistics = [];
                 if(typeof previsionDataForEachDay !== 'undefined' && previsionDataForEachDay.length > 0) {
                     for(var i = 0; i < previsionDataForEachDay.length; i++) {
                         if(previsionDataForEachDay[i] === null) {
@@ -119,13 +83,15 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
                             // In this case the provided canteen has some previsions in weekDay i
                             weeklyStatistics[i] = [];
                             var openTime = savedOpeningHours[i].openTime;
-                            var openTimeDate = self.getDateByTime(openTime);
+                            var openTimeDate = TimeHelper.getDateByTime(openTime);
                             var closeTime = savedOpeningHours[i].closeTime;
-                            var closeTimeDate = self.getDateByTime(closeTime);
+                            var closeTimeDate = TimeHelper.getDateByTime(closeTime);
 
-                            for(var timeIterator = openTimeDate; timeIterator <= closeTimeDate; timeIterator = self.addMinutes(timeIterator, 10)) {
-                                canteenPrevision = self.getPrevisionDataByTime(previsionDataForEachDay[i], timeIterator);
-                                statisticalData = new StatisticalData(self.getTimeByDate(timeIterator), Math.round(canteenPrevision.waitSeconds / 60));
+                            for(var timeIterator = openTimeDate; timeIterator <= closeTimeDate; timeIterator = TimeHelper.addMinutes(timeIterator, 5)) {
+                                canteenPrevision = TimeHelper.getPrevisionDataByTime(previsionDataForEachDay[i], timeIterator);
+                                var arriveTime = TimeHelper.getTimeByDate(timeIterator);
+                                var waitMinutes = Math.round(canteenPrevision.waitSeconds / SECONDS_PER_MINUTE);
+                                statisticalData = new StatisticalData(arriveTime, waitMinutes);
                                 weeklyStatistics[i].push(statisticalData);
                             } 
                         }  
@@ -133,23 +99,24 @@ module.exports = class WaitingTimeWeeklyHandler extends ApplicationHandlerSkelet
                 }    
             } else {
                 // In this case there won't be any day in which the provided canteen contains some previsions
-                var weeklyStatistics = null;
+                weeklyStatistics = null;
             }
             
             var weeklyStatisticsJSON = {
                 statistics: weeklyStatistics
             };
             
-            bind.toFile('./web_interface/tpl/weekChart.tpl', {
+            bind.toFile('./node_backend/web_interface/tpl/weekChart.tpl', {
                 selectedCanteen: canteenId,
                 weeklyStatistics: JSON.stringify(weeklyStatisticsJSON)
             }, function(data) {
-                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.writeHead(HttpStatus.OK.status, {'Content-Type': 'text/html'});
                 res.end(data);
             });
               
         }, function(err) {
-            console.log(err);
+            self.processFailure(res, err);
         });
     }
+    
 }

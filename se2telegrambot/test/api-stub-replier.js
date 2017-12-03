@@ -17,27 +17,43 @@ var httpServer = require('http').createServer(app);
 
 app.use(bodyParser.json()); //for parsing application/json
 
+app.get('/api/v1/codeName', function(req, res) {
+    if(DEBUG) {
+        console.log('GET /api/v1/codeName');
+    }
 
-app.get('/api/waitingTimeCanteen', function (req, res) {
-    var jsonRequest = req.body;
+    jsonResponse = {
+        'codeName':['povo0', 'povo1', 'pastoLesto', 'testOK', 'testNO']
+    };
+
+    if(DEBUG) {
+        console.log('------------ RESPONSE ------------');
+        console.log(jsonResponse);
+    }
+
+    res.json(jsonResponse);
+});
+
+app.get('/api/v1/waitTime', function (req, res) {
+    var reqParam = req.query;
     var jsonResponse;
 
     if(DEBUG) {
-        console.log('GET /api/waitingTimeCanteen');
+        console.log('GET /api/v1/waitTime');
         console.log('------------ REQUEST ------------');
-        console.log(jsonRequest);
+        console.log(reqParam);
     }
 
     //sets error as default
     jsonResponse = {
-        'error':true,
-        'errorDescription':'description of the error'
+        'isClosed':true,
+        'waitingTime':null
     };
 
-    if(jsonRequest.hasOwnProperty('canteenName')) {
-        if(jsonRequest.canteenName.localeCompare('testOK') === 0) {   //setted value for passing the test
+    if(reqParam.hasOwnProperty('codeName')) {
+        if(reqParam.codeName.localeCompare('testOK') === 0) {   //setted value for passing the test
             jsonResponse = {
-                'error':false,
+                'isClosed':false,
                 'waitingTime':11
             };
         }
@@ -52,32 +68,30 @@ app.get('/api/waitingTimeCanteen', function (req, res) {
 });
 
 
-app.get('/api/bestWaitingTime', function (req, res) {
-    var jsonRequest = req.body;
+app.get('/api/v1/bestTime', function (req, res) {
+    var reqParam = req.query;
     var jsonResponse;
 
     if(DEBUG) {
-        console.log('GET /api/bestWaitingTime');
+        console.log('GET /api/v1/bestTime');
         console.log('------------ REQUEST ------------');
-        console.log(jsonRequest);
+        console.log(reqParam);
     }
 
-    jsonResponse = {
-        'error':true,
-        'errorDescription':'description of the error'
-    };
+    jsonResponse = {};
+    res.statusCode = 550;
 
-    if(jsonRequest.hasOwnProperty('startTime')) {
-        if(jsonRequest.startTime.localeCompare('99:99') === 0) {   //setted value for passing the test
+    if(reqParam.hasOwnProperty('startTime')) {
+        if(reqParam.startTime.localeCompare('11:11') === 0) {   //setted value for passing the test
             jsonResponse = {
-                'error':false,
-                'bestWaitingTimes':
+                'bestTime':
                     [
-                        {'name':'povo0', 'error':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
-                        {'name':'povo0', 'error':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
-                        {'name':'povo0', 'error':true, 'values':{'bestTime':null, 'waitingTime':null}}
+                        {'codeName':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+                        {'codeName':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+                        {'codeName':'povo0', 'isClosed':true, 'values':{'bestTime':null, 'waitingTime':null}}
                     ]
             };
+            res.statusCode = 200;
         }
     }
 
@@ -90,27 +104,24 @@ app.get('/api/bestWaitingTime', function (req, res) {
 });
 
 
-app.put('/addWaitingTime', function (req, res) {
+app.post('/addTime', function (req, res) {
     var jsonRequest = req.body;
     var jsonResponse;
 
     if(DEBUG) {
-        console.log('PUT /addWaitingTime');
+        console.log('POST /addTime');
         console.log('------------ REQUEST ------------');
         console.log(jsonRequest);
     }
 
-    jsonResponse = {
-        'error':true,
-        'errorDescription':'description of the error'
-    };
+    jsonResponse = {'isClosed':true};
+    res.statusCode = 550;
 
 
-    if(jsonRequest.hasOwnProperty('canteenName')) {
-        if(jsonRequest.canteenName.localeCompare('testOK') === 0) {   //setted value for passing the test
-            jsonResponse = {
-                'error':false
-            };
+    if(jsonRequest.hasOwnProperty('authToken')) {
+        if(jsonRequest.authToken.localeCompare('tokenOK') === 0) {   //setted value for passing the test
+            jsonResponse = {'isClosed':false};
+            res.statusCode = 200;
         }
     }
 

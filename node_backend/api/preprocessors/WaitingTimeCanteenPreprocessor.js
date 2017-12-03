@@ -1,7 +1,9 @@
-
 var CanteenDBHelper = require("../../database/helpers/CanteenDBHelper.js");
-var TimeChecker = require("../../common/TimeChecker.js");
-var OpeningHourDBHelper = require("../../database/helpers/OpeningHourDBHelper")
+var TimeHelper = require("../../common/TimeHelper.js");
+var OpeningHourDBHelper = require("../../database/helpers/OpeningHourDBHelper");
+var Error = require('../../common/Error.js');
+var HttpStatus = require('../../common/HttpStatus.js');
+var ErrorType = require('../../common/ErrorType.js');
 
 class WaitingTimeCanteenAttributes{
     constructor(){
@@ -37,43 +39,34 @@ module.exports = class WaitingTimeCanteenPreprocessor{
     
     parseAndValidate(req){
         var promiseFunction = function(resolve, reject){
+            //instance of helper that I need
             var canteenDBHelper = new CanteenDBHelper();
             var openingHoursDBHelper = new OpeningHourDBHelper();
 
             var attributes = new WaitingTimeCanteenAttributes();
-
-            var canteenNameAttribute = req.query.canteenName;
+            
+            //http attributes variables
+            var codeNameAttribute = req.query.codeName;
             var timeAttribute = req.query.time;  
             var dayAttribute = req.query.day;
-
+            
             var weekDay = parseInt(dayAttribute);
             
             var canteenGlobal;
-            var timeDate = TimeChecker.getDateFromHoursAndMinutesByString(timeAttribute);
-            canteenDBHelper.getCanteenByName(canteenNameAttribute).then(function(canteen){
+            var timeDate = TimeHelper.getDateFromHoursAndMinutesByString(timeAttribute);
+            canteenDBHelper.getCanteenByCodeName(codeNameAttribute).then(function(canteen){
                 canteenGlobal = canteen;
-                if(!(canteenNameAttribute instanceof String) && typeof canteenNameAttribute != 'string'){
-                    return Promise.reject("Missing Canteen Attribute");
+                if(!(codeNameAttribute instanceof String) && typeof codeNameAttribute != 'string'){
+                    reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.CANTEEN_ERROR));
                 } else if(canteen === null){
-                    return Promise.reject("Doesn't exixt any canteen with that name");
+                    reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.CANTEEN_ERROR));
                 } else if(timeDate === null){
-                    return Promise.reject("Missing time or Incorrect date format");
+                    reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.ARRIVE_TIME_ERROR));
                 } else if(isNaN(dayAttribute)){
-                    return Promise.reject("Missing day attribute or the attribute is not the correct index of the week day");
+                    reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.DAY_ERROR));
                 } else if(weekDay < 0 || weekDay > 6){
-                    return Promise.reject("Week day attribute is not valid, it must be ad index between 0 and 6");
+                    reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.DAY_ERROR));
                 } else{
-                    return openingHoursDBHelper.getOpeningHourByCanteenIdAndDay(canteen.canteenId, weekDay);
-                }
-            }, function(err){
-                return Promise.reject(err);
-            }).then(function(canteenSchedule){
-                var startCanteenTime = TimeChecker.getDateByTime(canteenSchedule.openTime);
-                var endCanteenTime = TimeChecker.getDateByTime(canteenSchedule.closeTime);
-                if(TimeChecker.compareHoursMinutesTimes(startCanteenTime, timeDate) == -1 || TimeChecker.compareHoursMinutesTimes(timeDate, endCanteenTime) == -1){
-                    reject("Invalid time, that canteen is closed!");
-                } else{
-                    
                     attributes.setTime(timeDate);
                     attributes.setDay(weekDay);
                     attributes.setCanteen(canteenGlobal);

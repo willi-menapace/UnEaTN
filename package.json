@@ -9,10 +9,14 @@
   "license": "ISC",
   "dependencies": {
     "apiai": "^4.0.3",
+    "bind": "^0.1.7",
     "body-parser": "^1.18.2",
+    "enumify": "^1.0.4",
     "express": "^4.16.2",
     "jest": "^21.2.1",
+    "mysql": "^2.15.0",
     "node-telegram-bot-api": "^0.29.0",
     "request": "^2.83.0"
   }
 }
+

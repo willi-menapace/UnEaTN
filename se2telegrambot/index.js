@@ -12,18 +12,24 @@
 */
 
 /* Fetching of enviroment variables */
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || '453354176:AAEsyCqr-LdNhjADBY_Z1xLxIytwLRjHVyM';
+const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || '483884774:AAGbt5DFB214pfoisaMXfMqyLOoGaJKsNdc';
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const HEROKU_URL = process.env.HEROKU_URL || 'https://se2telegrambot.herokuapp.com/';
+const HOST_URL = process.env.HOST_URL;
 
 /* Import of different modules */
 var TelegramBot = require('node-telegram-bot-api');
 var commandParser = require('./command-parser');
+var STUB_SERVER = require('./test/api-stub-replier');
+
+/* Error messages */
+const BAD_INPUT = 'Non riesco a capirti, prova con la chat!';
 
 
 /* BOT CONFIGURATION */
 
-console.log("Starting bot...");
+console.log('BOT: Starting bot...');
+console.log('BOT: Fetching codenames...');
+commandParser.initCodenameList();
 
 var bot;
 
@@ -31,6 +37,7 @@ var bot;
 if(NODE_ENV === 'development') {
     //starts the bot in polling mode (development only)
     bot = new TelegramBot(TELEGRAM_TOKEN, {polling: true});
+    //STUB_SERVER.start(8080, false); //start server for local testing
 } else {
     //starts the bot in webhook mode (production only)
     var options = {
@@ -39,26 +46,27 @@ if(NODE_ENV === 'development') {
         }
     };
     bot = new TelegramBot(TELEGRAM_TOKEN, options);
-    bot.setWebHook(HEROKU_URL + bot.token)
+    bot.setWebHook(HOST_URL + bot.token)
 }
 
-console.log('Bot started in ' + NODE_ENV + ' mode');
+console.log('BOT: Bot started in ' + NODE_ENV + ' mode');
 
 
 /* Bot logic */
 
 bot.on('message', function(msg){
-
-    var answer = commandParser.parse(msg).then(function(val) {
-        bot.sendMessage(msg.chat.id, val, {parse_mode: 'markdown'});
-        console.log('SUCCESFULL REQUEST: ' + msg.text); //todo remove this line (debug only)
-    }).catch(function(res) {
-        bot.sendMessage(msg.chat.id, res, {parse_mode: 'markdown'});
-        console.log('BAD REQUEST RECEIVED');
-        console.log('Req:');
-        console.log(msg.text);
-        console.log('Res:');
-        console.log(res);
-    });
-
+    if(msg.text === undefined) {
+        bot.sendMessage(msg.chat.id,  BAD_INPUT, {parse_mode: 'markdown'})
+    } else {
+        var answer = commandParser.parse(msg).then(function(val) {
+            bot.sendMessage(msg.chat.id, val, {parse_mode: 'markdown'});
+        }).catch(function(res) {
+            bot.sendMessage(msg.chat.id, res, {parse_mode: 'markdown'});
+            console.log('BOT: bad request received!');
+            console.log('Request:');
+            console.log(msg.text);
+            console.log('Response:');
+            console.log(res);
+        });
+    }
 });
