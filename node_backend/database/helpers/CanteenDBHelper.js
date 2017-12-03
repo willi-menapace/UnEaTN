@@ -137,7 +137,6 @@ module.exports = class CanteenDBHelper {
 	getNumberOfCanteens() {
         var promiseFunction = function(resolve, reject) {
             var sql = 'SELECT COUNT(*) AS num_of_canteens FROM canteens';
-            var con = DatabaseHelper.getConnection();
             var numOfCanteens = 0;
             var error = null;
 
