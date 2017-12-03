@@ -100,3 +100,32 @@ var maxCloseDateTime = TimeHelper.getDateByTime('14:32:00');
 test('test1-TimeHelper-getMaxCloseDateTime', () => {
   expect(TimeHelper.getMaxCloseDateTime(openingHours)).toEqual(maxCloseDateTime);
 });
+/* 
+* TEST CODE FOR fromTimeToStringHoursAndMinutes
+*/
+test('test1-TimeHelper-getMaxCloseDateTime', () => {
+  expect(TimeHelper.fromTimeToStringHoursAndMinutes("12:30:11")).toEqual("12:30");
+});
+test('test1-TimeHelper-getMaxCloseDateTime', () => {
+  expect(TimeHelper.fromTimeToStringHoursAndMinutes("30:30:11")).toEqual("30:30");
+});
+/*
+* TEST CODE FOR getDateFromHoursAndMinutesByString
+*/
+var date = new Date();
+date.setHours(12);
+date.setMinutes(11);
+date.setMilliseconds(0);
+date.setSeconds(0);
+test('test1-TimeHelper-getMaxCloseDateTime', () => {
+  expect(TimeHelper.getDateFromHoursAndMinutesByString("12:11")).toEqual(date);
+});
+test('test1-TimeHelper-getMaxCloseDateTime', () => {
+  expect(TimeHelper.getDateFromHoursAndMinutesByString("asdf")).toEqual(null);
+});
+test('test1-TimeHelper-getMaxCloseDateTime', () => {
+  expect(TimeHelper.getDateFromHoursAndMinutesByString("43:11")).toEqual(null);
+});
+test('test1-TimeHelper-getMaxCloseDateTime', () => {
+  expect(TimeHelper.getDateFromHoursAndMinutesByString(32)).toEqual(null);
+});
