@@ -12,7 +12,7 @@ var STUB_SERVER = require('./api-stub-replier');
 
 /* Setup stub server replier */
 beforeAll(function() {
-    UNEATN.overrideServerAPI(HOST + ':' + PORT); //set localhost as request handler
+    UNEATN.overrideServerAPI(HOST + ':' + PORT + '/'); //set localhost as request handler
     STUB_SERVER.start(PORT, false);
 });
 
