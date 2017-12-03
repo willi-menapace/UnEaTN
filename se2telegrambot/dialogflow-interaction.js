@@ -9,14 +9,15 @@ const NO_TIME_ERROR = 'Errore: inserire l\'orario!';
 const NO_TIME_INTERVAL_ERROR = "Errore: inserire un intervallo di tempo!";
 const WAITING_FORECAST_INTENT = 'Previsione mensa';
 const BEST_TIME_INTENT = 'Orario ideale';
-const NOT_RECOGNIZED_ERROR = 'Non ho capito, puoi ripetere?';
+const NOT_RECOGNIZED_INTENT = 'Non ho capito, puoi ripetere?';
 const DIALOGFLOW_INTERNAL_ERROR = 'Si è verificato un errore nel server DialogFlow, riprovare più tardi!';
+const CANTEEN_CLOSED = 'La mensa all\'orario richiesto, è chiusa';
 const TIME_ZONE = 1; //Siamo in UTC+1
 //const NOT_RECOGNIZED_INTENT = 'Default Fallback Intent';
 
 /**
  * Passa a DialogFlow il messaggio Telegram in linguaggio naturale che capisce cosa vuol fare l'utente e
- * ottiene dalla frase i vari paramentri. In base all'Intent rispondo all'utente interfacciandomi alle nostre API
+ * ottiene dalla frase i vari paramentri. In base all'Intent risponde all'utente interfacciandomi alle nostre API
  * del back-end.
  */
 function NLrequestParser(msg, resolve, reject) {
@@ -42,7 +43,7 @@ function NLrequestParser(msg, resolve, reject) {
         }else if(readIntentName === BEST_TIME_INTENT){
             bestTimeNL(response,resolve,reject,answer);
         }else{
-            answer = NOT_RECOGNIZED_ERROR;
+            answer = NOT_RECOGNIZED_INTENT;
             reject(answer);
             return;
         }
@@ -59,8 +60,8 @@ function NLrequestParser(msg, resolve, reject) {
 }
 
 /**
- *  L'utente vuole sapere che attesa c'è per un determinata mensa. Questa funzione prende i parametri necessari da
- *  JSON generato da DialogFlow e genero una risposta in base ai valori ottenuti dal nostro DB.
+ *  L'utente vuole sapere che attesa c'è per un determinata mensa. Questa funzione prende i parametri necessari
+ *  dal JSON generato da DialogFlow e genera una risposta in base ai valori ottenuti dal nostro DB.
  */
 function waitingTimeNL(response,resolve,reject,answer) {
     //var isIncomplete = response.result.actionIncomplete;
@@ -75,7 +76,14 @@ function waitingTimeNL(response,resolve,reject,answer) {
 
     if(readDate === ''){
         var parsed = timestampParser(readTimestamp,'d');
-        dayOfTheWeek = dateToDayofTheWeek(parsed[0],parsed[1],parsed[2]);
+        if(parsed === null){
+            console.log('DialogFlow: errore durante il parsing del timestamp!');
+            answer = DIALOGFLOW_INTERNAL_ERROR;
+            reject(answer);
+            return;
+        }else {
+            dayOfTheWeek = dateToDayofTheWeek(parsed[0], parsed[1], parsed[2]);
+        }
     }else{
         dayOfTheWeek = dateParser(readDate);
     }
@@ -105,12 +113,16 @@ function waitingTimeNL(response,resolve,reject,answer) {
         reject(answer);
         return;
     }
-    UNEATN.waitingTimeCanteen(canteen, time[0], time[1], dayOfTheWeek).then(function (val) {
+    UNEATN.getWaitTime(canteen, time[0], time[1], dayOfTheWeek).then(function (val) {
         answer = 'Dovrai aspettare in coda circa ' + val + ' minuti.';
         resolve(answer);
         return;
     }).catch(function (res) {
-        answer = INTERNAL_ERROR;
+        if(res === UNEATN.NO_PREVISION){
+            answer = CANTEEN_CLOSED;
+        }else{
+            answer = INTERNAL_ERROR;
+        }
         reject(answer);
         return;
     });
@@ -119,7 +131,7 @@ function waitingTimeNL(response,resolve,reject,answer) {
 
 /**
  *  L'utente vuole sapere che attesa migliore per tutte le mense dato un determinato range di ore.
- *  Questa funzione prende i parametri necessari da JSON generato da DialogFlow e genero una risposta in base ai
+ *  Questa funzione prende i parametri necessari da JSON generato da DialogFlow e genera una risposta in base ai
  *  valori ottenuti dal nostro DB.
  */
 function bestTimeNL(response,resolve,reject,answer) {
@@ -134,7 +146,14 @@ function bestTimeNL(response,resolve,reject,answer) {
 
     if(readDate === ''){
         var parsed = timestampParser(readTimestamp,'d');
-        dayOfTheWeek = dateToDayofTheWeek(parsed[0],parsed[1],parsed[2]);
+        if(parsed === null){
+            console.log('DialogFlow: errore durante il parsing del timestamp!');
+            answer = DIALOGFLOW_INTERNAL_ERROR;
+            reject(answer);
+            return;
+        }else {
+            dayOfTheWeek = dateToDayofTheWeek(parsed[0], parsed[1], parsed[2]);
+        }
     }else{
         dayOfTheWeek = dateParser(readDate);
     }
@@ -161,15 +180,13 @@ function bestTimeNL(response,resolve,reject,answer) {
         return;
     }
 
-    UNEATN.bestWaitingTime(startTime[0],startTime[1],endTime[0],endTime[1],dayOfTheWeek).then(function (val) {
-        var responseArray = val.bestWaitingTimes;
+    UNEATN.getBestTime(startTime[0],startTime[1],endTime[0],endTime[1],dayOfTheWeek).then(function (val) {
+        var responseArray = val.bestTime;
         for(var i = 0; i < responseArray.length; i++) {
             if(responseArray[i].error === false) {
-                //answer += responseArray[i].name + ' -- Miglior orario: ' + responseArray[i].values.bestTime + ' Tempo di attesa: ' + responseArray[i].values.waitingTime + '\n';
-                answer += responseArray[i].name + ': ti consiglio di andare a mangiare alle ' + responseArray[i].values.bestTime + ', dovrai aspettare circa '+ responseArray[i].values.waitingTime + ' minuti.\n';
+                answer += responseArray[i].codeName + ': ti consiglio di andare a mangiare alle ' + responseArray[i].values.bestTime + ', dovrai aspettare circa '+ responseArray[i].values.waitingTime + ' minuti.\n';
             } else {
-                //answer += responseArray[i].name + ' -- Nessun orario trovato' + '\n';
-                answer += responseArray[i].name + ': non ho trovato nessun orario.'+ '\n';
+                answer += responseArray[i].codeName + ': non ho trovato nessun orario.'+ '\n';
             }
         }
         resolve(answer);
@@ -182,10 +199,10 @@ function bestTimeNL(response,resolve,reject,answer) {
 }
 
 /**
- * Funzione che prende una data in ingresso (nel formato da dialogflow) e ritorna il giorno della settimana
+ * Funzione che prende una data in ingresso (nel formato di DialogFlow) e ritorna il giorno della settimana
  * corrispondente
  * @param date: data nel formato "ANNO-MESE-GIORNO", altrimenti non è una RE e non parsa nulla
- * @returns ritorna il giorno della settimana della data passata
+ * @returns ritorna il giorno della settimana della data passata, null se non è nel formato giusto.
  */
 function dateParser(date) {
     if(date === undefined)
@@ -238,7 +255,7 @@ function timeParser(time) {
 }
 
 /**
- * Funzione che parsa il timestamp in data/orario o entrambi
+ * Funzione che parsa il timestamp in una data/orario o entrambi
  * @param timestamp: il timestamp (di Dialogflow?) nel formato "ANNO-MESE-GIORNOTORA:MINUTI:SECONDI.DECIMIZ)
  * altrimenti non è una RE e non viene parsata
  * @param whatToReturn: niente o 'a' per tutte le informazioni (data e orario), 'd' per la data
@@ -286,7 +303,7 @@ function timestampParser(timestamp,whatToReturn) {
 
 /**
  * L'operatore modulo (n % m) ritorna n se n è negativo, quindi questa funzione mi torna comodo
- * per avere dei valori da 0 a m come desiderei
+ * per avere dei valori da 0 a m come desiderei, anche se ho un n negativo.
  */
 function mod(n, m) {
     return ((n % m) + m) % m;
@@ -302,5 +319,18 @@ function dateToDayofTheWeek(year,month,day) {
 }
 
 module.exports = {
-    NLrequestParser : NLrequestParser
+    NLrequestParser : NLrequestParser,
+    //Only for testing:
+    dateToDayofTheWeek : dateToDayofTheWeek,
+    dateParser : dateParser,
+    timestampParser : timestampParser,
+    timeParser : timeParser,
+    INTERNAL_ERROR : INTERNAL_ERROR,
+    PARSE_ERROR : PARSE_ERROR,
+    NO_CANTEEN_ERROR : NO_CANTEEN_ERROR,
+    NO_TIME_ERROR : NO_TIME_ERROR,
+    NO_TIME_INTERVAL_ERROR : NO_TIME_INTERVAL_ERROR,
+    NOT_RECOGNIZED_INTENT : NOT_RECOGNIZED_INTENT,
+    DIALOGFLOW_INTERNAL_ERROR : DIALOGFLOW_INTERNAL_ERROR,
+    CANTEEN_CLOSED : CANTEEN_CLOSED
 };
