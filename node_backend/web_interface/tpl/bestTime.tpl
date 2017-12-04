@@ -224,6 +224,13 @@
         var bestCanteenTime = [];
 
         if (jsonBestTimes.bestTimes === null) {
+            value = [
+                "CHIUSA",
+                "0"
+            ];
+            bestCanteenTime.push(value);
+            bestCanteenTime.push(value);
+            bestCanteenTime.push(value);
         }
         else {
             var i;

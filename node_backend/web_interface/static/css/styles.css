@@ -90,6 +90,14 @@ body {
     text-align: center;
 }
 
+.txt-right {
+    text-align: right;
+}
+
+.txt-left {
+    text-align: left;
+}
+
 .txt-justify {
     text-align: justify;
 }
@@ -187,6 +195,58 @@ body {
     font-size: 30px;
 }
 
+/* DROP DOWN LIST HALF-SIZE*/
+.rail-select-half {
+    position: relative;
+    width: 130px;
+}
+.rail-select-half select {
+    padding-left: 20px;
+    height: 60px;
+}
+.rail-select-half select:focus {
+    outline: none;
+    box-shadow: none;
+    border: 0;
+}
+.rail-select-half .select-side {
+    pointer-events: none;
+    width: 40px;
+    position: absolute;
+    top: 0;
+    background-color: #4D91BF;
+    height: 100%;
+    left: 90px;
+    border-radius: 0 4px 4px 0;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 0;
+}
+.rail-select-half .select-side:before {
+    border-left: 0;
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    width: 1px;
+}
+.rail-select-half .select-side i {
+    width: 100%;
+    text-align: center;
+    top: 30px;
+    margin-top: 15px;
+    font-size: 30px;
+}
+
+.btn-primary-half,
+.btn-primary-half:active,
+.btn-primary-half:visited,
+.btn-primary-half:hover,
+.btn-primary-half:focus{
+    width: 130px;
+}
+
 /* FOOTER */
 .footer {
     text-align: center;
@@ -203,6 +263,16 @@ body {
 
     .float-right {
         float: right;
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .txt-right {
+        text-align: center;
+    }
+
+    .txt-left {
+        text-align: center;
     }
 }
 
