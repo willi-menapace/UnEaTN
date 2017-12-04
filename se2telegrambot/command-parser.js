@@ -348,11 +348,19 @@ exports.parse = function(msg) {
 
 };
 
-/* Function used to init the list of the avaliable canteen */
+/*
+* Function used to init the list of the avaliable canteen
+* @return Promise resolved as true if the list was obtained correctly otherwise rejected as false
+*/
 exports.initCodenameList = function() {
-    UNEATN.getCanteenList().then(function(val) {
-        canteenList = val;
-    }).catch(function(res) {
-        console.log('BOT: Failed to init codename list!');
+    return new Promise(function(resolve, reject) {
+        UNEATN.getCanteenList().then(function(val) {
+            canteenList = val;
+            resolve(true);
+            return;
+        }).catch(function(res) {
+            reject(false);
+            return;
+        });
     });
 }
