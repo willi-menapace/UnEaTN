@@ -4,6 +4,7 @@ var QRHandler = require('./web_interface/handlers/QRHandler.js');
 var JoinProjectHandler = require('./web_interface/handlers/JoinProjectHandler.js');
 var WaitingTimeDailyHandler = require('./web_interface/handlers/WaitingTimeDailyHandler.js');
 var WaitingTimeWeeklyHandler = require('./web_interface/handlers/WaitingTimeWeeklyHandler.js');
+var BestTimeHandler = require('./web_interface/handlers/BestTimeHandler.js');
 var AddWaitingTimeHandler = require('./telegram_bot/handlers/AddWaitingTimeHandler.js');
 var BestWaitingTimeHandler = require('./api/handlers/BestWaitingTimeHandler.js');
 var WaitingTimeCanteenHandler = require('./api/handlers/WaitingTimeCanteenHandler.js');
@@ -56,6 +57,12 @@ app.get('/compChart', function (req, res) {
 app.get('/weekChart', function (req, res) {
     var waitingTimeWeeklyHandler = new WaitingTimeWeeklyHandler();
     waitingTimeWeeklyHandler.dispatch(req, res);
+});
+
+//handle requests on /bestTime
+app.get('/bestTime', function (req, res) {
+    var bestTimeHandler = new BestTimeHandler();
+    bestTimeHandler.dispatch(req, res);
 });
 
 /*
