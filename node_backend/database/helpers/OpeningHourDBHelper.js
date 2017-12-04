@@ -1,5 +1,8 @@
 var OpeningHourEntity = require('../entities/OpeningHourEntity.js');
 var pool = require('./pool.js');
+var Error = require('../../common/Error.js');
+var HttpStatus = require('../../common/HttpStatus.js');
+var ErrorType = require('../../common/ErrorType.js');
 
 module.exports = class OpeningHourDBHelper {
     
@@ -12,10 +15,12 @@ module.exports = class OpeningHourDBHelper {
         var promiseFunction = function(resolve, reject) {
             var sql = 'SELECT * FROM opening_hours WHERE canteen_id = ? AND weekday = ?';
             var openingHour = null;
+            var error = null;
 
             pool.getConnection(function(err, connection) {
                 if(err) {
-                    reject(err);
+                    error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_CONNECTION_ERROR);
+                    reject(error);
                 } else {
                     // Use the connection
                     connection.query(sql, [canteenId, day], function(err, result) {
@@ -28,9 +33,11 @@ module.exports = class OpeningHourDBHelper {
 
                         // Handle error after the release
                         if(err) {
-                            reject(err);    
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_QUERY_ERROR);
+                            reject(error);    
                         } else if (result.length > 1) {
-                             reject(err);     
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_INTERNAL_ERROR);
+                            reject(error);     
                         } else {
                             // Returns null if canteen is closed
                             resolve(openingHour);    
@@ -55,10 +62,12 @@ module.exports = class OpeningHourDBHelper {
             var openingHours = [];
             var openingHour = null;
             const DAY_PER_WEEK = 7;
+            var error = null;
             
             pool.getConnection(function(err, connection) {
                 if(err) {
-                    reject(err);
+                    error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_CONNECTION_ERROR);
+                    reject(error);
                 } else {
                     // Use the connection
                     connection.query(sql, [canteenId], function(err, result) {
@@ -83,7 +92,8 @@ module.exports = class OpeningHourDBHelper {
 
                         // Handle error after the release
                         if(err) {
-                            reject(err);
+                            error = new Error(HttpStatus.INTERNAL_SERVER_ERROR, ErrorType.DB_QUERY_ERROR);
+                            reject(error);
                         } else {
                             resolve(openingHours);    
                         }           

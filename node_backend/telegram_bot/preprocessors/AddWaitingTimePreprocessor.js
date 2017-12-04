@@ -1,7 +1,10 @@
 var bodyParser = require('body-parser');
-var TimeChecker = require('../../common/TimeChecker.js');
+var TimeHelper = require('../../common/TimeHelper.js');
 var CanteenDBHelper = require('../../database/helpers/CanteenDBHelper.js');
 var OpeningHourDBHelper = require('../../database/helpers/OpeningHourDBHelper.js');
+var Error = require('../../common/Error.js');
+var HttpStatus = require('../../common/HttpStatus.js');
+var ErrorType = require('../../common/ErrorType.js');
 
 
 //defition of AddWaitingTime attributes and relative getters and setters
@@ -43,85 +46,57 @@ class AddWaitingTimeAttributes{
 // Definition of class AddWaitingTimePreprocessor that checks if input http params are correct
 module.exports = class AddWaitingTimePreprocessor{
     constructor() {
-        
+        this.authenticationKey = "key";
     }
     parseAndValidate(req){
+        
+        var authKey = this.authenticationKey;
         var promiseFunction = function(resolve, reject){
             var attributes = new AddWaitingTimeAttributes();
 
             //import http data into javascript variables
+            var authTokenAttribute = req.body.authToken;
             var telegramIdAttribute = req.body.telegramId;
             var canteenCodeNameAttribute = req.body.codeName;
             var waitingTimeAttribute = req.body.waitingTime;
             var arriveTimeAttribute = req.body.arriveTime;
-
-            var currentDate = new Date();
+            
             //convert the String arriveDate in a Date object
-            var arriveDate = TimeChecker.getDateFromHoursAndMinutesByString(arriveTimeAttribute);
+            var arriveDate = TimeHelper.getDateFromHoursAndMinutesByString(arriveTimeAttribute);
 
             var canteenObject;
             var canteenDBHelper = new CanteenDBHelper();
             var openingHourDBHelper = new OpeningHourDBHelper();
-
-            
-            canteenDBHelper.getCanteenByCodeName(canteenCodeNameAttribute).then(function(canteen){
-                canteenObject = canteen;
-                //telegramIdAttribute is null if there is any key "telegramIdAttribute" in json file
-                if(arriveDate === null){
-                    return Promise.reject("Invalid arrive time");
-                } else if(telegramIdAttribute == null || !Number.isInteger(telegramIdAttribute)){  //check if telegramId is an Integer
-                    return Promise.reject("Invalid or missing telegramId attribute");
-                } else if (!Number.isInteger(waitingTimeAttribute)){       //check if waitingTime is an integer that rapresent the waiting time
-                    return Promise.reject("Invalid waitingTimeAttribute");
-                } else if(typeof canteenCodeNameAttribute != 'string' && !(canteenCodeNameAttribute instanceof String)){ //check if CanteenName exist and it is a strCodeing
-                    return Promise.reject("Invalid or missing Canteen CodeName");
-                } else if(canteenObject !== null){
-                    return openingHourDBHelper.getOpeningHourByCanteenIdAndDay(canteenObject.canteenId, currentDate.getDay());
-                } else{
-                    
-                    return Promise.reject("Doesn't exist canteen with that CodeName");
-                }
-            }, function(err){  //relatives to canteenDBHelper
-               
-                return Promise.reject(err); 
-            }).then(function(canteenSchedule){
-                if(TimeChecker.compareHoursMinutesTimes(TimeChecker.getDateByTime(canteenSchedule.openTime), arriveDate) > -1 && TimeChecker.compareHoursMinutesTimes(TimeChecker.getDateByTime(canteenSchedule.closeTime), arriveDate) == -1){ //check if arriveTime is in the Canteen opening - closing Time
-                    var endWaitingTimeDate = new Date(arriveDate.getTime() + (parseInt(waitingTimeAttribute) * 60000));
-                    if(TimeChecker.compareHoursMinutesTimes(endWaitingTimeDate,TimeChecker.getDateByTime(canteenSchedule.closeTime)) == 1){
+            //telegramIdAttribute is null if there is any key "telegramIdAttribute" in json file
+            if(authTokenAttribute === null || (typeof authTokenAttribute != 'string' && !(authTokenAttribute instanceof String))){
+                reject(new Error(HttpStatus.PERMISSION_DENIED, ErrorType.AUTHENTICATION_ERROR));
+            } else if(authTokenAttribute.localeCompare(authKey) != 0){
+                reject(new Error(HttpStatus.PERMISSION_DENIED, ErrorType.AUTHENTICATION_ERROR));
+            } else if(arriveDate === null){
+                reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.ARRIVE_TIME_ERROR)); console.log("3");
+            } else if(telegramIdAttribute === null || !Number.isInteger(telegramIdAttribute)){  //check if telegramId is an Integer
+                reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.TELEGRAM_ID_ERROR)); console.log("4");
+            } else if (!Number.isInteger(waitingTimeAttribute)){       //check if waitingTime is an integer that rapresent the waiting time
+                reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.WAITING_TIME_ERROR));; console.log("5");
+            } else if(typeof canteenCodeNameAttribute != 'string' && !(canteenCodeNameAttribute instanceof String)){ //check if CanteenName exist and it is a strCodeing
+                reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.CANTEEN_ERROR));  console.log("6");
+            } else {
+                canteenDBHelper.getCanteenByCodeName(canteenCodeNameAttribute).then(function(canteen){
+                    canteenObject = canteen;
+                    if(canteenObject === null){
+                        reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.CANTEEN_ERROR));
+                    } else{
                         attributes.setCanteen(canteenObject);
                         attributes.setArriveTime(arriveDate);
                         attributes.setTelegramId(telegramIdAttribute);
                         attributes.setWaitingTime(waitingTimeAttribute);
                         resolve(attributes);
-                    } else{
-                        reject("Invalid WaitingTime: waitingTime attribute is too large");
                     }
-                }else {
-                    reject("Invalid arrive time!, it is incoerent with the canteen schedule of that day");
-                }
-            }, function(err){  //relatives to openHourDBHelper
-                reject(err);
-            });
-
+                }, function(err){  //relatives to canteenDBHelper
+                    reject(err); 
+                });
+            }
         }
         return new Promise(promiseFunction);
     }
 }
-
-
-      //  var openingHourDBHelper = new OpeningHourDBHelper();
-     //   var canteenDBHelper = new CanteenDBHelper();
-      /*  
-        var promiseFuncrion = function(resolve, reject) {
-            
-            resolve(attributi)
-            
-            reject(messaggioerrore)
-            
-        }
-        
-        
-        return new Promise(promiseFuncrion);
-        
-        */
-        

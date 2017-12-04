@@ -90,6 +90,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-sm-12 bottom-margin cursor-pointer" onclick="window.location='/weekChart?canteenId=3';">
+                        <div class="alignment-wrapper float-right">
+                            <div>
+                                <span class="icon-txt-message txt-center" style="line-height: 60px">STIMA VALIDA PER I SUCCESSIVI 15 MINUTI</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -98,6 +105,11 @@
         <div class="col-sm-12 col-md-4 col-lg-4 body-padding">
             <div class="container-fluid">
                 <div class="row">
+                    <div class="col-sm-12 bottom-margin">
+                        <div class="alignment-wrapper float-left">
+                            <button type="button" class="btn btn-primary expand" onclick="window.location='/bestTime';">TROVA ORARIO MIGLIORE</button>
+                        </div>
+                    </div>
                     <div class="col-sm-12 bottom-margin">
                         <div class="alignment-wrapper float-left">
                             <button type="button" class="btn btn-primary expand" onclick="window.location='/compChart';">GRAFICO COMPARATIVO</button>
@@ -117,11 +129,12 @@
             </div>
         </div>
     </div>
+    <!--
     <div class="alignment-wrapper" style="height: 25px">
         <div style="vertical-align: middle;">
             <span class="icon-txt-message txt-center">STIMA VALIDA PER I SUCCESSIVI 15 MINUTI</span>
         </div>
-    </div>
+    </div>-->
     <!-- FOOTER -->
     <div class="row">
         <div class="col-lg-12 footer">

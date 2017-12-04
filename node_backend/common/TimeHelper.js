@@ -1,5 +1,10 @@
 module.exports = class TimeHelper {
     
+    static fromTimeToStringHoursAndMinutes(time){
+        var splittedTime = time.split(':');
+        var stringDate = splittedTime[0] + ":" + splittedTime[1];
+        return stringDate;
+    }
     //if firstTime is before secondTime returns 1
     //if firstTime is then secondTime returns -1
     //if firstTime is equal to secondTime returns 0
