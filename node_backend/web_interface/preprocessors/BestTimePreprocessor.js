@@ -67,6 +67,9 @@ module.exports = class BestWaitingTimePreprocessor{
                 day = parseInt(dayAttribute);
                 startDate = TimeHelper.getDateByTime(startTimeAttribute);
                 endDate = TimeHelper.getDateByTime(endTimeAttribute);
+                if(startDate > endDate) {
+                    error = new Error(HttpStatus.BAD_REQUEST, ErrorType.START_TIME_ERROR);
+                }
             }
             
             if(error !== null) {
