@@ -11,7 +11,7 @@ const WAITING_FORECAST_INTENT = 'Previsione mensa';
 const BEST_TIME_INTENT = 'Orario ideale';
 const NOT_RECOGNIZED_INTENT = 'Non ho capito, puoi ripetere?';
 const DIALOGFLOW_INTERNAL_ERROR = 'Si è verificato un errore nel server DialogFlow, riprovare più tardi!';
-const CANTEEN_CLOSED = 'La mensa all\'orario richiesto, è chiusa';
+const CANTEEN_CLOSED = 'La mensa all\'orario richiesto è chiusa';
 const TIME_ZONE = 1; //Siamo in UTC+1
 //const NOT_RECOGNIZED_INTENT = 'Default Fallback Intent';
 
@@ -183,7 +183,7 @@ function bestTimeNL(response,resolve,reject,answer) {
     UNEATN.getBestTime(startTime[0],startTime[1],endTime[0],endTime[1],dayOfTheWeek).then(function (val) {
         var responseArray = val.bestTime;
         for(var i = 0; i < responseArray.length; i++) {
-            if(responseArray[i].error === false) {
+            if(responseArray[i].isClosed === false) {
                 answer += responseArray[i].codeName + ': ti consiglio di andare a mangiare alle ' + responseArray[i].values.bestTime + ', dovrai aspettare circa '+ responseArray[i].values.waitingTime + ' minuti.\n';
             } else {
                 answer += responseArray[i].codeName + ': non ho trovato nessun orario.'+ '\n';
