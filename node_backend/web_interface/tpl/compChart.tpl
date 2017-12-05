@@ -74,7 +74,7 @@
                                     <div class="select-side">
                                         <i class="zmdi zmdi-chevron-down"></i>
                                     </div>
-                                    <select title="Seleziona Giorno" class="form-control btn-primary expand" id="dayOfTheWeek">
+                                    <select title="SELEZIONA GIORNO" class="form-control btn-primary expand" id="dayOfTheWeek">
                                         <option value="0">LUNED&Igrave;</option>
                                         <option value="1">MARTED&Igrave;</option>
                                         <option value="2">MERCOLED&Igrave;</option>
@@ -203,11 +203,22 @@
 
         // IMPOSTAZIONI LEGENDE
         var setupSeriesLabels = function(series, name, color) {
+            var strokeSetup = '2 #fff 1';
+            if ($(window).width() > 991){
+                strokeSetup = '2 #fff 1';
+            } else {
+                strokeSetup = '1 #fff 1';
+            }
             series.name(name)
-                .stroke('3 #fff 1')
+                .stroke(strokeSetup)
                 .fill(color);
             series.hovered().stroke('3 #fff 1');
             series.hovered().markers()
+                .enabled(true)
+                .type('circle')
+                .size(4)
+                .stroke('1.5 #fff');
+            series.selected().markers()
                 .enabled(true)
                 .type('circle')
                 .size(4)
@@ -271,7 +282,7 @@
         // ETICHETTA IN CASO DI MANCANZA DATI
         noDataLabel = chart.noData().label();
         noDataLabel.enabled(true);
-        noDataLabel.text("Tutte le mense sono attualmente chiuse.");
+        noDataLabel.text("Nessun dato.");
         noDataLabel.fontSize(18);
         noDataLabel.fontColor('#FFFFFF');
         noDataLabel.fontFamily('Ubuntu');

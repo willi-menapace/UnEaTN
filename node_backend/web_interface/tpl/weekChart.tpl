@@ -100,7 +100,7 @@
                                     <div class="select-side">
                                         <i class="zmdi zmdi-chevron-down"></i>
                                     </div>
-                                    <select title="Seleziona Mensa" class="form-control btn-primary expand" id="canteenToShow">
+                                    <select title="SELEZIONE MENSA" class="form-control btn-primary expand" id="canteenToShow">
                                         <option value="1">PASTO LESTO</option>
                                         <option value="2">MENSA POVO 0</option>
                                         <option value="3">MENSA POVO 1</option>
@@ -240,11 +240,22 @@
 
         // IMPOSTAZIONI DELLE LEGENDE
         var setupSeriesLabels = function(series, name, color) {
+            var strokeSetup = '2 #fff 1';
+            if ($(window).width() > 991){
+                strokeSetup = '2 #fff 1';
+            } else {
+                strokeSetup = '1 #fff 1';
+            }
             series.name(name)
-                .stroke('3 #fff 1')
+                .stroke(strokeSetup)
                 .fill(color);
             series.hovered().stroke('3 #fff 1');
             series.hovered().markers()
+                .enabled(true)
+                .type('circle')
+                .size(4)
+                .stroke('1.5 #fff');
+            series.selected().markers()
                 .enabled(true)
                 .type('circle')
                 .size(4)
@@ -310,7 +321,7 @@
         // ETICHETTA IN CASO DI MANCANZA DATI
         noDataLabel = chart.noData().label();
         noDataLabel.enabled(true);
-        noDataLabel.text("Tutte le mense sono attualmente chiuse.");
+        noDataLabel.text("Nessun dato.");
         noDataLabel.fontSize(18);
         noDataLabel.fontColor('#FFFFFF');
         noDataLabel.fontFamily('Ubuntu');
