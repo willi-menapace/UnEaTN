@@ -7,7 +7,7 @@
 * Author: Giuliani Daniele
 */
 
-var URL_UNEATN = process.env.UNEATN_URL || 'http://localhost:8080'; //second url is used for testing purpuses only
+var URL_UNEATN = process.env.UNEATN_URL || 'http://localhost:8080/'; //second url is used for testing purpuses only
 
 var request = require('request');
 
@@ -25,7 +25,7 @@ const BAD_DATA = 'Submitted data is not valid!';
 *   error message - otherwise
 */
 function getCanteenList() {
-    const URL_POSTFIX = '/api/v1/codeName';
+    const URL_POSTFIX = 'api/v1/codeName';
     return new Promise(function(resolve, reject) {
         var options = {
             uri: URL_UNEATN + URL_POSTFIX,
@@ -39,9 +39,11 @@ function getCanteenList() {
                     resolve(jsonBody.codeName);
                     return;
                 }
-                console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
+                console.log('UNEATN-API: response status code: ' + response.statusCode);
                 reject(REQ_FAIL);
                 return;
+            } else {
+                console.log('UNEATN-API: fetching canteen returned: ' + error);
             }
             reject(REQ_FAIL);
             return;
@@ -56,7 +58,7 @@ function getCanteenList() {
 *   error message - if promise was rejected
 */
 function getWaitTime(canteenName, hour, minute, dayOfTheWeek) {
-    const URL_POSTFIX = '/api/v1/waitTime';
+    const URL_POSTFIX = 'api/v1/waitTime';
 
     return new Promise(function(resolve, reject) {
         if(canteenName === undefined || hour === undefined || minute === undefined || dayOfTheWeek === undefined) {
@@ -86,14 +88,14 @@ function getWaitTime(canteenName, hour, minute, dayOfTheWeek) {
                 if(response.statusCode === 200) {
                     var jsonBody = JSON.parse(body);
                     if(jsonBody.isClosed === false) {
-                        resolve(jsonBody.waitTime);
+                        resolve(jsonBody.waitingTime);
                         return;
                     } else {
                         reject(NO_PREVISION);
                         return;
                     }
                 }
-                console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
+                console.log('UNEATN-API: response status code: ' + response.statusCode);
                 reject(REQ_FAIL);
                 return;
             }
@@ -120,7 +122,7 @@ function getWaitTime(canteenName, hour, minute, dayOfTheWeek) {
 *   error message - if promise was rejected
 */
 function getBestTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek) {
-    const URL_POSTFIX = '/api/v1/bestTime';
+    const URL_POSTFIX = 'api/v1/bestTime';
 
     return new Promise(function(resolve, reject) {
         if(startHour === undefined || startMinute === undefined || endHour === undefined || endMinute === undefined || dayOfTheWeek === undefined) {
@@ -154,7 +156,7 @@ function getBestTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek) {
                     resolve(jsonBody);
                     return;
                 }
-                console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
+                console.log('UNEATN-API: response status code: ' + response.statusCode);
                 reject(REQ_FAIL);
                 return;
             }
@@ -171,7 +173,7 @@ function getBestTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek) {
 *   error message - otherwise
 */
 function addTime(authToken, telegramID, canteenName, waitingTime, arriveHour, arriveMinute) {
-    const URL_POSTFIX = '/addTime';
+    const URL_POSTFIX = 'addTime';
 
     return new Promise(function(resolve, reject) {
         if(authToken === undefined || telegramID === undefined || canteenName === undefined || waitingTime === undefined || arriveHour === undefined || arriveMinute === undefined) {
@@ -187,7 +189,7 @@ function addTime(authToken, telegramID, canteenName, waitingTime, arriveHour, ar
 
         var jsonBody = {
             'authToken':authToken,
-            'telegramID':telegramID,
+            'telegramId':telegramID,
             'codeName':canteenName,
             'waitingTime':waitingTime,
             'arriveTime':arriveTime
@@ -210,7 +212,7 @@ function addTime(authToken, telegramID, canteenName, waitingTime, arriveHour, ar
                     reject(BAD_DATA);
                     return;
                 }
-                console.log('UNEATN-API: response status code: ' + response.statusCode + '\n');
+                console.log('UNEATN-API: response status code: ' + response.statusCode);
                 reject(REQ_FAIL);
                 return;
             }

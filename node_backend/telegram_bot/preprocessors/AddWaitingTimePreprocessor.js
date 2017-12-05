@@ -46,7 +46,7 @@ class AddWaitingTimeAttributes{
 // Definition of class AddWaitingTimePreprocessor that checks if input http params are correct
 module.exports = class AddWaitingTimePreprocessor{
     constructor() {
-        this.authenticationKey = "key";
+        this.authenticationKey = "]VsM°O&>KIc{=qdZP8({qVZlExK8yN;bXYE}EWMa{Ptg|.#%zk1q4kkgu!pPBC)tr)";
     }
     parseAndValidate(req){
         

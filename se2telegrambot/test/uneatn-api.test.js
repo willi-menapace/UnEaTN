@@ -12,7 +12,7 @@ var STUB_SERVER = require('./api-stub-replier');
 
 /* Setup stub server replier */
 beforeAll(function() {
-    UNEATN.overrideServerAPI(HOST + ':' + PORT); //set localhost as request handler
+    UNEATN.overrideServerAPI(HOST + ':' + PORT + '/'); //set localhost as request handler
     STUB_SERVER.start(PORT, false);
 });
 
@@ -57,9 +57,9 @@ test('getWaitTime(\'testOK\', \'abbas\', \'are great\')', function() {
 var positiveResponse = {
     'bestTime':
         [
-            {'name':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
-            {'name':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
-            {'name':'povo0', 'isClosed':true, 'values':{'bestTime':null, 'waitingTime':null}}
+            {'codeName':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+            {'codeName':'povo0', 'isClosed':false, 'values':{'bestTime':'12:00', 'waitingTime':15}},
+            {'codeName':'povo0', 'isClosed':true, 'values':{'bestTime':null, 'waitingTime':null}}
         ]
 };
 

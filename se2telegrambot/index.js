@@ -23,13 +23,20 @@ var STUB_SERVER = require('./test/api-stub-replier');
 
 /* Error messages */
 const BAD_INPUT = 'Non riesco a capirti, prova con la chat!';
+const BOT_SLEEPY = 'Yaaawn! Lasciami il tempo per svegliarmi...';
 
+/* Contains the status of the bot, after the inizialization gets set to false */
+var sleepy = true;
 
 /* BOT CONFIGURATION */
 
 console.log('BOT: Starting bot...');
 console.log('BOT: Fetching codenames...');
-commandParser.initCodenameList();
+commandParser.initCodenameList().then(function(val) {
+    sleepy = false;
+}).catch(function(res) {
+    console.log('BOT: Failed to init codename list!');
+});
 
 var bot;
 
@@ -37,7 +44,7 @@ var bot;
 if(NODE_ENV === 'development') {
     //starts the bot in polling mode (development only)
     bot = new TelegramBot(TELEGRAM_TOKEN, {polling: true});
-    STUB_SERVER.start(8080, false);
+    //STUB_SERVER.start(8080, false); //start server for local testing
 } else {
     //starts the bot in webhook mode (production only)
     var options = {
@@ -56,7 +63,9 @@ console.log('BOT: Bot started in ' + NODE_ENV + ' mode');
 
 bot.on('message', function(msg){
     if(msg.text === undefined) {
-        bot.sendMessage(msg.chat.id,  BAD_INPUT, {parse_mode: 'markdown'})
+        bot.sendMessage(msg.chat.id, BAD_INPUT, {parse_mode: 'markdown'});
+    } else if(sleepy) {
+        bot.sendMessage(msg.chat.id, BOT_SLEEPY, {parse_mode: 'markdown'});
     } else {
         var answer = commandParser.parse(msg).then(function(val) {
             bot.sendMessage(msg.chat.id, val, {parse_mode: 'markdown'});
