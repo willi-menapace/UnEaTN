@@ -23,10 +23,12 @@ var STUB_SERVER = require('./test/api-stub-replier');
 
 /* Error messages */
 const BAD_INPUT = 'Non riesco a capirti, prova con la chat!';
-const BOT_SLEEPY = 'Yaaawn! Lasciami il tempo per svegliarmi...';
+const BOT_SLEEPY = 'Yaaawn! Lasciami il tempo di svegliarmi...';
+const BOT_ERROR = 'Scusami, oggi non mi sento molto bene...';
 
 /* Contains the status of the bot, after the inizialization gets set to false */
 var sleepy = true;
+var error = false;
 
 /* BOT CONFIGURATION */
 
@@ -34,7 +36,10 @@ console.log('BOT: Starting bot...');
 console.log('BOT: Fetching codenames...');
 commandParser.initCodenameList().then(function(val) {
     sleepy = false;
+    console.log('BOT: Codename list updated!');
 }).catch(function(res) {
+    sleepy = false;
+    error = true;
     console.log('BOT: Failed to init codename list!');
 });
 
@@ -65,7 +70,11 @@ bot.on('message', function(msg){
     if(msg.text === undefined) {
         bot.sendMessage(msg.chat.id, BAD_INPUT, {parse_mode: 'markdown'});
     } else if(sleepy) {
+        //bot still starting
         bot.sendMessage(msg.chat.id, BOT_SLEEPY, {parse_mode: 'markdown'});
+    } else if(error) {
+        //initilization error
+        bot.sendMessage(msg.chat.id, BOT_ERROR, {parse_mode: 'markdown'});
     } else {
         var answer = commandParser.parse(msg).then(function(val) {
             bot.sendMessage(msg.chat.id, val, {parse_mode: 'markdown'});

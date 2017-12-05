@@ -31,6 +31,7 @@ var waitRE = /^\/wait (.+)/;
 var bestTimeRE = /^\/bestTime (.+)/;
 var submitRE = /^\/submit (.+)/;
 var helpRE = /^\/help.*/;
+var startRE = /^\/start.*/;
 var messageRE = /^[^/].+/;   //all the messages that don't begin with "/"
 
 
@@ -307,6 +308,11 @@ function messageSA(msg, resolve, reject) {
 	DFINTERACTION.NLrequestParser(msg,resolve,reject);
 }
 
+function startSA(msg, resolve, reject) {
+    answer = 'Ciao, cosa posso fare per te?';
+    resolve(answer);
+}
+
 
 /*
 *   Adding regular expression and semantic actions to structures
@@ -326,6 +332,9 @@ semActs.push(helpSA);
 
 regExps.push(messageRE);
 semActs.push(messageSA);
+
+regExps.push(startRE);
+semActs.push(startSA);
 
 
 /* Function available outside the module */
