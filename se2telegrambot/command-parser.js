@@ -80,7 +80,7 @@ function waitSA(msg, resolve, reject) {
         minute = time.minute;
     } else {
         //inserire orario di sistema
-        hour = new Date().getHours();
+        hour = new Date().getUTCHours() + 1;
         minute = new Date().getMinutes();
         console.log('Extracted time: ' + hour + ':' + minute);
     }
@@ -239,7 +239,7 @@ function submitSA(msg, resolve, reject) {
             minute = time.minute;
         }
     } else {
-        hour = new Date().getHours();
+        hour = new Date().getUTCHours() + 1;
         minute = new Date().getMinutes();
 
         //calculating arrival time
