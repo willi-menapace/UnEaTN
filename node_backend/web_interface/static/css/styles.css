@@ -111,6 +111,23 @@ body {
     padding-top: 12px;
 }
 
+/* CHAR OVERLAP */
+.first {
+    position:relative;
+    z-index:2;
+}
+.secondLeft {
+    position:relative;
+    left: -15.5px;
+    z-index:1;
+}
+
+.secondRight {
+    position:relative;
+    left: +15.5px;
+    z-index:1;
+}
+
 /* BLUE BUTTONS */
 .btn-primary,
 .btn-primary:active,

@@ -37,6 +37,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
     <link rel="stylesheet" href="https://cdn.anychart.com/releases/8.0.1/css/anychart-ui.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" href="/css/styles.css">
     <!-- EXTERNAL SCRIPTS -->
     <script src="https://cdn.anychart.com/releases/8.0.1/js/anychart-base.min.js"></script>
@@ -160,6 +161,13 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-sm-12 bottom-margin" style="display: none" id="time-error">
+                        <div style="width: 270px">
+                            <div>
+                                <span class="icon-txt-message txt-center" style="line-height: 20px; color: #FFF; font-size: 12px; font-weight: bold"><i class="zmdi zmdi-caret-up animated infinite fadeOutUp zmdi-hc-fw first"></i><i class="zmdi zmdi-caret-up animated infinite fadeInUp zmdi-hc-fw secondLeft"></i> ORARIO NON VALIDO <i class="zmdi zmdi-caret-up animated infinite fadeOutUp zmdi-hc-fw secondRight"></i><i class="zmdi zmdi-caret-up animated infinite fadeInUp zmdi-hc-fw first"></i></span>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-sm-12 bottom-margin">
                         <div class="alignment-wrapper float-left">
                             <div class="selector">
@@ -274,7 +282,11 @@
         var day = dotws.value.toString();
         var startTime = sts.value.toString();
         var endTime = ets.value.toString();
-        window.location = '/bestTime?day='.concat(day).concat("&startTime=").concat(startTime).concat("&endTime=").concat(endTime);
+        if (parseInt(startTime.replace(":", "")) > parseInt(endTime.replace(":", ""))){
+            $("#time-error").css("display", "block");
+        } else {
+            window.location = '/bestTime?day='.concat(day).concat("&startTime=").concat(startTime).concat("&endTime=").concat(endTime);
+        }
     }
 </script>
 </body>
