@@ -82,6 +82,7 @@ function waitSA(msg, resolve, reject) {
         //inserire orario di sistema
         hour = new Date().getHours();
         minute = new Date().getMinutes();
+        console.log('Extracted time: ' + hour + ':' + minute);
     }
 
     //controllo ed estrazione del giorno (se presente)
@@ -94,7 +95,7 @@ function waitSA(msg, resolve, reject) {
             return;
         }
     } else {
-        dayOfTheWeek = new Date().getDay();
+        dayOfTheWeek = new Date().getDay() - 1;
     }
 
     UNEATN.getWaitTime(canteen, hour, minute, dayOfTheWeek).then(function(val) {
@@ -157,7 +158,7 @@ function bestTimeSA(msg, resolve, reject) {
             return;
         }
     } else {
-        dayOfTheWeek = new Date().getDay();
+        dayOfTheWeek = new Date().getDay() - 1;
     }
 
     UNEATN.getBestTime(startHour, startMinute, endHour, endMinute, dayOfTheWeek).then(function(val) {
