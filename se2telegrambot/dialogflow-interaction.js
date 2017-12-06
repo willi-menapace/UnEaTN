@@ -4,9 +4,9 @@ const DIALOGFLOW_ACCESS_TOKEN = process.env.DIALOGFLOW_TOKEN || "957a68d0a11d4ac
 const UNEATN = require('./uneatn-api');
 const INTERNAL_ERROR = 'Si è verificato un errore, riprovare più tardi!';
 const PARSE_ERROR = 'Si è verificato un errore durante il parsing della richiesta, riprovare più tardi!';
-const NO_CANTEEN_ERROR = 'Errore: la mensa non è stata trovata!';
-const NO_TIME_ERROR = 'Errore: inserire l\'orario!';
-const NO_TIME_INTERVAL_ERROR = "Errore: inserire un intervallo di tempo!";
+const NO_CANTEEN_ERROR = 'Mmh, credo che tu abbia sbagliato ad inserire la mensa.';
+const NO_TIME_ERROR = 'Inserisci un orario per il quale vuoi la previsione!';
+const NO_TIME_INTERVAL_ERROR = "Specifica un intervallo di tempo!";
 const WAITING_FORECAST_INTENT = 'Previsione mensa';
 const BEST_TIME_INTENT = 'Orario ideale';
 const NOT_RECOGNIZED_INTENT = 'Non ho capito, puoi ripetere?';
@@ -248,6 +248,11 @@ function timeParser(time) {
 
     if(!isNaN(hour) && !isNaN(minute)) {
         if (hour < 24 && hour >= 0 && minute < 60 && minute >= 0) {
+            /* Se l'utente dice per esempio "Dimmi la coda a povo0 alle 2", Dialogflow capisce le 2
+            *  di mattina! */
+            if(hour >= 1 && hour <4){
+                hour = hour + 12;
+            }
             return [hour,minute];
         }
     }
