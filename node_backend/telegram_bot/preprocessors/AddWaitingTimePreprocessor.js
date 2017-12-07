@@ -73,13 +73,13 @@ module.exports = class AddWaitingTimePreprocessor{
             } else if(authTokenAttribute.localeCompare(authKey) != 0){
                 reject(new Error(HttpStatus.PERMISSION_DENIED, ErrorType.AUTHENTICATION_ERROR));
             } else if(arriveDate === null){
-                reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.ARRIVE_TIME_ERROR)); console.log("3");
+                reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.ARRIVE_TIME_ERROR)); 
             } else if(telegramIdAttribute === null || !Number.isInteger(telegramIdAttribute)){  //check if telegramId is an Integer
-                reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.TELEGRAM_ID_ERROR)); console.log("4");
+                reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.TELEGRAM_ID_ERROR)); 
             } else if (!Number.isInteger(waitingTimeAttribute)){       //check if waitingTime is an integer that rapresent the waiting time
-                reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.WAITING_TIME_ERROR));; console.log("5");
+                reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.WAITING_TIME_ERROR));
             } else if(typeof canteenCodeNameAttribute != 'string' && !(canteenCodeNameAttribute instanceof String)){ //check if CanteenName exist and it is a strCodeing
-                reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.CANTEEN_ERROR));  console.log("6");
+                reject(new Error(HttpStatus.BAD_REQUEST, ErrorType.CANTEEN_ERROR)); 
             } else {
                 canteenDBHelper.getCanteenByCodeName(canteenCodeNameAttribute).then(function(canteen){
                     canteenObject = canteen;
