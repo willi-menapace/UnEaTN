@@ -5,7 +5,7 @@
 */
 
 const HOST = 'http://localhost';
-const PORT = 8080;
+const PORT = 8081;
 
 var UNEATN = require('../uneatn-api');
 var STUB_SERVER = require('./api-stub-replier');
