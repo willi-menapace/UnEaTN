@@ -3,10 +3,6 @@
     Project:    unEATn
     Author:     Simone Lorengo
     Date:       21.11.2017
-    Note:       OK, needs debug
-
-    Valori necessari:
-    Nessun valore necessario
 -->
 
 <!DOCTYPE html>

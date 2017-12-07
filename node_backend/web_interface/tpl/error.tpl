@@ -1,12 +1,8 @@
 <!--
-    Page Name:  QR
+    Page Name:  Error Page
     Project:    unEATn
     Author:     Simone Lorengo
-    Date:       21.11.2017
-    Note:       OK, needs debug
-
-    Valori necessari:
-    Nessun valore necessario
+    Date:       27.11.2017
 -->
 
 <!DOCTYPE html>
