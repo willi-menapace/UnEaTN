@@ -3,17 +3,6 @@
     Project:    unEATn
     Author:     Simone Lorengo
     Date:       21.11.2017
-    Note:       OK, needs debug
-
-    Valori necessari:
-    - canteenAffStatus_1 :: int or string :: default 4 :: Stato Affluenza Mensa Pasto Lesto
-    - canteenAffStatus_2 :: int or string :: default 4 :: Stato Affluenza Mensa di Povo 0
-    - canteenAffStatus_3 :: int or string :: default 4 :: Stato Affluenza Mensa di Povo 1
-    0 -> Mensa chiusa
-    1 -> Mensa libera
-    2 -> Mensa trafficata
-    3 -> Mensa piena
-    * -> Errore visualizzato
 -->
 
 <!DOCTYPE html>

@@ -3,15 +3,6 @@
     Project:    unEATn
     Author:     Simone Lorengo
     Date:       21.11.2017
-    Note:       OK, needs debug
-
-    Valori necessari:
-    - selectedDay :: id or string :: default 1 :: Giorno della settimana selezionato
-    0 -> Lunedì, ..., 6 -> Domenica
-
-    GET:
-    compChart?day=x
-    x con il significato indicato
 -->
 
 <!DOCTYPE html>

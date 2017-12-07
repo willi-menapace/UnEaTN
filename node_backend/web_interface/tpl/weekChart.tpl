@@ -3,17 +3,6 @@
     Project:    unEATn
     Author:     Simone Lorengo
     Date:       21.11.2017
-    Note:       OK, needs debug
-
-    Valori necessari:
-    - selectedCanteen :: id or string :: default 1 :: Mensa selezionata
-    1 -> Pasto Lesto
-    2 -> Povo 0
-    3 -> Povo 1
-
-    GET:
-    weekChart?canteen=x
-    x con il significato indicato
 -->
 
 <!DOCTYPE html>
