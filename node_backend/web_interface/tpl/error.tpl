@@ -22,9 +22,9 @@
     <!-- FAVICON -->
     <link rel="icon" href="img/favicon.png" type="image/png" />
     <!-- THEME COLOR -->
-    <meta name="theme-color" content="#222222">
-    <meta name="msapplication-navbutton-color" content="#222222">
-    <meta name="apple-mobile-web-app-status-bar-style" content="#222222">
+    <meta name="theme-color" content="#440000">
+    <meta name="msapplication-navbutton-color" content="#440000">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#440000">
     <!-- STYLESHEETS -->
     <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
