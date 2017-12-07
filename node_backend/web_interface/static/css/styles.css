@@ -24,6 +24,10 @@ body {
     margin-bottom: 10px;
 }
 
+.padding-null {
+    padding: 0;
+}
+
 .alignment-wrapper {
     margin: 0 auto;
     height: 60px;

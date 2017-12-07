@@ -72,26 +72,26 @@
                     <div class="col-sm-12 bottom-margin cursor-pointer">
                         <div class="alignment-wrapper float-right rail-select">
                             <div class="row show-results" style="display: none">
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 padding-null">
                                     <span class="txt-right txt-bold"><p style="margin-top: 7px; margin-bottom: 0; line-height: 30px;">Pasto Lesto</p></span>
-                                    <span class="txt-right"><p style="margin-bottom: 0; line-height: 10px; font-size: 12px" id="waitingTimeShow-1">Culocane</p></span>
+                                    <span class="txt-right"><p style="margin-bottom: 0; line-height: 10px; font-size: 12px" id="waitingTimeShow-1">ATTESA DATI</p></span>
                                 </div>
                                 <div class="col-sm-6">
-                                    <span class="txt-right txt-bold"><p style="margin-bottom: 0; line-height: 60px; font-size: 40px;" id="timeShow-1">ERR</p></span>
+                                    <span class="txt-right txt-bold"><p style="margin-bottom: 0; line-height: 60px; font-size: 40px;" id="timeShow-1">WAIT</p></span>
                                 </div>
                             </div>
-                            <span class="txt-center txt-bold no-results"><p style="margin-bottom: 0; line-height: 60px;">Seleziona un intervallo orario..</p></span>
+                            <span class="txt-center txt-bold no-results"><p style="margin-bottom: 0; line-height: 60px;">Seleziona un orario..</p></span>
                         </div>
                     </div>
                     <div class="col-sm-12 bottom-margin cursor-pointer">
                         <div class="alignment-wrapper float-right rail-select">
                             <div class="row show-results" style="display: none">
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 padding-null">
                                     <span class="txt-right txt-bold"><p style="margin-top: 7px; margin-bottom: 0; line-height: 30px;">Mensa Povo 0</p></span>
-                                    <span class="txt-right"><p style="margin-bottom: 0; line-height: 10px; font-size: 12px" id="waitingTimeShow-2">Culocane</p></span>
+                                    <span class="txt-right"><p style="margin-bottom: 0; line-height: 10px; font-size: 12px" id="waitingTimeShow-2">ATTESA DATI</p></span>
                                 </div>
                                 <div class="col-sm-6">
-                                    <span class="txt-right txt-bold"><p style="margin-bottom: 0; line-height: 60px; font-size: 40px;" id="timeShow-2">ERR</p></span>
+                                    <span class="txt-right txt-bold"><p style="margin-bottom: 0; line-height: 60px; font-size: 40px;" id="timeShow-2">WAIT</p></span>
                                 </div>
                             </div>
                             <span class="txt-center txt-bold no-results"><p style="margin-bottom: 0; line-height: 60px;">..scegli il giorno della settimana..</p></span>
@@ -100,12 +100,12 @@
                     <div class="col-sm-12 bottom-margin cursor-pointer">
                         <div class="alignment-wrapper float-right rail-select">
                             <div class="row show-results" style="display: none">
-                                <div class="col-sm-6">
+                                <div class="col-sm-6 padding-null">
                                     <span class="txt-right txt-bold"><p style="margin-top: 7px; margin-bottom: 0; line-height: 30px;">Mensa Povo 1</p></span>
-                                    <span class="txt-right"><p style="margin-bottom: 0; line-height: 10px; font-size: 12px" id="waitingTimeShow-3">Culocane</p></span>
+                                    <span class="txt-right"><p style="margin-bottom: 0; line-height: 10px; font-size: 12px" id="waitingTimeShow-3">ATTESA DATI</p></span>
                                 </div>
                                 <div class="col-sm-6">
-                                    <span class="txt-right txt-bold"><p style="margin-bottom: 0; line-height: 60px; font-size: 40px;" id="timeShow-3">ERR</p></span>
+                                    <span class="txt-right txt-bold"><p style="margin-bottom: 0; line-height: 60px; font-size: 40px;" id="timeShow-3">WAIT</p></span>
                                 </div>
                             </div>
                             <span class="txt-center txt-bold no-results"><p style="margin-bottom: 0; line-height: 60px;">..e trova quando mangiare! 👻</p></span>
