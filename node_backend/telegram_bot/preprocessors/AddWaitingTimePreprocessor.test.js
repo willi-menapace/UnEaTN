@@ -1,5 +1,4 @@
-var Jext = require('jest');
-
+var pool = require('../../database/helpers/pool.js');
 var httpMocks = require('node-mocks-http');
 var Error = require('../../common/Error.js');
 var ErrorType = require('../../common/ErrorType.js');
@@ -360,4 +359,7 @@ test('test15-AddWaitingTimePreprocessor-parseAndValidate', () => {
     return expect(addWaitingTimePreprocessor.parseAndValidate(request15)).rejects.toMatchObject(error15);
 });
 
+afterAll(() => {
+  pool.end();
+});
 

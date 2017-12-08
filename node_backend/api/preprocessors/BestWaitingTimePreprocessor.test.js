@@ -1,4 +1,4 @@
-var Jext = require('jest');
+var pool = require('../../database/helpers/pool.js');
 var httpMocks = require('node-mocks-http');
 var Error = require('../../common/Error.js');
 var ErrorType = require('../../common/ErrorType.js');
@@ -178,4 +178,8 @@ test('test8-BestWaitingTimeCanteenPreprocessor-parseAndValidate', () => {
     expect.assertions(1);
     return expect(bestWaitingTimeCanteenPreprocessor.parseAndValidate(request8)).rejects.toMatchObject(error8);
 });
+afterAll(() => {
+  pool.end();
+});
+
 

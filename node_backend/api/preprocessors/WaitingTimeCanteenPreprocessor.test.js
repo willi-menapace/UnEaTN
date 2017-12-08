@@ -1,4 +1,4 @@
-var Jext = require('jest');
+var pool = require('../../database/helpers/pool.js');
 var httpMocks = require('node-mocks-http');
 var Error = require('../../common/Error.js');
 var ErrorType = require('../../common/ErrorType.js');
@@ -192,6 +192,9 @@ var error8 = new Error(HttpStatus.BAD_REQUEST, ErrorType.DAY_ERROR);
 test('test8-WaitingTimeCanteenPreprocessor-parseAndValidate' + waitingTimeCanteenAttributes.toString(), () => {
     expect.assertions(1);
     return expect(waitingTimeCanteenPreprocessor.parseAndValidate(request8)).rejects.toMatchObject(error8);
+});
+afterAll(() => {
+  pool.end();
 });
 
 
