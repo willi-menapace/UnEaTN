@@ -4,8 +4,8 @@ prevision = new PREVISION();
 
 //DEFINING PREVISIONDATA ENTITY
 var previsionEntity = [];
-var time = new Date(2017, 10, 29, 24, 0, 0, 0)
-previsionEntity[0] = new PrevisionEntity(137, 10, time);
+var time = new Date(2017, 10, 22, 24, 0, 0, 0)
+previsionEntity[0] = new PrevisionEntity(119, 10, time);
 
 //TESTING
 //getLatestPrevisionByCanteenIdAndDay				
