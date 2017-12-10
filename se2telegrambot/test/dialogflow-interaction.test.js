@@ -8,14 +8,20 @@ const HOST = 'http://localhost';
 const PORT = 8081;
 
 var UNEATN = require('../uneatn-api');
-var STUB_SERVER = require('./api-stub-replier');
+var STUB_SERVER = require('./api-stub-replier-df');
 var DF_INTERACTION = require('../dialogflow-interaction');
 
 /* Setup stub server replier */
 beforeAll(function() {
-    UNEATN.overrideServerAPI(HOST + ':' + PORT); //set localhost as request handler
+    UNEATN.overrideServerAPI(HOST + ':' + PORT+'/'); //set localhost as request handler
     STUB_SERVER.start(PORT, false);
 });
+
+var defaultWaitTimeAnswer = 'Dovrai aspettare in coda circa 30 minuti.';
+
+var defaultBestTimeAnswer = 'lesto: ti consiglio di andare a mangiare alle 12:00, dovrai aspettare circa 15 minuti.\n';
+defaultBestTimeAnswer += 'povo0: ti consiglio di andare a mangiare alle 12:20, dovrai aspettare circa 14 minuti.\n';
+defaultBestTimeAnswer += 'povo1: non ho trovato nessun orario.\n';
 
 var msg1={
     'text':'Quanta coda è prevista a Povo 0 domani?', //errore voluto sull'orario
@@ -67,7 +73,7 @@ var msg7={
 };
 
 var msg8={
-    'text':'Qual è il momento migliore per andare a mangiare tra le 12 e le 14?',
+    'text':'Quando è meglio che vada a pranzare tra le 12 e le 14?',
     'chat':{
         'id':'randomId8'
     }
@@ -84,6 +90,13 @@ var msg10={
     'text': '  ', //Non può mai accadere, Telegram non permette di inviare messaggi vuoti!
     'chat':{
         'id':'randomId10'
+    }
+};
+
+var msg11={
+    'text':'Qual è il momento migliore per andare a mangiare?',
+    'chat':{
+        'id':'randomId11'
     }
 };
 
@@ -188,7 +201,7 @@ test('2)TESTING: '+msg2.text, function() {
         DF_INTERACTION.NLrequestParser(msg2,resolve,reject);
     });
     expect.assertions(1);
-    return expect(testPromise2).rejects.toBe(DF_INTERACTION.INTERNAL_ERROR);
+    return expect(testPromise2).resolves.toBe(defaultWaitTimeAnswer);
 });
 
 test('3)TESTING: '+msg3.text, function() {
@@ -204,7 +217,7 @@ test('4)TESTING: '+msg4.text, function() {
         DF_INTERACTION.NLrequestParser(msg4,resolve,reject);
     });
     expect.assertions(1);
-    return expect(testPromise4).rejects.toBe(DF_INTERACTION.INTERNAL_ERROR);
+    return expect(testPromise4).rejects.toBe(DF_INTERACTION.CANTEEN_CLOSED);
 });
 
 test('5)TESTING: '+msg5.text, function() {
@@ -212,10 +225,32 @@ test('5)TESTING: '+msg5.text, function() {
         DF_INTERACTION.NLrequestParser(msg5,resolve,reject);
     });
     expect.assertions(1);
-    return expect(testPromise5).rejects.toBe(DF_INTERACTION.INTERNAL_ERROR);
+    return expect(testPromise5).resolves.toBe(defaultWaitTimeAnswer);
 });
 
-//...
+test('6)TESTING: '+msg6.text, function() {
+    var testPromise6 = new Promise(function (resolve,reject) {
+        DF_INTERACTION.NLrequestParser(msg6,resolve,reject);
+    });
+    expect.assertions(1);
+    return expect(testPromise6).resolves.toBe(defaultWaitTimeAnswer);
+});
+
+test('7)TESTING: '+msg7.text, function() {
+    var testPromise7 = new Promise(function (resolve,reject) {
+        DF_INTERACTION.NLrequestParser(msg7,resolve,reject);
+    });
+    expect.assertions(1);
+    return expect(testPromise7).resolves.toBe(defaultBestTimeAnswer);
+});
+
+test('8)TESTING: '+msg8.text, function() {
+    var testPromise8 = new Promise(function (resolve,reject) {
+        DF_INTERACTION.NLrequestParser(msg8,resolve,reject);
+    });
+    expect.assertions(1);
+    return expect(testPromise8).resolves.toBe(defaultBestTimeAnswer);
+});
 
 test('9)TESTING: '+msg9.text, function() {
     var testPromise9 = new Promise(function (resolve,reject) {
@@ -231,6 +266,14 @@ test('10)TESTING: '+msg10.text, function() {
     });
     expect.assertions(1);
     return expect(testPromise10).rejects.toBe(DF_INTERACTION.DIALOGFLOW_INTERNAL_ERROR);
+});
+
+test('11)TESTING: '+msg11.text, function() {
+    var testPromise11 = new Promise(function (resolve,reject) {
+        DF_INTERACTION.NLrequestParser(msg11,resolve,reject);
+    });
+    expect.assertions(1);
+    return expect(testPromise11).rejects.toBe(DF_INTERACTION.NO_TIME_INTERVAL_ERROR);
 });
 
 /* Shutdown stub server replier */
